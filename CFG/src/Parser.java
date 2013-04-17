@@ -25,7 +25,7 @@ public class Parser {
 				if (line.startsWith("method")) {
 					routines.add(Routine.parseRoutine(line));
 				} else if (line.startsWith("instr")) {
-					stmts.add(Stmt.parseStmt(line));
+					stmts.add(new Stmt(line));
 				}
 				//System.out.println(line);
 			}
@@ -52,16 +52,28 @@ public class Parser {
 			routine = routines.get(routines.size() - 1);
 			routine.setEndLine(endLine);
 			routine.setStmts(stmts.subList(beginLine - 1, endLine));
-			
-			/*for (int i = 0; i < routines.size(); i++) {
-				routines.get(i).dump();
-			}*/
 		}
 	}
 	
-	public void parseRoutine() {
+	public void parseRoutines() {
 		for (Routine r: routines) {
 			r.parse();
+		}
+	}
+	
+	public List<Routine> getRoutines() { return routines; }
+	
+	public void genDom() {
+		for (Routine r: routines) {
+			//r.dump();
+			r.genDom();
+		}
+	}
+	
+	public void dump() {
+		for (Routine r: routines) {
+			r.dump();
+			System.out.println("\n*********************************************");
 		}
 	}
 	
@@ -75,6 +87,13 @@ public class Parser {
 		Parser p = new Parser();
 		p.scanFile(args[0]);
 		
-		p.parseRoutine();
+		p.parseRoutines();
+		
+		p.genDom();
+		p.dump();
+		
+		//System.out.println("end");
+		
+		//new Stmt("instr 30: store 10 (29)");
 	}
 }
