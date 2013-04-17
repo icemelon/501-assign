@@ -1,0 +1,8 @@
+Haichen Shen
+
+Build method:
+ant
+
+Run method:
+./run.sh [input file]
+

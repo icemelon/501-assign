@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 public class Routine {
 	private int startLine;
@@ -174,10 +173,6 @@ public class Routine {
 	public void genDom() {
 		
 		genPostorder();
-		/*for (int i = blockCount - 1; i >= 0; --i)
-			System.out.print(postorder.get(i).index + " ");
-		System.out.println();*/
-		
 		boolean changed = true;
 		entryBlock.setIdom(entryBlock);
 		
@@ -194,7 +189,6 @@ public class Routine {
 				BasicBlock b = postorder.get(i);
 				Iterator<BasicBlock> it = b.getPreds().iterator();
 				
-				//System.out.print("block " + b.index + ":");
 				BasicBlock newIdom = null;
 				while (it.hasNext()) {
 					BasicBlock tmp = it.next();
@@ -203,16 +197,13 @@ public class Routine {
 						break;
 					}
 				}
-				//System.out.print(newIdom.index + " ");
 				
 				while (it.hasNext()) {
 					BasicBlock tmp = it.next();
 					if (tmp.getIdom() != null) {
 						newIdom = intersect(tmp, newIdom);
-						//System.out.print(newIdom.index + " ");
 					}
 				}
-				//System.out.println();
 								
 				if (b.getIdom() == null || b.getIdom() != newIdom) {
 					b.setIdom(newIdom);

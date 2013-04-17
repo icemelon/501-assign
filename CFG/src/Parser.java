@@ -65,7 +65,6 @@ public class Parser {
 	
 	public void genDom() {
 		for (Routine r: routines) {
-			//r.dump();
 			r.genDom();
 		}
 	}
@@ -80,8 +79,6 @@ public class Parser {
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println("CFG.jar [Input file]"	);
-			//for (String arg: args)
-			//	System.out.println(arg);
 			return;
 		}
 		Parser p = new Parser();
@@ -92,8 +89,5 @@ public class Parser {
 		p.genDom();
 		p.dump();
 		
-		//System.out.println("end");
-		
-		//new Stmt("instr 30: store 10 (29)");
 	}
 }

@@ -28,6 +28,7 @@
 
   <target name="clean">
     <delete dir="${build}"/>
+	<delete file="CFG.jar"/>
 	<!--delete dir="${dist}"/-->
   </target>
 
