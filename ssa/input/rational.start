@@ -1,0 +1,259 @@
+    type Rational: numerator#4:int denominator#8:int
+    method gcd@2: a#12:int b#8:int c#-4:int
+    method makeRational@16: n#12:int d#8:int common#-4:int
+    method add@47: a#12:dynamic b#8:dynamic
+    method write@169: a#8:dynamic
+    method main@195: a#-4:int b#-8:int x#-12:Rational y#-16:Rational
+    global retVal#32764:dynamic
+    instr 1: nop
+    instr 2: enter 4
+    instr 3: cmpeq b#8 0 :bool
+    instr 4: blbs (3) [10]
+    instr 5: move a#12 c#-4
+    instr 6: move b#8 a#12
+    instr 7: mod c#-4 b#8 :int
+    instr 8: move (7) b#8
+    instr 9: br [3]
+    instr 10: new Integer_type#8 :Integer
+    instr 11: add (10) value_offset#4 :int*
+    instr 12: store a#12 (11)
+    instr 13: add retVal_base#32764 GP :dynamic*
+    instr 14: store (10) (13)
+    instr 15: ret 8
+    instr 16: enter 4
+    instr 17: param n#12
+    instr 18: param d#8
+    instr 19: call [2]
+    instr 20: add retVal_base#32764 GP :dynamic*
+    instr 21: load (20) :dynamic
+    instr 22: checknull (21) :dynamic
+    instr 23: checktype (22) Integer_type#8 :Integer
+    instr 24: add (23) value_offset#4 :int*
+    instr 25: load (24) :int
+    instr 26: move (25) common#-4
+    instr 27: new Rational_type#12 :Rational
+    instr 28: add retVal_base#32764 GP :dynamic*
+    instr 29: store (27) (28)
+    instr 30: add retVal_base#32764 GP :dynamic*
+    instr 31: load (30) :dynamic
+    instr 32: checknull (31) :dynamic
+    instr 33: div n#12 common#-4 :int
+    instr 34: new Integer_type#8 :Integer
+    instr 35: add (34) value_offset#4 :int*
+    instr 36: store (33) (35)
+    instr 37: stdynamic (34) (32) numerator_offset#?
+    instr 38: add retVal_base#32764 GP :dynamic*
+    instr 39: load (38) :dynamic
+    instr 40: checknull (39) :dynamic
+    instr 41: div d#8 common#-4 :int
+    instr 42: new Integer_type#8 :Integer
+    instr 43: add (42) value_offset#4 :int*
+    instr 44: store (41) (43)
+    instr 45: stdynamic (42) (40) denominator_offset#?
+    instr 46: ret 8
+    instr 47: enter 0
+    instr 48: istype a#12 Integer_type#8 :bool
+    instr 49: blbc (48) [95]
+    instr 50: istype b#8 Integer_type#8 :bool
+    instr 51: blbc (50) [67]
+    instr 52: checknull a#12 :dynamic
+    instr 53: checktype (52) Integer_type#8 :Integer
+    instr 54: add (53) value_offset#4 :int*
+    instr 55: load (54) :int
+    instr 56: checknull b#8 :dynamic
+    instr 57: checktype (56) Integer_type#8 :Integer
+    instr 58: add (57) value_offset#4 :int*
+    instr 59: load (58) :int
+    instr 60: add (55) (59) :int
+    instr 61: new Integer_type#8 :Integer
+    instr 62: add (61) value_offset#4 :int*
+    instr 63: store (60) (62)
+    instr 64: add retVal_base#32764 GP :dynamic*
+    instr 65: store (61) (64)
+    instr 66: br [94]
+    instr 67: checknull b#8 :dynamic
+    instr 68: lddynamic (67) denominator_offset#? :dynamic
+    instr 69: checknull a#12 :dynamic
+    instr 70: checktype (69) Integer_type#8 :Integer
+    instr 71: add (70) value_offset#4 :int*
+    instr 72: load (71) :int
+    instr 73: checknull (68) :dynamic
+    instr 74: checktype (73) Integer_type#8 :Integer
+    instr 75: add (74) value_offset#4 :int*
+    instr 76: load (75) :int
+    instr 77: mul (72) (76) :int
+    instr 78: checknull b#8 :dynamic
+    instr 79: lddynamic (78) numerator_offset#? :dynamic
+    instr 80: checknull (79) :dynamic
+    instr 81: checktype (80) Integer_type#8 :Integer
+    instr 82: add (81) value_offset#4 :int*
+    instr 83: load (82) :int
+    instr 84: add (77) (83) :int
+    instr 85: param (84)
+    instr 86: checknull b#8 :dynamic
+    instr 87: lddynamic (86) denominator_offset#? :dynamic
+    instr 88: checknull (87) :dynamic
+    instr 89: checktype (88) Integer_type#8 :Integer
+    instr 90: add (89) value_offset#4 :int*
+    instr 91: load (90) :int
+    instr 92: param (91)
+    instr 93: call [16]
+    instr 94: br [168]
+    instr 95: istype b#8 Integer_type#8 :bool
+    instr 96: blbc (95) [125]
+    instr 97: checknull a#12 :dynamic
+    instr 98: lddynamic (97) denominator_offset#? :dynamic
+    instr 99: checknull b#8 :dynamic
+    instr 100: checktype (99) Integer_type#8 :Integer
+    instr 101: add (100) value_offset#4 :int*
+    instr 102: load (101) :int
+    instr 103: checknull (98) :dynamic
+    instr 104: checktype (103) Integer_type#8 :Integer
+    instr 105: add (104) value_offset#4 :int*
+    instr 106: load (105) :int
+    instr 107: mul (102) (106) :int
+    instr 108: checknull a#12 :dynamic
+    instr 109: lddynamic (108) numerator_offset#? :dynamic
+    instr 110: checknull (109) :dynamic
+    instr 111: checktype (110) Integer_type#8 :Integer
+    instr 112: add (111) value_offset#4 :int*
+    instr 113: load (112) :int
+    instr 114: add (107) (113) :int
+    instr 115: param (114)
+    instr 116: checknull a#12 :dynamic
+    instr 117: lddynamic (116) denominator_offset#? :dynamic
+    instr 118: checknull (117) :dynamic
+    instr 119: checktype (118) Integer_type#8 :Integer
+    instr 120: add (119) value_offset#4 :int*
+    instr 121: load (120) :int
+    instr 122: param (121)
+    instr 123: call [16]
+    instr 124: br [168]
+    instr 125: checknull a#12 :dynamic
+    instr 126: lddynamic (125) numerator_offset#? :dynamic
+    instr 127: checknull b#8 :dynamic
+    instr 128: lddynamic (127) denominator_offset#? :dynamic
+    instr 129: checknull (126) :dynamic
+    instr 130: checktype (129) Integer_type#8 :Integer
+    instr 131: add (130) value_offset#4 :int*
+    instr 132: load (131) :int
+    instr 133: checknull (128) :dynamic
+    instr 134: checktype (133) Integer_type#8 :Integer
+    instr 135: add (134) value_offset#4 :int*
+    instr 136: load (135) :int
+    instr 137: mul (132) (136) :int
+    instr 138: checknull b#8 :dynamic
+    instr 139: lddynamic (138) numerator_offset#? :dynamic
+    instr 140: checknull a#12 :dynamic
+    instr 141: lddynamic (140) denominator_offset#? :dynamic
+    instr 142: checknull (139) :dynamic
+    instr 143: checktype (142) Integer_type#8 :Integer
+    instr 144: add (143) value_offset#4 :int*
+    instr 145: load (144) :int
+    instr 146: checknull (141) :dynamic
+    instr 147: checktype (146) Integer_type#8 :Integer
+    instr 148: add (147) value_offset#4 :int*
+    instr 149: load (148) :int
+    instr 150: mul (145) (149) :int
+    instr 151: add (137) (150) :int
+    instr 152: param (151)
+    instr 153: checknull a#12 :dynamic
+    instr 154: lddynamic (153) denominator_offset#? :dynamic
+    instr 155: checknull b#8 :dynamic
+    instr 156: lddynamic (155) denominator_offset#? :dynamic
+    instr 157: checknull (154) :dynamic
+    instr 158: checktype (157) Integer_type#8 :Integer
+    instr 159: add (158) value_offset#4 :int*
+    instr 160: load (159) :int
+    instr 161: checknull (156) :dynamic
+    instr 162: checktype (161) Integer_type#8 :Integer
+    instr 163: add (162) value_offset#4 :int*
+    instr 164: load (163) :int
+    instr 165: mul (160) (164) :int
+    instr 166: param (165)
+    instr 167: call [16]
+    instr 168: ret 8
+    instr 169: enter 0
+    instr 170: istype a#8 Rational_type#12 :bool
+    instr 171: blbc (170) [188]
+    instr 172: checknull a#8 :dynamic
+    instr 173: lddynamic (172) numerator_offset#? :dynamic
+    instr 174: checknull (173) :dynamic
+    instr 175: checktype (174) Integer_type#8 :Integer
+    instr 176: add (175) value_offset#4 :int*
+    instr 177: load (176) :int
+    instr 178: write (177)
+    instr 179: checknull a#8 :dynamic
+    instr 180: lddynamic (179) denominator_offset#? :dynamic
+    instr 181: checknull (180) :dynamic
+    instr 182: checktype (181) Integer_type#8 :Integer
+    instr 183: add (182) value_offset#4 :int*
+    instr 184: load (183) :int
+    instr 185: write (184)
+    instr 186: wrl
+    instr 187: br [194]
+    instr 188: checknull a#8 :dynamic
+    instr 189: checktype (188) Integer_type#8 :Integer
+    instr 190: add (189) value_offset#4 :int*
+    instr 191: load (190) :int
+    instr 192: write (191)
+    instr 193: wrl
+    instr 194: ret 4
+    instr 195: entrypc
+    instr 196: enter 16
+    instr 197: move 2 a#-4
+    instr 198: move 5 b#-8
+    instr 199: param 1
+    instr 200: param 2
+    instr 201: call [16]
+    instr 202: add retVal_base#32764 GP :dynamic*
+    instr 203: load (202) :dynamic
+    instr 204: checktype (203) Rational_type#12 :Rational
+    instr 205: move (204) x#-12
+    instr 206: param 2
+    instr 207: param 3
+    instr 208: call [16]
+    instr 209: add retVal_base#32764 GP :dynamic*
+    instr 210: load (209) :dynamic
+    instr 211: checktype (210) Rational_type#12 :Rational
+    instr 212: move (211) y#-16
+    instr 213: new Integer_type#8 :Integer
+    instr 214: add (213) value_offset#4 :int*
+    instr 215: store a#-4 (214)
+    instr 216: param (213)
+    instr 217: call [169]
+    instr 218: param x#-12
+    instr 219: call [169]
+    instr 220: new Integer_type#8 :Integer
+    instr 221: add (220) value_offset#4 :int*
+    instr 222: store a#-4 (221)
+    instr 223: param (220)
+    instr 224: param x#-12
+    instr 225: call [47]
+    instr 226: add retVal_base#32764 GP :dynamic*
+    instr 227: load (226) :dynamic
+    instr 228: param (227)
+    instr 229: call [169]
+    instr 230: param y#-16
+    instr 231: param y#-16
+    instr 232: call [47]
+    instr 233: add retVal_base#32764 GP :dynamic*
+    instr 234: load (233) :dynamic
+    instr 235: param (234)
+    instr 236: call [169]
+    instr 237: new Integer_type#8 :Integer
+    instr 238: add (237) value_offset#4 :int*
+    instr 239: store a#-4 (238)
+    instr 240: param (237)
+    instr 241: new Integer_type#8 :Integer
+    instr 242: add (241) value_offset#4 :int*
+    instr 243: store b#-8 (242)
+    instr 244: param (241)
+    instr 245: call [47]
+    instr 246: add retVal_base#32764 GP :dynamic*
+    instr 247: load (246) :dynamic
+    instr 248: param (247)
+    instr 249: call [169]
+    instr 250: ret 0
+    instr 251: nop
+

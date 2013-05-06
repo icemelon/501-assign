@@ -1,28 +1,26 @@
 package haichen;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 
 public class BasicBlock {
-	public static int GlobalIndex = 0;
+	public static int globalIndex = 0;
 	
 	public final int index;
 	public final int startLine;
 	public final int endLine;
 	public final List<Stmt> stmts;
 	
-	public List<Stmt> SSAstmts;
-	
 	private Set<BasicBlock> preds;
 	private Set<BasicBlock> succs;
-	private Set<BasicBlock> children; // in dominator tree
 	
 	private BasicBlock idom;
 	
 	public BasicBlock(int begin, int end, List<Stmt> s) {
-		index = GlobalIndex++;
-		//index = i;
+		globalIndex++;
+		index = begin;
 		startLine = begin;
 		endLine = end;
 		stmts = s;
@@ -45,7 +43,7 @@ public class BasicBlock {
 	public BasicBlock getIdom() { return idom; }
 	
 	public void dump() {
-		System.out.print("Block #" + index + " @[" + startLine + ", " + endLine + "]");
+		System.out.print("Block #" + index);
 		
 		System.out.print("  Preds:");
 		for (BasicBlock b: preds)

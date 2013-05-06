@@ -1,4 +1,5 @@
 package haichen;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,23 +39,27 @@ public class Parser {
 			e.printStackTrace();
 		}
 		
-		int beginLine = routines.get(0).getStartLine();
-		int endLine;
-		Routine routine;
-		for (int i = 0; i < routines.size() - 1; i++) {
-			endLine = routines.get(i + 1).getStartLine() - 1;
-			routine = routines.get(i);
+		{
+			int beginLine = routines.get(0).getStartLine();
+			int endLine;
+			Routine routine;
+			for (int i = 0; i < routines.size() - 1; i++) {
+				endLine = routines.get(i + 1).getStartLine() - 1;
+				routine = routines.get(i);
+				routine.setEndLine(endLine);
+				routine.setStmts(stmts.subList(beginLine - 1, endLine));
+				beginLine = endLine + 1;
+			}
+			endLine = stmts.size() - 1; // last instr: nop, skip this one
+			routine = routines.get(routines.size() - 1);
+			routine.setEndLine(endLine);
 			routine.setStmts(stmts.subList(beginLine - 1, endLine));
-			beginLine = endLine + 1;
 		}
-		endLine = stmts.size() - 1; // last instr: nop, skip this one
-		routine = routines.get(routines.size() - 1);
-		routine.setStmts(stmts.subList(beginLine - 1, endLine));
 	}
 	
-	public void parseRoutines() {
+	public void genCFG() {
 		for (Routine r: routines) {
-			r.parse();
+			r.genCFG();
 		}
 	}
 	
@@ -80,10 +85,28 @@ public class Parser {
 		}
 		Parser p = new Parser();
 		p.scanFile(args[0]);
+
+		long startTime, endTime;
 		
-		p.parseRoutines();
-		
+		startTime = System.nanoTime();
+		p.genCFG();
+		endTime = System.nanoTime();
+		//System.out.println(((endTime - startTime) / 1000.0));
+
+		startTime = System.nanoTime();
 		p.genDom();
+		endTime = System.nanoTime();
+
+		//System.out.println(((endTime - startTime) / 1000.0));
+		//System.out.println(BasicBlock.globalIndex);
+
+		//int max = 0;
+		//for (Routine r: p.getRoutines()) {
+		//	int b = r.getBlockCount();
+		//	if (b > max) max = b;
+		//}
+		//System.out.println(max);
+		
 		p.dump();
 		
 	}

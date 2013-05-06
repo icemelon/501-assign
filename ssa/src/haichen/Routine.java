@@ -1,4 +1,5 @@
 package haichen;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -8,6 +9,7 @@ import java.util.TreeSet;
 
 public class Routine {
 	private int startLine;
+	private int endLine;
 	private String name;
 	
 	private List<Stmt> stmts;
@@ -19,18 +21,24 @@ public class Routine {
 	private List<BasicBlock> postorder;
 	private HashMap<BasicBlock, Boolean> visit;
 	
-	public Routine(String name) {
-		this.name = name;
-	}
-	
-	public Routine(String name, int startLine) {
+	private Routine(String name, int startLine) {
 		this.name = name;
 		this.startLine = startLine;
 	}
 	
-	public void setStmts(List<Stmt> stmts) { this.stmts = stmts; }
 	public String getName() { return name; }
+	
+	public void setStartLine(int start) { startLine = start; }
+	
+	public void setEndLine(int end) { endLine = end; }
+	
+	public void setStmts(List<Stmt> s) { stmts = s; }
+	
 	public int getStartLine() { return startLine; }
+	
+	public int getEndLine() { return endLine; }
+
+	public int getBlockCount() { return blockCount; }
 	
 	private BasicBlock searchBlock(int stmtIndex) {
 		int left = 0;
@@ -44,7 +52,7 @@ public class Routine {
 			mid = (left + right) / 2;
 			BasicBlock block = blocks.get(mid);
 			
-			if (stmtIndex == block.startLine)
+			if (stmtIndex == block.startLine || stmtIndex == block.endLine)
 				return block;
 			if (stmtIndex < block.startLine)
 				right = mid - 1;
@@ -54,7 +62,7 @@ public class Routine {
 	}
 	
 	// Find basic blocks and generate CFG
-	public void parse() {
+	public void genCFG() {
 		Set<Integer> boundary = new TreeSet<Integer>();
 		boundary.add(startLine);
 		
@@ -62,10 +70,10 @@ public class Routine {
 			String instr = stmt.instr;
 			if (instr.equals("br")) {
 				boundary.add(stmt.index + 1);
-				boundary.add(Stmt.parseIndexFromOp(stmt.op1));
+				boundary.add(stmt.oprand[0].getValue());
 			} else if (instr.equals("blbc") || instr.equals("blbs")) {
 				boundary.add(stmt.index + 1);
-				boundary.add(Stmt.parseIndexFromOp(stmt.op2));
+				boundary.add(stmt.oprand[1].getValue());
 			}
 		}
 		
@@ -86,7 +94,7 @@ public class Routine {
 			
 			int brOp = 0;
 			if (stmt.instr.equals("blbc") || stmt.instr.equals("blbs")) {
-				brOp = Stmt.parseIndexFromOp(stmt.op2);
+				brOp = stmt.oprand[1].getValue();
 				
 				BasicBlock b1 = blocks.get(i + 1); 
 				BasicBlock b2 = searchBlock(brOp);
@@ -98,7 +106,7 @@ public class Routine {
 				b2.addPred(block);
 				
 			} else if (stmt.instr.equals("br")) {
-				brOp = Stmt.parseIndexFromOp(stmt.op1);
+				brOp = stmt.oprand[0].getValue();
 				BasicBlock b = searchBlock(brOp);
 				
 				block.addSucc(b);
