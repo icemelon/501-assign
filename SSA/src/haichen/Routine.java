@@ -1,3 +1,4 @@
+package haichen;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -7,7 +8,6 @@ import java.util.TreeSet;
 
 public class Routine {
 	private int startLine;
-	private int endLine;
 	private String name;
 	
 	private List<Stmt> stmts;
@@ -28,35 +28,9 @@ public class Routine {
 		this.startLine = startLine;
 	}
 	
-	public Routine(String name, int startLine, int endLine) {
-		this.name = name;
-		this.startLine = startLine;
-		this.endLine = endLine;
-	} 
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setStartLine(int start) {
-		startLine = start;
-	}
-	
-	public void setEndLine(int end) {
-		endLine = end;
-	}
-	
-	public void setStmts(List<Stmt> s) {
-		stmts = s;
-	}
-	
-	public int getStartLine() {
-		return startLine;
-	}
-	
-	public int getEndLine() {
-		return endLine;
-	}
+	public void setStmts(List<Stmt> stmts) { this.stmts = stmts; }
+	public String getName() { return name; }
+	public int getStartLine() { return startLine; }
 	
 	private BasicBlock searchBlock(int stmtIndex) {
 		int left = 0;
@@ -70,7 +44,7 @@ public class Routine {
 			mid = (left + right) / 2;
 			BasicBlock block = blocks.get(mid);
 			
-			if (stmtIndex >= block.startLine && stmtIndex <= block.endLine)
+			if (stmtIndex == block.startLine)
 				return block;
 			if (stmtIndex < block.startLine)
 				right = mid - 1;

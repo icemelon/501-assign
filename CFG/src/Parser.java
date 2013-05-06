@@ -83,10 +83,28 @@ public class Parser {
 		}
 		Parser p = new Parser();
 		p.scanFile(args[0]);
+
+		long startTime, endTime;
 		
+		startTime = System.nanoTime();
 		p.parseRoutines();
-		
+		endTime = System.nanoTime();
+		//System.out.println(((endTime - startTime) / 1000.0));
+
+		startTime = System.nanoTime();
 		p.genDom();
+		endTime = System.nanoTime();
+
+		//System.out.println(((endTime - startTime) / 1000.0));
+		//System.out.println(BasicBlock.globalIndex);
+
+		//int max = 0;
+		//for (Routine r: p.getRoutines()) {
+		//	int b = r.getBlockCount();
+		//	if (b > max) max = b;
+		//}
+		//System.out.println(max);
+		
 		p.dump();
 		
 	}

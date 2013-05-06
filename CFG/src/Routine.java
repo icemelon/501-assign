@@ -34,29 +34,19 @@ public class Routine {
 		this.endLine = endLine;
 	} 
 	
-	public String getName() {
-		return name;
-	}
+	public String getName() { return name; }
 	
-	public void setStartLine(int start) {
-		startLine = start;
-	}
+	public void setStartLine(int start) { startLine = start; }
 	
-	public void setEndLine(int end) {
-		endLine = end;
-	}
+	public void setEndLine(int end) { endLine = end; }
 	
-	public void setStmts(List<Stmt> s) {
-		stmts = s;
-	}
+	public void setStmts(List<Stmt> s) { stmts = s; }
 	
-	public int getStartLine() {
-		return startLine;
-	}
+	public int getStartLine() { return startLine; }
 	
-	public int getEndLine() {
-		return endLine;
-	}
+	public int getEndLine() { return endLine; }
+
+	public int getBlockCount() { return blockCount; }
 	
 	private BasicBlock searchBlock(int stmtIndex) {
 		int left = 0;

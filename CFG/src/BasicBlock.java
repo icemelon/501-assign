@@ -4,7 +4,7 @@ import java.util.Set;
 
 
 public class BasicBlock {
-	public static int GlobalIndex = 0;
+	public static int globalIndex = 0;
 	
 	public final int index;
 	public final int startLine;
@@ -17,8 +17,9 @@ public class BasicBlock {
 	private BasicBlock idom;
 	
 	public BasicBlock(int begin, int end, List<Stmt> s) {
-		index = GlobalIndex++;
-		//index = i;
+		//index = 
+		globalIndex++;
+		index = begin;
 		startLine = begin;
 		endLine = end;
 		stmts = s;
@@ -41,7 +42,7 @@ public class BasicBlock {
 	public BasicBlock getIdom() { return idom; }
 	
 	public void dump() {
-		System.out.print("Block #" + index + " @[" + startLine + ", " + endLine + "]");
+		System.out.print("Block #" + index);
 		
 		System.out.print("  Preds:");
 		for (BasicBlock b: preds)

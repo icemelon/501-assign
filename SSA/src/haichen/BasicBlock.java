@@ -1,3 +1,4 @@
+package haichen;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,8 +12,11 @@ public class BasicBlock {
 	public final int endLine;
 	public final List<Stmt> stmts;
 	
+	public List<Stmt> SSAstmts;
+	
 	private Set<BasicBlock> preds;
 	private Set<BasicBlock> succs;
+	private Set<BasicBlock> children; // in dominator tree
 	
 	private BasicBlock idom;
 	

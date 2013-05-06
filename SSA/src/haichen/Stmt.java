@@ -1,3 +1,4 @@
+package haichen;
 
 public class Stmt {
 	public final int index;
