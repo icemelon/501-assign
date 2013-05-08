@@ -1,4 +1,4 @@
-package haichen;
+package compiler;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
+
+import type.Constant;
+import type.Variable;
 
 public class Parser {
 	private List<Stmt> stmts;
@@ -27,9 +30,8 @@ public class Parser {
 				if (line.startsWith("method")) {
 					routines.add(Routine.parseRoutine(line));
 				} else if (line.startsWith("instr")) {
-					stmts.add(new Stmt(line));
+					stmts.add(Stmt.parseStmt(line));
 				}
-				//System.out.println(line);
 			}
 			reader.close();
 			
@@ -57,18 +59,33 @@ public class Parser {
 		}
 	}
 	
+	public List<Routine> getRoutines() { return routines; }
+	
 	public void genCFG() {
 		for (Routine r: routines) {
 			r.genCFG();
 		}
 	}
 	
-	public List<Routine> getRoutines() { return routines; }
-	
-	public void genDom() {
+	public void genDominator() {
 		for (Routine r: routines) {
-			r.genDom();
+			r.genDominator();
 		}
+	}
+	
+	public void genDomFrontier() {
+		for (Routine r: routines)
+			r.genDomFrontier();
+	}
+	
+	public void placePhi() {
+		for (Routine r: routines)
+			r.placePhi();
+	}
+	
+	public void rename() {
+		for (Routine r: routines)
+			r.rename();
 	}
 	
 	public void dump() {
@@ -78,9 +95,16 @@ public class Parser {
 		}
 	}
 	
+	public void dumpSSA() {
+		for (Routine r: routines) {
+			r.dumpSSA();
+			System.out.println("\n*********************************************");
+		}
+	}
+	
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			System.out.println("CFG.jar [Input file]"	);
+			System.out.println("SSA.jar [Input file]"	);
 			return;
 		}
 		Parser p = new Parser();
@@ -94,8 +118,12 @@ public class Parser {
 		//System.out.println(((endTime - startTime) / 1000.0));
 
 		startTime = System.nanoTime();
-		p.genDom();
+		p.genDominator();
 		endTime = System.nanoTime();
+		
+		p.genDomFrontier();
+		p.placePhi();
+		p.rename();
 
 		//System.out.println(((endTime - startTime) / 1000.0));
 		//System.out.println(BasicBlock.globalIndex);
@@ -107,7 +135,7 @@ public class Parser {
 		//}
 		//System.out.println(max);
 		
-		p.dump();
-		
+		//p.dump();
+		p.dumpSSA();
 	}
 }

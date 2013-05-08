@@ -21,7 +21,7 @@
 	<!--mkdir dir="${dist}"/-->
 	<jar jarfile="ssa.jar" basedir="${build}">
 	  <manifest>
-	    <attribute name="Main-Class" value="haichen.Parser"/>
+	    <attribute name="Main-Class" value="compiler.Parser"/>
 	  </manifest>
 	</jar>
   </target>
