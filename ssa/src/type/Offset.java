@@ -24,6 +24,11 @@ public class Offset extends Token implements Cloneable {
 	}
 	
 	@Override
+	public String toIRString() {
+		return (name + "#" + (dynamic ? "?" : offset));
+	}
+	
+	@Override
 	public String toSSAString() {
 		return (name + "#" + (dynamic ? "?" : offset));
 	}

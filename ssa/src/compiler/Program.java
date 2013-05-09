@@ -8,14 +8,16 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
+
+import stmt.Stmt;
 import type.Constant;
 import type.Variable;
 
-public class Parser {
+public class Program {
 	private List<Stmt> stmts;
 	private List<Routine> routines;
 	
-	public Parser() {
+	public Program() {
 		stmts = new LinkedList<Stmt>();
 		routines = new LinkedList<Routine>();
 	}
@@ -95,6 +97,13 @@ public class Parser {
 		}
 	}
 	
+	public void dumpIR() {
+		for (Routine r: routines) {
+			r.dumpIR();
+			System.out.println("\n*********************************************");
+		}
+	}
+	
 	public void dumpSSA() {
 		for (Routine r: routines) {
 			r.dumpSSA();
@@ -107,7 +116,7 @@ public class Parser {
 			System.out.println("SSA.jar [Input file]"	);
 			return;
 		}
-		Parser p = new Parser();
+		Program p = new Program();
 		p.scanFile(args[0]);
 
 		long startTime, endTime;
@@ -135,7 +144,7 @@ public class Parser {
 		//}
 		//System.out.println(max);
 		
-		//p.dump();
+		//p.dumpIR();
 		p.dumpSSA();
 	}
 }

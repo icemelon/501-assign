@@ -16,6 +16,11 @@ public class Code extends Token implements Cloneable {
 	}
 	
 	@Override
+	public String toIRString() {
+		return "[" + index + "]";
+	}
+	
+	@Override
 	public String toSSAString() {
 		return "[" + index + "]";
 	}

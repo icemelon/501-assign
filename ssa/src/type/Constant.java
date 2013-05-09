@@ -14,6 +14,11 @@ public class Constant extends Token implements Cloneable {
 	}
 	
 	@Override
+	public String toIRString() {
+		return "" + value;
+	}
+	
+	@Override
 	public String toSSAString() {
 		return "" + value;
 	}

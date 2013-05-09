@@ -58,5 +58,9 @@ public abstract class Token implements Cloneable {
 		return o;
 	}
 	
+	abstract public String toString();
+	
+	abstract public String toIRString();
+	
 	abstract public String toSSAString();	
 }

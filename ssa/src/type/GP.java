@@ -12,6 +12,11 @@ public class GP extends Token implements Cloneable {
 	}
 	
 	@Override
+	public String toIRString() {
+		return "GP";
+	}
+	
+	@Override
 	public String toSSAString() {
 		return "GP";
 	}

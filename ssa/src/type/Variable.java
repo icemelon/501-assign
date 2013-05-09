@@ -1,7 +1,5 @@
 package type;
 
-import compiler.Block;
-
 
 public class Variable extends Token implements Cloneable {
 	
@@ -10,7 +8,7 @@ public class Variable extends Token implements Cloneable {
 	private int offset;
 	
 	// for ssa
-	private int ssaIndex = -1;
+	private String ssaName;
 	
 	public Variable(String name, int offset) {
 		this.name = name;
@@ -34,9 +32,7 @@ public class Variable extends Token implements Cloneable {
 	
 	public int getOffset() { return offset; }
 	
-	public void setName(String name) { this.name = name; }
-	
-	public void setSSAIndex(int index) { ssaIndex = index; }
+	public void setSSAName(String name) { this.ssaName = name; }
 	
 	@Override
 	public String toString() {
@@ -44,8 +40,17 @@ public class Variable extends Token implements Cloneable {
 	}
 	
 	@Override
+	public String toIRString() {
+		return name + "#" + offset;
+	}
+	
+	@Override
 	public String toSSAString() {
-		return name + "$" + ssaIndex;
+		return ssaName;
+	}
+	
+	public boolean equals(Variable v) {
+		return name.equals(v.getName());
 	}
 	
 	public String debug() {
@@ -55,8 +60,6 @@ public class Variable extends Token implements Cloneable {
 	public Object clone() {
 		
 		Variable o = (Variable) super.clone();
-		
-		o.name = new String(name);
 		
 		return o;
 	}

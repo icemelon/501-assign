@@ -10,6 +10,9 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+
+import stmt.Stmt;
+import stmt.Stmt.Operator;
 import type.Token;
 import type.Code;
 import type.Variable;
@@ -24,7 +27,7 @@ public class Routine {
 	private List<Block> blocks = new LinkedList<Block>();
 	
 	// SSA renaming
-	private List<Stack<Integer>> varStack;
+	private List<Stack<String>> varStack;
 	private List<Integer> varCounter;
 	
 	private int blockCount = 0;
@@ -79,11 +82,11 @@ public class Routine {
 		boundary.add(startLine);
 		
 		for (Stmt stmt: stmts) {
-			String instr = stmt.getInstr();
-			if (instr.equals("br")) {
+			Operator op = stmt.getOperator();
+			if (op == Operator.br) {
 				boundary.add(stmt.index + 1);
 				boundary.add(((Code) stmt.getOprands().get(0)).getIndex());
-			} else if (instr.equals("blbc") || instr.equals("blbs")) {
+			} else if (op == Operator.blbc || op == Operator.blbs) {
 				boundary.add(stmt.index + 1);
 				boundary.add(((Code) stmt.getOprands().get(1)).getIndex());
 			}
@@ -102,10 +105,11 @@ public class Routine {
 		
 		for (int i = 0; i < blockCount; i++) {
 			Block block = blocks.get(i);
-			Stmt stmt = block.stmts.get(block.stmts.size() - 1);
+			Stmt stmt = block.body.get(block.body.size() - 1);
 			
 			int brOp = 0;
-			if (stmt.getInstr().equals("blbc") || stmt.getInstr().equals("blbs")) {
+			Operator op = stmt.getOperator();
+			if (op == Operator.blbc || op == Operator.blbs) {
 				brOp = ((Code) stmt.getOprands().get(1)).getIndex();
 				
 				Block b1 = blocks.get(i + 1); 
@@ -117,13 +121,13 @@ public class Routine {
 				block.addSucc(b2);
 				b2.addPred(block);
 				
-			} else if (stmt.getInstr().equals("br")) {
+			} else if (op == Operator.br) {
 				brOp = ((Code) stmt.getOprands().get(0)).getIndex();
 				Block b = searchBlock(brOp);
 				
 				block.addSucc(b);
 				b.addPred(block);
-			} else if (!stmt.getInstr().equals("ret")) {
+			} else if (!(op == Operator.ret)) {
 				Block b = blocks.get(i + 1);
 				
 				block.addSucc(b);
@@ -153,12 +157,6 @@ public class Routine {
 		
 		while (changed) {
 			changed = false;
-			
-			/*for (int i = blockCount - 1; i >= 0; --i) {
-				BasicBlock b = postorder.get(i).getIdom();
-				System.out.print((b == null ? "u" : b.index) + " ");
-			}
-			System.out.println("");*/
 			
 			for (int i = blockCount - 2; i >= 0; --i) {
 				Block b = postorder.get(i);
@@ -239,7 +237,7 @@ public class Routine {
 				workList.remove(0);
 				for (Block df: block.getDF()) {
 					if (!hasAlready.contains(df)) {
-						df.insertPhi(var);
+						df.insertPhiNode(var);
 						hasAlready.add(df);
 						if (!everOnWorkList.contains(df)) {
 							everOnWorkList.add(df);
@@ -251,48 +249,49 @@ public class Routine {
 		}
 	}
 	
-	public void genSSAIndex(Variable v) {
+	public void genSSAName(Variable v) {
 		int i;
 		for (i = 0; i < vars.size(); i++)
-			if (vars.get(i).getName().equals(v.getName()))
+			if (vars.get(i).equals(v))
 				break;
 		
 		Integer index = varCounter.get(i);
-		v.setSSAIndex(index);
-		varStack.get(i).push(index);
+		String name = v.getName() + "$" + index;
+		v.setSSAName(name);
+		varStack.get(i).push(name);
 		varCounter.set(i, index + 1);
 	}
 	
-	public void setSSAIndex(Variable v) {
+	public void setSSAName(Variable v) {
 		int i;
 		for (i = 0; i < vars.size(); i++)
-			if (vars.get(i).getName().equals(v.getName()))
+			if (vars.get(i).equals(v))
 				break;
 		
-		Stack<Integer> stack = varStack.get(i);
+		Stack<String> stack = varStack.get(i);
 		if (stack.isEmpty()) {
-			entryBlock.insertParam(v.getName());
-			stack.push(0);
+			//entryBlock.insertParam(v.getName());
+			stack.push(v.getName() + "$0");
 			varCounter.set(i, 1);
 		}
-		v.setSSAIndex(varStack.get(i).peek());
+		v.setSSAName(varStack.get(i).peek());
 	}
 	
-	public void popSSAIndex(Variable v) {
+	public void popSSAName(Variable v) {
 		int i;
 		for (i = 0; i < vars.size(); i++)
-			if (vars.get(i).getName().equals(v.getName()))
+			if (vars.get(i).equals(v))
 				break;
 		
 		varStack.get(i).pop();
 	}
 	
 	public void rename() {
-		varStack = new ArrayList<Stack<Integer>>();
+		varStack = new ArrayList<Stack<String>>();
 		varCounter = new ArrayList<Integer>();
 		
 		for (int i = 0; i < vars.size(); i++) {
-			varStack.add(new Stack<Integer>());
+			varStack.add(new Stack<String>());
 			varCounter.add(0);
 		}
 		
@@ -305,6 +304,15 @@ public class Routine {
 		for (Block b: blocks) {
 			System.out.println();
 			b.dump();
+		}
+	}
+	
+	public void dumpIR() {
+		System.out.print("Method: " + name + " @[" + startLine + ", " + endLine + "]");
+		System.out.println("  Entryblock #" + entryBlock.index);
+		for (Block b: blocks) {
+			System.out.println();
+			b.dumpIR();
 		}
 	}
 	
