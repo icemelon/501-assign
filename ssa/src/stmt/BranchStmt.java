@@ -1,5 +1,6 @@
 package stmt;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import token.Token;
@@ -10,7 +11,7 @@ public class BranchStmt extends Stmt {
 	public BranchStmt(int index, Operator op, List<Token> oprands) {
 		super(index, op);
 		rhs = oprands;
-		lhs = null;
+		lhs = new LinkedList();
 	}
 	
 	@Override

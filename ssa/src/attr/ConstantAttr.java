@@ -10,6 +10,15 @@ public class ConstantAttr extends Attribute {
 	private Type type;
 	private int value;
 	
+	public ConstantAttr(Type type) {
+		this.type = type;
+	}
+	
+	public ConstantAttr(Type type, int value) {
+		this.type = type;
+		this.value = value;
+	}
+	
 	public boolean equals(ConstantAttr cAttr) {
 		if (type == cAttr.getType()) {
 			if (type == Type.Constant)

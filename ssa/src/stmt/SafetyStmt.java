@@ -1,5 +1,6 @@
 package stmt;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import token.Register;
@@ -12,13 +13,13 @@ public class SafetyStmt extends Stmt {
 		
 		if (op == Operator.checkbounds) {
 			rhs = oprands;
-			lhs = null;
+			lhs = new LinkedList();
 		} else if (op == Operator.checknull){
 			rhs = oprands.subList(0, 1);
-			lhs = oprands.get(1);
+			lhs = oprands.subList(1, 2);
 		} else { // checktype
 			rhs = oprands.subList(0, 2);
-			lhs = oprands.get(2);
+			lhs = oprands.subList(2, 3);
 		}
 	}
 	
@@ -29,7 +30,7 @@ public class SafetyStmt extends Stmt {
 		for (Token t: rhs)
 			sb.append(" " + t);
 		if (lhs != null)
-			sb.append(" :" + ((Register) lhs).getType());
+			sb.append(" :" + ((Register) lhs.get(0)).getType());
 		return sb.toString();
 	}
 	
@@ -38,7 +39,7 @@ public class SafetyStmt extends Stmt {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
 		if (lhs != null)
-			sb.append(lhs.toIRString() + " := ");
+			sb.append(lhs.get(0).toIRString() + " := ");
 		sb.append(op);
 		for (Token t: rhs)
 			sb.append(" " + t.toIRString());
@@ -50,7 +51,7 @@ public class SafetyStmt extends Stmt {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
 		if (lhs != null)
-			sb.append(lhs.toSSAString() + " := ");
+			sb.append(lhs.get(0).toSSAString() + " := ");
 		sb.append(op);
 		for (Token t: rhs)
 			sb.append(" " + t.toSSAString());

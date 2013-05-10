@@ -1,5 +1,6 @@
 package stmt;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import token.Token;
@@ -10,7 +11,7 @@ public class OtherStmt extends Stmt {
 		super(index, op);
 		
 		rhs = oprands;
-		lhs = null;
+		lhs = new LinkedList();
 	}
 	
 	@Override

@@ -43,6 +43,7 @@ public abstract class Stmt implements Cloneable {
 		param("param"),
 		entrypc("entrypc"),
 		nop("nop"),
+		entry("entry"),
 		phi("phi"),
 		phinode("phinode");
 		
@@ -118,6 +119,8 @@ public abstract class Stmt implements Cloneable {
 				return entrypc;
 			if (op.equals("nop"))
 				return nop;
+			if (op.equals("entry"))
+				return entry;
 			if (op.equals("phi"))
 				return phi;
 			if (op.equals("phinode"))
@@ -129,9 +132,9 @@ public abstract class Stmt implements Cloneable {
 	
 	public static int globalIndex;
 	public final int index;
-	protected Operator op;
+	protected final Operator op;
 	protected List<Token> rhs = null;
-	protected Token lhs = null;
+	protected List<Token> lhs = null;
 	protected Attribute attr = null;
 	
 	protected Stmt(int index, Operator op) {
@@ -149,13 +152,13 @@ public abstract class Stmt implements Cloneable {
 	
 	public List<Token> getRHS() { return rhs; }
 	
-	public Token getLHS() { return lhs; }
+	public List<Token> getLHS() { return lhs; }
 	
-	public List<Token> getOprands() {
+	/*public List<Token> getOprands() {
 		List<Token> oprands = new LinkedList<Token>(rhs);
-		oprands.add(lhs);
+		oprands.addAll(lhs);
 		return oprands;
-	}
+	}*/
 	
 	// assembly code
 	public abstract String toString();
@@ -181,10 +184,10 @@ public abstract class Stmt implements Cloneable {
 			for (Token t: rhs)
 				o.rhs.add((Token) t.clone());
 			
-			/*o.lhs = new LinkedList<Token>();
+			o.lhs = new LinkedList<Token>();
 			for (Token t: lhs)
-				o.lhs.add((Token) t.clone());*/
-			o.lhs = (Token) lhs.clone();
+				o.lhs.add((Token) t.clone());
+//			o.lhs = (Token) lhs.clone();
 			
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

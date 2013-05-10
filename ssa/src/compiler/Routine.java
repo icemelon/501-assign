@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 
 import stmt.BranchStmt;
+import stmt.EntryStmt;
 import stmt.MoveStmt;
 import stmt.Stmt;
 import stmt.Stmt.Operator;
@@ -58,6 +59,8 @@ public class Routine {
 
 	public int getBlockCount() { return blockCount; }
 	
+	public Block getEntryBlock() { return entryBlock; }
+	
 	private Block searchBlock(int stmtIndex) {
 		int left = 0;
 		int right = blockCount - 1;
@@ -88,10 +91,10 @@ public class Routine {
 			Operator op = stmt.getOperator();
 			if (op == Operator.br) {
 				boundary.add(stmt.index + 1);
-				boundary.add(((Code) stmt.getOprands().get(0)).getIndex());
+				boundary.add(((Code) stmt.getRHS().get(0)).getIndex());
 			} else if (op == Operator.blbc || op == Operator.blbs) {
 				boundary.add(stmt.index + 1);
-				boundary.add(((Code) stmt.getOprands().get(1)).getIndex());
+				boundary.add(((Code) stmt.getRHS().get(1)).getIndex());
 			}
 		}
 		
@@ -113,7 +116,7 @@ public class Routine {
 			int brOp = 0;
 			Operator op = stmt.getOperator();
 			if (op == Operator.blbc || op == Operator.blbs) {
-				brOp = ((Code) stmt.getOprands().get(1)).getIndex();
+				brOp = ((Code) stmt.getRHS().get(1)).getIndex();
 				
 				Block b1 = blocks.get(i + 1); 
 				Block b2 = searchBlock(brOp);
@@ -125,7 +128,7 @@ public class Routine {
 				b2.addPred(block);
 				
 			} else if (op == Operator.br) {
-				brOp = ((Code) stmt.getOprands().get(0)).getIndex();
+				brOp = ((Code) stmt.getRHS().get(0)).getIndex();
 				Block b = searchBlock(brOp);
 				
 				block.addSucc(b);
@@ -223,6 +226,12 @@ public class Routine {
 		Set<Block> everOnWorkList = new HashSet<Block>();
 		Set<Block> hasAlready = new HashSet<Block>();
 		
+		// place entry stmt
+		List<Stmt> newBody = new LinkedList<Stmt>();
+		newBody.add(new EntryStmt(localVars));
+		newBody.addAll(entryBlock.body);
+		entryBlock.body = newBody;
+		
 		for (Variable var: localVars) {
 			workList.clear();
 			everOnWorkList.clear();
@@ -273,9 +282,12 @@ public class Routine {
 		
 		Stack<String> stack = varStack[i];
 		if (stack.isEmpty()) {
-			//entryBlock.insertParam(v.getName());
+			System.out.println(v.getName());
+			for (int j = 0; j < localVars.size(); j++)
+				System.out.println(localVars.get(j).getName());
+			/*entryBlock.body.get(0).insertParam(v.getName());
 			stack.push(v.getName() + "$0");
-			varCounter[i] = 1;
+			varCounter[i] = 1;*/
 		}
 		v.setSSAName(stack.peek());
 	}
@@ -299,14 +311,14 @@ public class Routine {
 			Variable var = localVars.get(i);
 			Stack<String> stack = new Stack<String>(); 
 			
-			if (var.getOffset() > 0) {
+			/*if (var.getOffset() > 0) {
 				varCounter[i] = 1;
 				String varName = var.getName() + "$" + "0";
 				stack.add(varName);
 				ssaVars.add(new Variable(varName));
 			} else
-				varCounter[i] = 0;
-			
+				varCounter[i] = 0;*/
+			varCounter[i] = 0;
 			varStack[i] = stack;
 		}
 		

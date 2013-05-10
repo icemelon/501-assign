@@ -12,7 +12,7 @@ public class BinopStmt extends Stmt  {
 	public BinopStmt(int index, Operator op, List<Token> oprands) {
 		super(index, op);
 		rhs = oprands.subList(0, 2);
-		lhs = oprands.get(2);
+		lhs = oprands.subList(2, 3);
 	}
 	
 	@Override
@@ -21,7 +21,7 @@ public class BinopStmt extends Stmt  {
 		sb.append("    instr " + index + ": " + op);
 		for (Token t: rhs)
 			sb.append(" " + t);
-		sb.append(" :" + ((Register) lhs).getType());
+		sb.append(" :" + ((Register) lhs.get(0)).getType());
 		return sb.toString();
 	}
 	
@@ -29,7 +29,7 @@ public class BinopStmt extends Stmt  {
 	public String toIRString() {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
-		sb.append(lhs.toIRString() + " := " + op);
+		sb.append(lhs.get(0).toIRString() + " := " + op);
 		for (Token t: rhs)
 			sb.append(" " + t.toIRString());
 
@@ -40,7 +40,7 @@ public class BinopStmt extends Stmt  {
 	public String toSSAString() {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
-		sb.append(lhs.toSSAString() + " := " + op);
+		sb.append(lhs.get(0).toSSAString() + " := " + op);
 		for (Token t: rhs)
 			sb.append(" " + t.toSSAString());
 

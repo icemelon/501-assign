@@ -21,28 +21,25 @@ public class DefUseAnalysis {
 		this.routine = r;
 	}
 	
-	public void genDefUse() {
-		routine.dumpSSA();
+	public Set<String> getVarName() { return varDef.keySet(); }
+	
+	public void analyze() {
+		
 		//HashMap<String, Stmt> varDef = new HashMap<String, Stmt>();
 		List<Block> blocks = routine.getBlocks();
 		for (Block b: blocks) {
 			for (PhiNode phiNode: b.getPhiNode()) {
-				String name = ((Variable) phiNode.getLHS()).getSSAName();
+				String name = ((Variable) phiNode.getLHS().get(0)).getSSAName();
 				varDef.put(name, phiNode);
 				defUse.put(name, new LinkedList<Stmt>());
 			}
 			for (Stmt s: b.body)
-				if (s instanceof MoveStmt) {
-					String name = ((Variable) s.getLHS()).getSSAName();
-					varDef.put(name, s);
-					defUse.put(name, new LinkedList<Stmt>());
-				}
-		}
-		{
-			Set<String> keySet = varDef.keySet();
-			for (String key: keySet) {
-				System.out.println("var " + key + "def: " + varDef.get(key).index);
-			}
+				for (Token t: s.getLHS())
+					if (t instanceof Variable) {
+						String name = ((Variable) t).getSSAName();
+						varDef.put(name, s);
+						defUse.put(name, new LinkedList<Stmt>());
+					}
 		}
 		
 		for (Block b: blocks) {
@@ -64,16 +61,24 @@ public class DefUseAnalysis {
 							list.add(s);
 					}
 		}
+	}
+	
+	public void dump() {
+		routine.dumpSSA();
 		
-		{
-			Set<String> keySet = varDef.keySet();
-			for (String key: keySet) {
-				System.out.print("var " + key + "use:");
-				for (Stmt s: defUse.get(key))
-					System.out.print(" " + s.index);
-				System.out.println();
-			}
+		System.out.println();
+		
+		Set<String> keySet = varDef.keySet();
+		for (String key: keySet) {
+			System.out.println("var " + key + "def: " + varDef.get(key).index);
 		}
-			
+		
+		keySet = varDef.keySet();
+		for (String key: keySet) {
+			System.out.print("var " + key + "use:");
+			for (Stmt s: defUse.get(key))
+				System.out.print(" " + s.index);
+			System.out.println();
+		}
 	}
 }

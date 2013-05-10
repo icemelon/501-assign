@@ -9,7 +9,8 @@ import token.Variable;
 public class PhiStmt extends Stmt {
 	public PhiStmt() {
 		super(Operator.phi);
-		lhs = new Register(index);
+		lhs = new LinkedList<Token>();
+		lhs.add(new Register(index));
 		rhs = new LinkedList<Token>();
 	}
 	
@@ -29,7 +30,7 @@ public class PhiStmt extends Stmt {
 	public String toSSAString() {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
-		sb.append(lhs.toSSAString() + " := " + op);
+		sb.append(lhs.get(0).toSSAString() + " := " + op);
 		for (Token t: rhs)
 			sb.append(" " + t.toSSAString());
 		return sb.toString();

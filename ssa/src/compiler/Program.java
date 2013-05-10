@@ -144,6 +144,7 @@ public class Program {
 		//p.dumpIR();
 		//p.dumpSSA();
 		DefUseAnalysis dua = new DefUseAnalysis(p.getRoutines().get(0));
-		dua.genDefUse();
+		dua.analyze();
+		dua.dump();
 	}
 }

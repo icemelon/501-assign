@@ -11,7 +11,7 @@ public class MemoryStmt extends Stmt {
 		super(index, op);
 		
 		rhs = oprands.subList(0, 1);
-		lhs = oprands.get(1);
+		lhs = oprands.subList(1, 2);
 	}
 	
 	@Override
@@ -20,7 +20,7 @@ public class MemoryStmt extends Stmt {
 		sb.append("    instr " + index + ": " + op);
 		for (Token t: rhs)
 			sb.append(" " + t);
-		sb.append(" " + lhs);
+		sb.append(" " + lhs.get(0));
 		return sb.toString();
 	}
 	
@@ -28,7 +28,7 @@ public class MemoryStmt extends Stmt {
 	public String toIRString() {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
-		sb.append(lhs.toIRString() + " := " + op);
+		sb.append(lhs.get(0).toIRString() + " := " + op);
 		for (Token t: rhs)
 			sb.append(" " + t.toIRString());
 		return sb.toString();
@@ -38,7 +38,7 @@ public class MemoryStmt extends Stmt {
 	public String toSSAString() {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
-		sb.append(lhs.toSSAString() + " := " + op);
+		sb.append(lhs.get(0).toSSAString() + " := " + op);
 		for (Token t: rhs)
 			sb.append(" " + t.toSSAString());
 		return sb.toString();

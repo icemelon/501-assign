@@ -13,17 +13,18 @@ public class PhiNode extends Stmt {
 	public PhiNode(String name, int count) {
 		super(Stmt.Operator.phinode);
 		
-		lhs = new Variable(name);
+		lhs = new LinkedList<Token>();
+		lhs.add(new Variable(name));
 		rhs = new LinkedList<Token>();
 		for (int i = 0; i < count; i++)
 			rhs.add(null);
 		
 		phiStmt = new PhiStmt();
 		phiStmt.rhs = rhs;
-		moveStmt = new MoveStmt(phiStmt.getLHS(), (Variable) lhs);
+		moveStmt = new MoveStmt(phiStmt.getLHS(), lhs);
 	}
 	
-	public String getVarName() { return ((Variable) lhs).getName(); }
+	public String getVarName() { return ((Variable) lhs.get(0)).getName(); }
 	
 	public void setRHS(int index, Variable var) { rhs.set(index, var); }
 
@@ -34,5 +35,7 @@ public class PhiNode extends Stmt {
 	public String toIRString() { return ""; }
 
 	@Override
-	public String toSSAString() { return phiStmt.toSSAString() + "\n" + moveStmt.toSSAString(); }
+	public String toSSAString() {
+		return phiStmt.toSSAString() + "\n" + moveStmt.toSSAString();
+	}
 }

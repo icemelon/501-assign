@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
+import stmt.EntryStmt;
 import stmt.MoveStmt;
 import stmt.PhiNode;
 import stmt.Stmt;
@@ -74,9 +75,10 @@ public class Block {
 	public boolean hasAssignment(Variable v) {
 		
 		for (Stmt stmt: body) {
-			if (stmt instanceof MoveStmt) {
-				if (((Variable) stmt.getLHS()).equals(v))
-					return true;
+			if (stmt instanceof MoveStmt || stmt instanceof EntryStmt) {
+				for (Token t: stmt.getLHS())
+					if (((Variable) t).equals(v))
+						return true;
 			}
 		}
 		
@@ -92,18 +94,16 @@ public class Block {
 	public void rename() {
 		for (int i = 0; i < phiNodeList.size(); i++) {
 			PhiNode phiNode = phiNodeList.get(i);
-			routine.genSSAName((Variable) phiNode.getLHS()); 
+			routine.genSSAName((Variable) phiNode.getLHS().get(0)); 
 		}
 		
 		List<Variable> lhsList = new LinkedList<Variable>();
 		
 		for (Stmt stmt: body) {
 			for (Token t: stmt.getRHS())
-				if (t instanceof Variable) {
+				if (t instanceof Variable)
 					routine.setSSAName((Variable) t);
-				}
-			{
-				Token t = stmt.getLHS();
+			for (Token t: stmt.getLHS()) {
 				if (t instanceof Variable) {
 					lhsList.add((Variable) t);
 					routine.genSSAName((Variable) t);
@@ -134,18 +134,6 @@ public class Block {
 			phiNode.setRHS(i, refVar);
 		}
 	}
-	
-	/*public void completePhiStmt() {
-
-//		List<Stmt> phiBody = new LinkedList<Stmt>();
-		for (PhiNode phiNode: phiNodeList) {
-			phiNode.complete();
-//			phiBody.add(phiNode.getPhiStmt());
-//			phiBody.add(phiNode.getMoveStmt());
-		}
-//		phiBody.addAll(body);
-//		body = phiBody;
-	}*/
 	
 	public void dump() {
 		System.out.print("Block #" + index);
