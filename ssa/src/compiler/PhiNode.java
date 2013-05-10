@@ -26,11 +26,13 @@ public class PhiNode {
 	
 	public Variable[] getRefVars() { return refVars; }
 	
-	public void dump() {
+	public void complete() {
 		for (int i = 0; i < refVars.length; i++) {
 			phiStmt.addRHS(refVars[i]);
 		}
-			
+	}
+	
+	public void dump() {
 		System.out.println(phiStmt.toSSAString());
 		System.out.println(moveStmt.toSSAString());
 	}

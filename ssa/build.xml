@@ -21,7 +21,7 @@
 	<!--mkdir dir="${dist}"/-->
 	<jar jarfile="ssa.jar" basedir="${build}">
 	  <manifest>
-	    <attribute name="Main-Class" value="compiler.Parser"/>
+	    <attribute name="Main-Class" value="compiler.Program"/>
 	  </manifest>
 	</jar>
   </target>

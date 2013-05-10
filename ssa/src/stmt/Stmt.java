@@ -3,6 +3,8 @@ package stmt;
 import java.util.LinkedList;
 import java.util.List;
 
+import attr.Attribute;
+
 import type.Register;
 import type.Token;
 
@@ -127,6 +129,7 @@ public abstract class Stmt implements Cloneable {
 	protected Operator op;
 	protected List<Token> rhs = null;
 	protected Token lhs = null;
+	protected Attribute attr = null;
 	
 	protected Stmt(int index, Operator op) {
 		++globalIndex;
@@ -159,6 +162,10 @@ public abstract class Stmt implements Cloneable {
 
 	// SSA code
 	public abstract String toSSAString();
+	
+	public Attribute getAttr() { return attr; }
+	
+	public void setAttr(Attribute attr) { this.attr = attr; }
 	
 	@Override
 	public Object clone() {

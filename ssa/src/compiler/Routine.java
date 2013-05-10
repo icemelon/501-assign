@@ -11,6 +11,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 
+import stmt.BranchStmt;
 import stmt.Stmt;
 import stmt.Stmt.Operator;
 import type.Token;
@@ -22,13 +23,14 @@ public class Routine {
 	private int endLine;
 	private String name;
 	
-	private List<Variable> vars;
-	private List<Stmt> stmts;
+	private List<Variable> localVars;
+	private List<Stmt> body;
 	private List<Block> blocks = new LinkedList<Block>();
 	
 	// SSA renaming
-	private List<Stack<String>> varStack;
-	private List<Integer> varCounter;
+	private Stack<String> varStack[];
+	private int varCounter[];
+	private List<Variable> ssaVars;
 	
 	private int blockCount = 0;
 	private Block entryBlock;
@@ -36,7 +38,7 @@ public class Routine {
 	private Routine(String name, int startLine, List<Variable> vars) {
 		this.name = name;
 		this.startLine = startLine;
-		this.vars = vars;
+		this.localVars = vars;
 	}
 	
 	public String getName() { return name; }
@@ -45,7 +47,7 @@ public class Routine {
 	
 	public void setEndLine(int end) { endLine = end; }
 	
-	public void setStmts(List<Stmt> s) { stmts = s; }
+	public void setBody(List<Stmt> stmts) { body = stmts; }
 	
 	public int getStartLine() { return startLine; }
 	
@@ -81,7 +83,7 @@ public class Routine {
 		Set<Integer> boundary = new TreeSet<Integer>();
 		boundary.add(startLine);
 		
-		for (Stmt stmt: stmts) {
+		for (Stmt stmt: body) {
 			Operator op = stmt.getOperator();
 			if (op == Operator.br) {
 				boundary.add(stmt.index + 1);
@@ -96,10 +98,10 @@ public class Routine {
 		Integer begin = it.next();
 		while (it.hasNext()) {
 			Integer end = it.next();
-			blocks.add(new Block(begin, end - 1, stmts.subList(begin - startLine, end - startLine), this));
+			blocks.add(new Block(begin, end - 1, body.subList(begin - startLine, end - startLine), this));
 			begin = end;
 		}
-		blocks.add(new Block(begin, endLine, stmts.subList(begin - startLine, endLine - startLine + 1), this));
+		blocks.add(new Block(begin, endLine, body.subList(begin - startLine, endLine - startLine + 1), this));
 		
 		blockCount = blocks.size();
 		
@@ -195,7 +197,7 @@ public class Routine {
 		}
 	}
 	
-	public void genDomFrontier() {
+	private void genDomFrontier() {
 		List<Block> topOrder = Tools.genTopOrder(blocks);
 		
 		for (Block block: topOrder) {
@@ -215,12 +217,12 @@ public class Routine {
 		}
 	}
 	
-	public void placePhi() {
+	private void placePhi() {
 		List<Block> workList = new LinkedList<Block>();
 		Set<Block> everOnWorkList = new HashSet<Block>();
 		Set<Block> hasAlready = new HashSet<Block>();
 		
-		for (Variable var: vars) {
+		for (Variable var: localVars) {
 			workList.clear();
 			everOnWorkList.clear();
 			hasAlready.clear();
@@ -251,56 +253,92 @@ public class Routine {
 	
 	public void genSSAName(Variable v) {
 		int i;
-		for (i = 0; i < vars.size(); i++)
-			if (vars.get(i).equals(v))
+		for (i = 0; i < localVars.size(); i++)
+			if (localVars.get(i).equals(v))
 				break;
 		
-		Integer index = varCounter.get(i);
+		Integer index = varCounter[i]++;
 		String name = v.getName() + "$" + index;
 		v.setSSAName(name);
-		varStack.get(i).push(name);
-		varCounter.set(i, index + 1);
+		varStack[i].push(name);
+		ssaVars.add(new Variable(name));
 	}
 	
 	public void setSSAName(Variable v) {
 		int i;
-		for (i = 0; i < vars.size(); i++)
-			if (vars.get(i).equals(v))
+		for (i = 0; i < localVars.size(); i++)
+			if (localVars.get(i).equals(v))
 				break;
 		
-		Stack<String> stack = varStack.get(i);
+		Stack<String> stack = varStack[i];
 		if (stack.isEmpty()) {
 			//entryBlock.insertParam(v.getName());
 			stack.push(v.getName() + "$0");
-			varCounter.set(i, 1);
+			varCounter[i] = 1;
 		}
-		v.setSSAName(varStack.get(i).peek());
+		v.setSSAName(stack.peek());
 	}
 	
 	public void popSSAName(Variable v) {
 		int i;
-		for (i = 0; i < vars.size(); i++)
-			if (vars.get(i).equals(v))
+		for (i = 0; i < localVars.size(); i++)
+			if (localVars.get(i).equals(v))
 				break;
 		
-		varStack.get(i).pop();
+		varStack[i].pop();
 	}
 	
-	public void rename() {
-		varStack = new ArrayList<Stack<String>>();
-		varCounter = new ArrayList<Integer>();
+	private void rename() {
+		int n = localVars.size();
+		varStack = new Stack[n];
+		varCounter = new int[n];
+		ssaVars = new ArrayList<Variable>();
 		
-		for (int i = 0; i < vars.size(); i++) {
-			varStack.add(new Stack<String>());
-			varCounter.add(0);
+		for (int i = 0; i < n; i++) {
+			Variable var = localVars.get(i);
+			Stack<String> stack = new Stack<String>(); 
+			
+			if (var.getOffset() > 0) {
+				varCounter[i] = 1;
+				String varName = var.getName() + "$" + "0";
+				stack.add(varName);
+				ssaVars.add(new Variable(varName));
+			} else
+				varCounter[i] = 0;
+			
+			varStack[i] = stack;
 		}
 		
 		entryBlock.rename();
 	}
 	
+	public void genSSA() {
+		genDomFrontier();
+		placePhi();
+		rename();
+		for (Block b: blocks)
+			b.completePhiStmt();
+	}
+	
+	public void simpleConstantProp() {
+		System.out.println(toString());
+		for (Variable v: ssaVars)
+			System.out.print(v.toString() + " ");
+		System.out.println();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(500);
+		sb.append("method " + name + "@" + startLine + ":");
+		for (Variable v: localVars)
+			sb.append(" " + v.fullString());
+		return sb.toString();
+	}
+	
 	public void dump() {
-		System.out.print("Method: " + name + " @[" + startLine + ", " + endLine + "]");
-		System.out.println("  Entryblock #" + entryBlock.index);
+		System.out.println(toString());
+		System.out.println("Entryblock #" + entryBlock.index);
 		for (Block b: blocks) {
 			System.out.println();
 			b.dump();
@@ -308,8 +346,10 @@ public class Routine {
 	}
 	
 	public void dumpIR() {
-		System.out.print("Method: " + name + " @[" + startLine + ", " + endLine + "]");
-		System.out.println("  Entryblock #" + entryBlock.index);
+		System.out.print("method " + name + "@" + startLine + ":");
+		for (Variable v: localVars)
+			System.out.print(" " + v.fullString());
+		System.out.println("\nEntryblock #" + entryBlock.index);
 		for (Block b: blocks) {
 			System.out.println();
 			b.dumpIR();
@@ -317,8 +357,10 @@ public class Routine {
 	}
 	
 	public void dumpSSA() {
-		System.out.print("Method: " + name + " @[" + startLine + ", " + endLine + "]");
-		System.out.println("  Entryblock #" + entryBlock.index);
+		System.out.print("method " + name + "@" + startLine + ":");
+		for (Variable v: localVars)
+			System.out.print(" " + v.fullString());
+		System.out.println("\nEntryblock #" + entryBlock.index);
 		for (Block b: blocks) {
 			System.out.println();
 			b.dumpSSA();

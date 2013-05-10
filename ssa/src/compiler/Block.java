@@ -1,16 +1,12 @@
 package compiler;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 
 import stmt.MoveStmt;
 import stmt.Stmt;
-import type.Register;
 import type.Token;
 import type.Variable;
 
@@ -21,7 +17,7 @@ public class Block {
 	public final int index;
 	public final int startLine;
 	public final int endLine;
-	public final List<Stmt> body;
+	public List<Stmt> body;
 	public final Routine routine;
 	
 	private List<PhiNode> phiNodeList = new LinkedList<PhiNode>();
@@ -73,12 +69,14 @@ public class Block {
 	public Block getIdom() { return idom; }
 	
 	public boolean hasAssignment(Variable v) {
+		
 		for (Stmt stmt: body) {
 			if (stmt instanceof MoveStmt) {
-				if (((Variable) stmt.getLHS()).getName().equals(v.getName()))
+				if (((Variable) stmt.getLHS()).equals(v))
 					return true;
 			}
 		}
+		
 		return false;
 	}
 	
@@ -87,17 +85,6 @@ public class Block {
 		phiNodeList.add(new PhiNode(v.getName(), preds.size()));
 		
 	}
-	
-	/*public void insertParam(String v) {
-		Stmt stmt = ssaStmts.get(0);
-		if (!stmt.getInstr().equals("enter") || !(stmt.getOprands().get(0) instanceof Variable)) {
-			stmt = new Stmt("enter");
-			ssaStmts.add(0, stmt);
-		}
-		Variable var = new Variable(v);
-		var.setSSAIndex(0);
-		stmt.addOprands(var);
-	}*/
 	
 	public void rename() {
 		for (int i = 0; i < phiNodeList.size(); i++) {
@@ -120,7 +107,6 @@ public class Block {
 				}
 			}
 			//ssaStmts.add(stmt);
-			//stmt.dumpSSA();
 		}
 		
 		for (Block succ: succs)
@@ -142,9 +128,20 @@ public class Block {
 		for (PhiNode phiNode: phiNodeList) {
 			Variable refVar = new Variable(phiNode.getVarName());
 			routine.setSSAName(refVar);
-			//System.out.println("Block#" + index + ": " + refVar.toSSAString() + "(" + i + ")");
 			phiNode.getRefVars()[i] = refVar;
 		}
+	}
+	
+	public void completePhiStmt() {
+
+		List<Stmt> phiBody = new LinkedList<Stmt>();
+		for (PhiNode phiNode: phiNodeList) {
+			phiNode.complete();
+			phiBody.add(phiNode.getPhiStmt());
+			phiBody.add(phiNode.getMoveStmt());
+		}
+		phiBody.addAll(body);
+		body = phiBody;
 	}
 	
 	public void dump() {
@@ -213,9 +210,9 @@ public class Block {
 		
 		System.out.println();
 		
-		for (PhiNode phiNode: phiNodeList) {
+		/*for (PhiNode phiNode: phiNodeList) {
 			phiNode.dump();
-		}
+		}*/
 		
 		for (Stmt stmt: body)
 			System.out.println(stmt.toSSAString());

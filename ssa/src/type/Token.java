@@ -1,6 +1,14 @@
 package type;
 
+import attr.Attribute;
+
 public abstract class Token implements Cloneable {
+	
+	protected Attribute attr = null;
+	
+	public Attribute getAttr() { return attr; }
+	
+	public void setAttr(Attribute attr) { this.attr = attr; }
 	
 	public static Token parseToken(String s) {
 		

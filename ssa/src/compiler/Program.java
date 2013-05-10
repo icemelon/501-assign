@@ -9,8 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 
+import stmt.BranchStmt;
 import stmt.Stmt;
+import type.Code;
 import type.Constant;
+import type.Token;
 import type.Variable;
 
 public class Program {
@@ -43,6 +46,11 @@ public class Program {
 			e.printStackTrace();
 		}
 		
+		for (Stmt s: stmts)
+			for (Token t: s.getRHS())
+				if (t instanceof Code)
+					((Code) t).setDstStmt(stmts.get(((Code) t).getIndex() - 1));
+		
 		{
 			int beginLine = routines.get(0).getStartLine();
 			int endLine;
@@ -51,13 +59,13 @@ public class Program {
 				endLine = routines.get(i + 1).getStartLine() - 1;
 				routine = routines.get(i);
 				routine.setEndLine(endLine);
-				routine.setStmts(stmts.subList(beginLine - 1, endLine));
+				routine.setBody(stmts.subList(beginLine - 1, endLine));
 				beginLine = endLine + 1;
 			}
 			endLine = stmts.size() - 1; // last instr: nop, skip this one
 			routine = routines.get(routines.size() - 1);
 			routine.setEndLine(endLine);
-			routine.setStmts(stmts.subList(beginLine - 1, endLine));
+			routine.setBody(stmts.subList(beginLine - 1, endLine));
 		}
 	}
 	
@@ -75,19 +83,14 @@ public class Program {
 		}
 	}
 	
-	public void genDomFrontier() {
+	public void genSSA() {
 		for (Routine r: routines)
-			r.genDomFrontier();
+			r.genSSA();
 	}
 	
-	public void placePhi() {
+	public void simpleConstantProp() {
 		for (Routine r: routines)
-			r.placePhi();
-	}
-	
-	public void rename() {
-		for (Routine r: routines)
-			r.rename();
+			r.simpleConstantProp();
 	}
 	
 	public void dump() {
@@ -130,10 +133,9 @@ public class Program {
 		p.genDominator();
 		endTime = System.nanoTime();
 		
-		p.genDomFrontier();
-		p.placePhi();
-		p.rename();
-
+		p.genSSA();
+		//p.simpleConstantProp();
+		
 		//System.out.println(((endTime - startTime) / 1000.0));
 		//System.out.println(BasicBlock.globalIndex);
 

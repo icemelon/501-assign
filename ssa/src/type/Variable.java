@@ -1,6 +1,5 @@
 package type;
 
-
 public class Variable extends Token implements Cloneable {
 	
 	private String name;
@@ -46,15 +45,15 @@ public class Variable extends Token implements Cloneable {
 	
 	@Override
 	public String toSSAString() {
-		return ssaName;
+		return ssaName; // + "(" + type + ")";
+	}
+	
+	public String fullString() {
+		return name + "#" + offset + ":" + type;
 	}
 	
 	public boolean equals(Variable v) {
 		return name.equals(v.getName());
-	}
-	
-	public String debug() {
-		return name + "#" + offset + ":" + type;
 	}
 	
 	public Object clone() {

@@ -1,28 +1,34 @@
 package type;
 
+import stmt.Stmt;
+
 public class Code extends Token implements Cloneable {
 	
 	private int index;
+	private Stmt dstStmt;
 	
 	public Code(int index) {
 		this.index = index;
+		this.dstStmt = null;
 	}
 	
 	public int getIndex() { return index; }
 	
+	public void setDstStmt(Stmt s) { dstStmt = s; }
+	
 	@Override
 	public String toString() {
-		return "[" + index + "]";
+		return "[" + dstStmt.index + "]";
 	}
 	
 	@Override
 	public String toIRString() {
-		return "[" + index + "]";
+		return "[" + dstStmt.index + "]";
 	}
 	
 	@Override
 	public String toSSAString() {
-		return "[" + index + "]";
+		return "[" + dstStmt.index + "]";
 	}
 	
 	public Object clone() {
