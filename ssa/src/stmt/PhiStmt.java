@@ -2,9 +2,9 @@ package stmt;
 
 import java.util.LinkedList;
 
-import type.Register;
-import type.Token;
-import type.Variable;
+import token.Register;
+import token.Token;
+import token.Variable;
 
 public class PhiStmt extends Stmt {
 	public PhiStmt() {

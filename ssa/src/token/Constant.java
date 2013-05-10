@@ -1,4 +1,4 @@
-package type;
+package token;
 
 public class Constant extends Token implements Cloneable {
 	

@@ -1,4 +1,4 @@
-package type;
+package token;
 
 public class Variable extends Token implements Cloneable {
 	
@@ -32,6 +32,8 @@ public class Variable extends Token implements Cloneable {
 	public int getOffset() { return offset; }
 	
 	public void setSSAName(String name) { this.ssaName = name; }
+	
+	public String getSSAName() { return ssaName; }
 	
 	@Override
 	public String toString() {

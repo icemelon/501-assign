@@ -11,10 +11,10 @@ import java.util.List;
 
 import stmt.BranchStmt;
 import stmt.Stmt;
-import type.Code;
-import type.Constant;
-import type.Token;
-import type.Variable;
+import token.Code;
+import token.Constant;
+import token.Token;
+import token.Variable;
 
 public class Program {
 	private List<Stmt> stmts;
@@ -88,11 +88,6 @@ public class Program {
 			r.genSSA();
 	}
 	
-	public void simpleConstantProp() {
-		for (Routine r: routines)
-			r.simpleConstantProp();
-	}
-	
 	public void dump() {
 		for (Routine r: routines) {
 			r.dump();
@@ -147,6 +142,8 @@ public class Program {
 		//System.out.println(max);
 		
 		//p.dumpIR();
-		p.dumpSSA();
+		//p.dumpSSA();
+		DefUseAnalysis dua = new DefUseAnalysis(p.getRoutines().get(0));
+		dua.genDefUse();
 	}
 }

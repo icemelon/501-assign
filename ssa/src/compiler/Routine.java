@@ -12,11 +12,12 @@ import java.util.TreeSet;
 
 
 import stmt.BranchStmt;
+import stmt.MoveStmt;
 import stmt.Stmt;
 import stmt.Stmt.Operator;
-import type.Token;
-import type.Code;
-import type.Variable;
+import token.Token;
+import token.Code;
+import token.Variable;
 
 public class Routine {
 	private int startLine;
@@ -316,15 +317,6 @@ public class Routine {
 		genDomFrontier();
 		placePhi();
 		rename();
-		for (Block b: blocks)
-			b.completePhiStmt();
-	}
-	
-	public void simpleConstantProp() {
-		System.out.println(toString());
-		for (Variable v: ssaVars)
-			System.out.print(v.toString() + " ");
-		System.out.println();
 	}
 	
 	@Override

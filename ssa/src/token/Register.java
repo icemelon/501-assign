@@ -1,4 +1,4 @@
-package type;
+package token;
 
 public class Register extends Token implements Cloneable {
 	

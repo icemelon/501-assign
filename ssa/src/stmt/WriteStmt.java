@@ -2,7 +2,7 @@ package stmt;
 
 import java.util.List;
 
-import type.Token;
+import token.Token;
 
 public class WriteStmt extends Stmt {
 

@@ -6,9 +6,10 @@ import java.util.List;
 
 
 import stmt.MoveStmt;
+import stmt.PhiNode;
 import stmt.Stmt;
-import type.Token;
-import type.Variable;
+import token.Token;
+import token.Variable;
 
 
 public class Block {
@@ -64,6 +65,8 @@ public class Block {
 	
 	public List<Block> getDF() { return DF; }
 	
+	public List<PhiNode> getPhiNode() { return phiNodeList; }
+	
 	public void setIdom(Block b) { idom = b; }
 	
 	public Block getIdom() { return idom; }
@@ -89,7 +92,7 @@ public class Block {
 	public void rename() {
 		for (int i = 0; i < phiNodeList.size(); i++) {
 			PhiNode phiNode = phiNodeList.get(i);
-			routine.genSSAName((Variable) phiNode.getMoveStmt().getLHS()); 
+			routine.genSSAName((Variable) phiNode.getLHS()); 
 		}
 		
 		List<Variable> lhsList = new LinkedList<Variable>();
@@ -128,21 +131,21 @@ public class Block {
 		for (PhiNode phiNode: phiNodeList) {
 			Variable refVar = new Variable(phiNode.getVarName());
 			routine.setSSAName(refVar);
-			phiNode.getRefVars()[i] = refVar;
+			phiNode.setRHS(i, refVar);
 		}
 	}
 	
-	public void completePhiStmt() {
+	/*public void completePhiStmt() {
 
-		List<Stmt> phiBody = new LinkedList<Stmt>();
+//		List<Stmt> phiBody = new LinkedList<Stmt>();
 		for (PhiNode phiNode: phiNodeList) {
 			phiNode.complete();
-			phiBody.add(phiNode.getPhiStmt());
-			phiBody.add(phiNode.getMoveStmt());
+//			phiBody.add(phiNode.getPhiStmt());
+//			phiBody.add(phiNode.getMoveStmt());
 		}
-		phiBody.addAll(body);
-		body = phiBody;
-	}
+//		phiBody.addAll(body);
+//		body = phiBody;
+	}*/
 	
 	public void dump() {
 		System.out.print("Block #" + index);
@@ -210,9 +213,9 @@ public class Block {
 		
 		System.out.println();
 		
-		/*for (PhiNode phiNode: phiNodeList) {
-			phiNode.dump();
-		}*/
+		for (PhiNode phiNode: phiNodeList) {
+			System.out.println(phiNode.toSSAString());
+		}
 		
 		for (Stmt stmt: body)
 			System.out.println(stmt.toSSAString());

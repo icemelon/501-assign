@@ -3,8 +3,8 @@ package stmt;
 import java.util.LinkedList;
 import java.util.List;
 
-import type.Token;
-import type.Variable;
+import token.Token;
+import token.Variable;
 
 public class MoveStmt extends Stmt {
 

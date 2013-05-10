@@ -1,4 +1,4 @@
-package type;
+package token;
 
 import stmt.Stmt;
 

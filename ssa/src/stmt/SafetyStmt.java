@@ -2,8 +2,8 @@ package stmt;
 
 import java.util.List;
 
-import type.Register;
-import type.Token;
+import token.Register;
+import token.Token;
 
 public class SafetyStmt extends Stmt {
 	

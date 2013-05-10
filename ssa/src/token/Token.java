@@ -1,4 +1,4 @@
-package type;
+package token;
 
 import attr.Attribute;
 

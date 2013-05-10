@@ -1,4 +1,4 @@
-package type;
+package token;
 
 public class Offset extends Token implements Cloneable {
 	

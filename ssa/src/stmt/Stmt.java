@@ -5,8 +5,8 @@ import java.util.List;
 
 import attr.Attribute;
 
-import type.Register;
-import type.Token;
+import token.Register;
+import token.Token;
 
 public abstract class Stmt implements Cloneable {
 	
@@ -43,7 +43,8 @@ public abstract class Stmt implements Cloneable {
 		param("param"),
 		entrypc("entrypc"),
 		nop("nop"),
-		phi("phi");
+		phi("phi"),
+		phinode("phinode");
 		
 		private String str;
 		
@@ -119,6 +120,8 @@ public abstract class Stmt implements Cloneable {
 				return nop;
 			if (op.equals("phi"))
 				return phi;
+			if (op.equals("phinode"))
+				return phinode;
 
 			return null;
 		}

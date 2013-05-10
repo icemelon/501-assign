@@ -1,4 +1,4 @@
-package type;
+package token;
 
 // global pointer
 public class GP extends Token implements Cloneable {

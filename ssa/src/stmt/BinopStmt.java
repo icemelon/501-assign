@@ -2,8 +2,8 @@ package stmt;
 
 import java.util.List;
 
-import type.Register;
-import type.Token;
+import token.Register;
+import token.Token;
 
 // add, sub, mul, div, mod, neg, cmpeq, cmple, cmplt
 

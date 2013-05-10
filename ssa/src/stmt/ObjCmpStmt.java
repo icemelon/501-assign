@@ -2,8 +2,8 @@ package stmt;
 
 import java.util.List;
 
-import type.Register;
-import type.Token;
+import token.Register;
+import token.Token;
 
 // istype, isnull
 public class ObjCmpStmt extends Stmt implements Cloneable {
