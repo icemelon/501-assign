@@ -2,13 +2,16 @@ package stmt;
 
 import java.util.LinkedList;
 
+import compiler.Block;
+
 import token.Register;
 import token.Token;
 import token.Variable;
 
 public class PhiStmt extends Stmt {
-	public PhiStmt() {
+	public PhiStmt(Block b) {
 		super(Operator.phi);
+		block = b;
 		lhs = new LinkedList<Token>();
 		lhs.add(new Register(index));
 		rhs = new LinkedList<Token>();

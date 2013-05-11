@@ -7,12 +7,17 @@ import token.Token;
 
 // add, sub, mul, div, mod, neg, cmpeq, cmple, cmplt
 
-public class BinopStmt extends Stmt  {
+public class ArithStmt extends Stmt  {
 	
-	public BinopStmt(int index, Operator op, List<Token> oprands) {
+	public ArithStmt(int index, Operator op, List<Token> oprands) {
 		super(index, op);
-		rhs = oprands.subList(0, 2);
-		lhs = oprands.subList(2, 3);
+		if (op == Stmt.Operator.neg) {
+			rhs = oprands.subList(0, 1);
+			lhs = oprands.subList(1, 2);
+		} else {
+			rhs = oprands.subList(0, 2);
+			lhs = oprands.subList(2, 3);
+		}
 	}
 	
 	@Override

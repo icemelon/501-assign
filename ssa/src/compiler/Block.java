@@ -87,7 +87,7 @@ public class Block {
 	
 	public void insertPhiNode(Variable v) {
 		
-		phiNodeList.add(new PhiNode(v.getName(), preds.size()));
+		phiNodeList.add(new PhiNode(v.getName(), preds.size(), this));
 		
 	}
 	

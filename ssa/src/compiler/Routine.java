@@ -141,6 +141,10 @@ public class Routine {
 			}
 		}
 		
+		for (Block b: blocks)
+			for (Stmt s: b.body)
+				s.setBlock(b);
+		
 		entryBlock = blocks.get(0);
 	}
 	
@@ -191,12 +195,8 @@ public class Routine {
 			}
 		}
 		
-		for (int i = 0; i < blockCount; i++) {
+		for (int i = blockCount - 2; i >= 0; --i) {
 			Block b = postorder.get(i);
-			
-			if (b == entryBlock)
-				continue;
-			
 			b.getIdom().addChild(b);
 		}
 	}
@@ -228,7 +228,7 @@ public class Routine {
 		
 		// place entry stmt
 		List<Stmt> newBody = new LinkedList<Stmt>();
-		newBody.add(new EntryStmt(localVars));
+		newBody.add(new EntryStmt(localVars, entryBlock));
 		newBody.addAll(entryBlock.body);
 		entryBlock.body = newBody;
 		
@@ -280,16 +280,7 @@ public class Routine {
 			if (localVars.get(i).equals(v))
 				break;
 		
-		Stack<String> stack = varStack[i];
-		if (stack.isEmpty()) {
-			System.out.println(v.getName());
-			for (int j = 0; j < localVars.size(); j++)
-				System.out.println(localVars.get(j).getName());
-			/*entryBlock.body.get(0).insertParam(v.getName());
-			stack.push(v.getName() + "$0");
-			varCounter[i] = 1;*/
-		}
-		v.setSSAName(stack.peek());
+		v.setSSAName(varStack[i].peek());
 	}
 	
 	public void popSSAName(Variable v) {

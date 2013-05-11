@@ -18,6 +18,8 @@ public class Offset extends Token implements Cloneable {
 		this.offset = 0; // offset unavailable
 	}
 	
+	public int getValue() { return offset; }
+	
 	@Override
 	public String toString() {
 		return (name + "#" + (dynamic ? "?" : offset));

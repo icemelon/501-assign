@@ -2,6 +2,8 @@ package stmt;
 
 import java.util.LinkedList;
 
+import compiler.Block;
+
 import token.Token;
 import token.Variable;
 
@@ -10,7 +12,7 @@ public class PhiNode extends Stmt {
 	private PhiStmt phiStmt;
 	private MoveStmt moveStmt;
 	
-	public PhiNode(String name, int count) {
+	public PhiNode(String name, int count, Block b) {
 		super(Stmt.Operator.phinode);
 		
 		lhs = new LinkedList<Token>();
@@ -19,14 +21,16 @@ public class PhiNode extends Stmt {
 		for (int i = 0; i < count; i++)
 			rhs.add(null);
 		
-		phiStmt = new PhiStmt();
+		block = b;
+		phiStmt = new PhiStmt(b);
 		phiStmt.rhs = rhs;
 		moveStmt = new MoveStmt(phiStmt.getLHS(), lhs);
+		moveStmt.setBlock(b);
 	}
 	
 	public String getVarName() { return ((Variable) lhs.get(0)).getName(); }
 	
-	public void setRHS(int index, Variable var) { rhs.set(index, var); }
+	public void setRHS(int index, Variable var) { rhs.set(index, (Variable) var.clone()); }
 
 	@Override
 	public String toString() { return ""; }

@@ -3,19 +3,23 @@ package stmt;
 import java.util.LinkedList;
 import java.util.List;
 
+import compiler.Block;
+
 import token.Token;
 import token.Variable;
 
 public class EntryStmt extends Stmt {
 	
-	public EntryStmt(List<Variable> varList) {
+	public EntryStmt(List<Variable> varList, Block b) {
 		super(Stmt.Operator.entry);
 		
-		rhs = new LinkedList();
-		lhs = new LinkedList();
+		block = b;
 		
-		for (Variable v: varList)
-			lhs.add(v); //.clone());
+		rhs = new LinkedList<Token>();
+		lhs = new LinkedList<Token>(varList);
+		
+//		for (Variable v: varList)
+//			lhs.add(v); //.clone());
 	}
 	
 	//@Override

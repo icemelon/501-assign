@@ -3,6 +3,8 @@ package stmt;
 import java.util.LinkedList;
 import java.util.List;
 
+import compiler.Block;
+
 import attr.Attribute;
 
 import token.Register;
@@ -136,6 +138,7 @@ public abstract class Stmt implements Cloneable {
 	protected List<Token> rhs = null;
 	protected List<Token> lhs = null;
 	protected Attribute attr = null;
+	protected Block block = null;
 	
 	protected Stmt(int index, Operator op) {
 		++globalIndex;
@@ -153,12 +156,10 @@ public abstract class Stmt implements Cloneable {
 	public List<Token> getRHS() { return rhs; }
 	
 	public List<Token> getLHS() { return lhs; }
+
+	public void setBlock(Block b) { block = b; }
 	
-	/*public List<Token> getOprands() {
-		List<Token> oprands = new LinkedList<Token>(rhs);
-		oprands.addAll(lhs);
-		return oprands;
-	}*/
+	public Block getBlock() { return block; }
 	
 	// assembly code
 	public abstract String toString();
@@ -176,9 +177,9 @@ public abstract class Stmt implements Cloneable {
 	@Override
 	public Object clone() {
 		
-		BinopStmt o = null;
+		ArithStmt o = null;
 		try {
-			o = (BinopStmt) super.clone();
+			o = (ArithStmt) super.clone();
 			
 			o.rhs = new LinkedList<Token>();
 			for (Token t: rhs)
@@ -243,7 +244,7 @@ public abstract class Stmt implements Cloneable {
 		switch (op) {
 		case add: case sub: case mul: case div: case mod:
 		case neg: case cmpeq: case cmple: case cmplt:
-			stmt = new BinopStmt(index, op, oprands); break;
+			stmt = new ArithStmt(index, op, oprands); break;
 		case isnull: case istype:
 			stmt = new ObjCmpStmt(index, op, oprands); break;
 		case br: case blbc: case blbs:
@@ -271,7 +272,7 @@ public abstract class Stmt implements Cloneable {
 			stmt = null;
 		}
 		
-		//System.out.println(stmt);
+//		System.out.println(stmt);
 		return stmt;
 	}
 }

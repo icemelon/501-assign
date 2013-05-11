@@ -16,6 +16,8 @@ public class Code extends Token implements Cloneable {
 	
 	public void setDstStmt(Stmt s) { dstStmt = s; }
 	
+	public Stmt getDstStmt() { return dstStmt; }
+	
 	@Override
 	public String toString() {
 		return "[" + dstStmt.index + "]";

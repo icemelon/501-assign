@@ -29,7 +29,7 @@ public class SafetyStmt extends Stmt {
 		sb.append("    instr " + index + ": " + op);
 		for (Token t: rhs)
 			sb.append(" " + t);
-		if (lhs != null)
+		if (lhs.size() > 0)
 			sb.append(" :" + ((Register) lhs.get(0)).getType());
 		return sb.toString();
 	}
@@ -38,7 +38,7 @@ public class SafetyStmt extends Stmt {
 	public String toIRString() {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
-		if (lhs != null)
+		if (lhs.size() > 0)
 			sb.append(lhs.get(0).toIRString() + " := ");
 		sb.append(op);
 		for (Token t: rhs)
@@ -50,7 +50,7 @@ public class SafetyStmt extends Stmt {
 	public String toSSAString() {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
-		if (lhs != null)
+		if (lhs.size() > 0)
 			sb.append(lhs.get(0).toSSAString() + " := ");
 		sb.append(op);
 		for (Token t: rhs)

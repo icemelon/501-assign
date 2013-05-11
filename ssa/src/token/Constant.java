@@ -8,6 +8,8 @@ public class Constant extends Token implements Cloneable {
 		this.value = value;
 	}
 	
+	public int getValue() { return value; }
+	
 	@Override
 	public String toString() {
 		return "" + value;

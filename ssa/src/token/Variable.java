@@ -33,8 +33,6 @@ public class Variable extends Token implements Cloneable {
 	
 	public void setSSAName(String name) { this.ssaName = name; }
 	
-	public String getSSAName() { return ssaName; }
-	
 	@Override
 	public String toString() {
 		return name + "#" + offset;

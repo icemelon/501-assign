@@ -8,6 +8,7 @@ import java.util.Set;
 import stmt.MoveStmt;
 import stmt.PhiNode;
 import stmt.Stmt;
+import token.Register;
 import token.Token;
 import token.Variable;
 
@@ -21,22 +22,23 @@ public class DefUseAnalysis {
 		this.routine = r;
 	}
 	
-	public Set<String> getVarName() { return varDef.keySet(); }
+	public Set<String> getAllVarName() { return varDef.keySet(); }
+	
+	public List<Stmt> getDefUseList(String var) { return defUse.get(var); }
 	
 	public void analyze() {
 		
-		//HashMap<String, Stmt> varDef = new HashMap<String, Stmt>();
 		List<Block> blocks = routine.getBlocks();
 		for (Block b: blocks) {
 			for (PhiNode phiNode: b.getPhiNode()) {
-				String name = ((Variable) phiNode.getLHS().get(0)).getSSAName();
+				String name = phiNode.getLHS().get(0).toSSAString();
 				varDef.put(name, phiNode);
 				defUse.put(name, new LinkedList<Stmt>());
 			}
 			for (Stmt s: b.body)
 				for (Token t: s.getLHS())
-					if (t instanceof Variable) {
-						String name = ((Variable) t).getSSAName();
+					if (t instanceof Variable || t instanceof Register) {
+						String name = t.toSSAString();
 						varDef.put(name, s);
 						defUse.put(name, new LinkedList<Stmt>());
 					}
@@ -45,7 +47,7 @@ public class DefUseAnalysis {
 		for (Block b: blocks) {
 			for (PhiNode phiNode: b.getPhiNode()) {
 				for (Token t: phiNode.getRHS()) {
-					String name = ((Variable) t).getSSAName();
+					String name = t.toSSAString();
 					List<Stmt> list = defUse.get(name);
 					if (list != null)
 						list.add(phiNode);
@@ -54,8 +56,8 @@ public class DefUseAnalysis {
 
 			for (Stmt s: b.body)
 				for (Token t: s.getRHS())
-					if (t instanceof Variable) {
-						String name = ((Variable) t).getSSAName();
+					if (t instanceof Variable || t instanceof Register) {
+						String name = t.toSSAString();
 						List<Stmt> list = defUse.get(name);
 						if (list != null)
 							list.add(s);
@@ -70,12 +72,12 @@ public class DefUseAnalysis {
 		
 		Set<String> keySet = varDef.keySet();
 		for (String key: keySet) {
-			System.out.println("var " + key + "def: " + varDef.get(key).index);
+			System.out.println("var " + key + " def: " + varDef.get(key).index);
 		}
 		
 		keySet = varDef.keySet();
 		for (String key: keySet) {
-			System.out.print("var " + key + "use:");
+			System.out.print("var " + key + " use:");
 			for (Stmt s: defUse.get(key))
 				System.out.print(" " + s.index);
 			System.out.println();

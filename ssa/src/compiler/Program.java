@@ -88,6 +88,14 @@ public class Program {
 			r.genSSA();
 	}
 	
+	public void constantPropOpt() {
+		for (Routine r: routines) {
+			ConstantPropOpt cpo = new ConstantPropOpt(r);
+			cpo.optimize();
+//			cpo.dump();
+		}
+	}
+	
 	public void dump() {
 		for (Routine r: routines) {
 			r.dump();
@@ -129,6 +137,7 @@ public class Program {
 		endTime = System.nanoTime();
 		
 		p.genSSA();
+		//p.getRoutines().get(1).genSSA();
 		//p.simpleConstantProp();
 		
 		//System.out.println(((endTime - startTime) / 1000.0));
@@ -142,9 +151,20 @@ public class Program {
 		//System.out.println(max);
 		
 		//p.dumpIR();
-		//p.dumpSSA();
-		DefUseAnalysis dua = new DefUseAnalysis(p.getRoutines().get(0));
-		dua.analyze();
-		dua.dump();
+//		p.dumpSSA();
+		
+		p.constantPropOpt();
+		
+//		DefUseAnalysis du = new DefUseAnalysis(p.getRoutines().get(0));
+//		du.analyze();
+//		du.dump();
+		
+//		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(1));
+//		cpo.optimize();
+//		cpo.dump();
+		
+		//ConstantPropOpt opt = new ConstantPropOpt(p.getRoutines().get(0));
+		//opt.optimize();
+		//opt.dump();
 	}
 }

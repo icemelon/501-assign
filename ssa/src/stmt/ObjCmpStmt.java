@@ -10,8 +10,14 @@ public class ObjCmpStmt extends Stmt implements Cloneable {
 
 	public ObjCmpStmt(int index, Operator op, List<Token> oprands) {
 		super(index, op);
-		rhs = oprands.subList(0, 2);
-		lhs = oprands.subList(2, 3);
+		
+		if (op == Operator.isnull) {
+			rhs = oprands.subList(0, 1);
+			lhs = oprands.subList(1, 2);
+		} else {
+			rhs = oprands.subList(0, 2);
+			lhs = oprands.subList(2, 3);
+		}
 	}
 	
 	@Override
