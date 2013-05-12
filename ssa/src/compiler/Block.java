@@ -135,6 +135,10 @@ public class Block {
 		}
 	}
 	
+	public void removeStmt(Stmt stmt) {
+		
+	}
+	
 	public void dump() {
 		System.out.print("Block #" + index);
 		

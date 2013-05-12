@@ -127,12 +127,17 @@ public class Routine {
 				block.addSucc(b2);
 				b2.addPred(block);
 				
+				((BranchStmt)stmt).setBranchBlock(b2);
+				
 			} else if (op == Operator.br) {
 				brOp = ((Code) stmt.getRHS().get(0)).getIndex();
 				Block b = searchBlock(brOp);
 				
 				block.addSucc(b);
 				b.addPred(block);
+				
+				((BranchStmt)stmt).setBranchBlock(b);
+				
 			} else if (!(op == Operator.ret)) {
 				Block b = blocks.get(i + 1);
 				

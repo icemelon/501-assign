@@ -10,6 +10,7 @@ import java.util.List;
 
 
 import stmt.BranchStmt;
+import stmt.CallStmt;
 import stmt.Stmt;
 import token.Code;
 import token.Constant;
@@ -25,6 +26,13 @@ public class Program {
 		routines = new LinkedList<Routine>();
 	}
 	
+	private Routine searchRoutine(int line) {
+		for (Routine r: routines)
+			if (r.getStartLine() == line)
+				return r;
+		return null;
+	}
+	
 	public void scanFile(String filename) {
 		
 		try {
@@ -35,7 +43,13 @@ public class Program {
 				if (line.startsWith("method")) {
 					routines.add(Routine.parseRoutine(line));
 				} else if (line.startsWith("instr")) {
-					stmts.add(Stmt.parseStmt(line));
+					Stmt s = Stmt.parseStmt(line);
+					if (s instanceof CallStmt) {
+						int index = ((Code) s.getRHS().get(0)).getIndex();
+						Routine r = searchRoutine(index); 
+						((CallStmt) s).setRoutine(r);
+					}
+					stmts.add(s);
 				}
 			}
 			reader.close();
@@ -46,10 +60,10 @@ public class Program {
 			e.printStackTrace();
 		}
 		
-		for (Stmt s: stmts)
-			for (Token t: s.getRHS())
-				if (t instanceof Code)
-					((Code) t).setDstStmt(stmts.get(((Code) t).getIndex() - 1));
+//		for (Stmt s: stmts)
+//			for (Token t: s.getRHS())
+//				if (t instanceof Code)
+//					((Code) t).setDstStmt(stmts.get(((Code) t).getIndex() - 1));
 		
 		{
 			int beginLine = routines.get(0).getStartLine();
@@ -92,7 +106,7 @@ public class Program {
 		for (Routine r: routines) {
 			ConstantPropOpt cpo = new ConstantPropOpt(r);
 			cpo.optimize();
-//			cpo.dump();
+			cpo.dump();
 		}
 	}
 	

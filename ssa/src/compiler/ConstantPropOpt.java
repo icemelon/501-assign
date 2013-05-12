@@ -9,13 +9,18 @@ import java.util.Set;
 import attr.ConstantAttr;
 import attr.ConstantAttr.ConstantType;
 
+import stmt.AllocStmt;
 import stmt.ArithStmt;
 import stmt.BranchStmt;
+import stmt.DynamicStmt;
 import stmt.EntryStmt;
 import stmt.MemoryStmt;
 import stmt.MoveStmt;
+import stmt.ObjCmpStmt;
 import stmt.PhiNode;
+import stmt.SafetyStmt;
 import stmt.Stmt;
+import stmt.Stmt.Operator;
 import token.Code;
 import token.Constant;
 import token.GP;
@@ -83,7 +88,7 @@ public class ConstantPropOpt {
 		return null;
 	}
 	
-	private void visitPhi(PhiNode phiNode) {
+	private void visitPhiNode(PhiNode phiNode) {
 		
 		List<Token> rhs = phiNode.getRHS();
 		String name = phiNode.getLHS().get(0).toSSAString();
@@ -100,10 +105,10 @@ public class ConstantPropOpt {
 			insertSSAWorkList(name);
 		}
 		
-		System.out.println(phiNode.toSSAString() + " old:" + oldAttr + ", new:" + newAttr);
+//		System.out.println(phiNode.toSSAString() + " old:" + oldAttr + ", new:" + newAttr);
 	}
 	
-	private void visitArith(ArithStmt stmt) {
+	private void visitArithStmt(ArithStmt stmt) {
 		
 		List<Token> rhs = stmt.getRHS();
 		Token lhs = stmt.getLHS().get(0);
@@ -122,10 +127,10 @@ public class ConstantPropOpt {
 			insertSSAWorkList(name);
 		}
 		
-		System.out.println(stmt.toSSAString() + " old:" + oldAttr + ", new:" + newAttr);
+//		System.out.println(stmt.toSSAString() + " old:" + oldAttr + ", new:" + newAttr);
 	}
 	
-	private void visitMove(MoveStmt stmt) {
+	private void visitMoveStmt(MoveStmt stmt) {
 		Token rhs = stmt.getRHS().get(0);
 		Token lhs = stmt.getLHS().get(0);
 		
@@ -137,10 +142,10 @@ public class ConstantPropOpt {
 			insertSSAWorkList(lhs.toSSAString());
 		}
 		
-		System.out.println(stmt.toSSAString() + " old:" + oldAttr + ", new:" + newAttr);
+//		System.out.println(stmt.toSSAString() + " old:" + oldAttr + ", new:" + newAttr);
 	}
 	
-	private void visitBranch(BranchStmt stmt) {
+	private void visitBranchStmt(BranchStmt stmt) {
 		int brVal;
 		
 		if (stmt.getOperator() == Stmt.Operator.blbc)
@@ -158,7 +163,7 @@ public class ConstantPropOpt {
 			insertFlowWorkList(b, b.getSuccs().get(0));
 			insertFlowWorkList(b, b.getSuccs().get(1));
 		} else if (attr.type == ConstantAttr.ConstantType.Constant) {
-			Block dst = ((Code) stmt.getRHS().get(1)).getDstStmt().getBlock();
+			Block dst = stmt.getBranchBlock();
 			if (attr.value == brVal) {
 				insertFlowWorkList(b, dst);
 			} else {
@@ -174,21 +179,42 @@ public class ConstantPropOpt {
 	
 	private void visitOtherStmt(Stmt stmt) {
 		if (stmt instanceof MemoryStmt) {
+			if (stmt.getOperator() == Operator.load) {
+				ConstantAttr attr = getTokenAttr(stmt.getLHS().get(0));
+				attr.type = ConstantType.Bottom;
+			}
+		} else if (stmt instanceof DynamicStmt) {
+			if (stmt.getOperator() == Operator.lddynamic) {
+				ConstantAttr attr = getTokenAttr(stmt.getLHS().get(0));
+				attr.type = ConstantType.Bottom;
+			}
+		} else if (stmt instanceof AllocStmt) {
+			// alloc type on heap, it should be bottom
 			ConstantAttr attr = getTokenAttr(stmt.getLHS().get(0));
 			attr.type = ConstantType.Bottom;
+		} else if (stmt instanceof ObjCmpStmt) {
+			// type/null check, bottom
+			ConstantAttr attr = getTokenAttr(stmt.getLHS().get(0));
+			attr.type = ConstantType.Bottom;
+		} else if (stmt instanceof SafetyStmt) {
+			// safety check, bottom
+			if (stmt.getLHS().size() > 0) {
+				ConstantAttr attr = getTokenAttr(stmt.getLHS().get(0));
+				attr.type = ConstantType.Bottom;
+			}
 		}
-		// TODO
+		// other stmt doesn't have lhs
 	}
 	
 	private void visitStmt(Stmt stmt) {
 		if (stmt instanceof ArithStmt) {
-			visitArith((ArithStmt) stmt);
+			visitArithStmt((ArithStmt) stmt);
 		} else if (stmt instanceof MoveStmt) {
-			visitMove((MoveStmt) stmt);
+			visitMoveStmt((MoveStmt) stmt);
 		} else if (stmt instanceof BranchStmt) {
-			visitBranch((BranchStmt) stmt);
+			visitBranchStmt((BranchStmt) stmt);
 		} else if (stmt instanceof PhiNode) {
-			visitPhi((PhiNode) stmt);
+			visitPhiNode((PhiNode) stmt);
 		} else {
 			visitOtherStmt(stmt);
 		}
@@ -198,7 +224,7 @@ public class ConstantPropOpt {
 //		System.out.println("visit block#" + b.index);
 		
 		for (PhiNode phiNode: b.getPhiNode())
-			visitPhi(phiNode);
+			visitPhiNode(phiNode);
 		
 		for (Stmt stmt: b.body)
 			visitStmt(stmt);
@@ -215,6 +241,11 @@ public class ConstantPropOpt {
 		return count;
 	}
 	
+	private void eliminateCode() {
+		Set<String> keys = varAttr.keySet();
+		
+	}
+	
 	public void optimize() {
 		
 		du.analyze();
@@ -225,6 +256,7 @@ public class ConstantPropOpt {
 		for (String s: varName)
 			varAttr.put(s, new ConstantAttr(ConstantAttr.ConstantType.Top));
 		
+		// set parameters bottom
 		for (Token t: entryBlock.body.get(0).getLHS())
 			if (((Variable) t).getOffset() > 0) {
 				ConstantAttr attr = varAttr.get(t.toSSAString());
