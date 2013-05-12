@@ -37,7 +37,7 @@ public class Block {
 		this.index = startLine;
 		this.startLine = startLine;
 		this.endLine = endLine;
-		this.body = stmts;
+		this.body = new ArrayList(stmts);
 		this.routine = routine;
 	}
 	
@@ -136,7 +136,9 @@ public class Block {
 	}
 	
 	public void removeStmt(Stmt stmt) {
-		
+		System.out.println("block#" + index + " remove stmt:" + stmt.toSSAString());
+		body.remove(stmt);
+//		dumpSSA();
 	}
 	
 	public void dump() {

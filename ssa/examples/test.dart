@@ -6,6 +6,10 @@ void swap(int x, int y) {
 		t = x;
 		x = y;
 		y = t;
+<<<<<<< HEAD
+=======
+		i = i + 1;
+>>>>>>> ac8299b831ddb9bb8002e0a3257667764057e1ec
 	}
 }
 

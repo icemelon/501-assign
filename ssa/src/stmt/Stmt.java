@@ -161,6 +161,8 @@ public abstract class Stmt implements Cloneable {
 	
 	public Block getBlock() { return block; }
 	
+	public void setRHS(int index, Token t) { rhs.set(index, t); }
+	
 	// assembly code
 	public abstract String toString();
 	
