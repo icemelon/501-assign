@@ -167,15 +167,15 @@ public class Program {
 		//p.dumpIR();
 //		p.dumpSSA();
 		
-		p.constantPropOpt();
+//		p.constantPropOpt();
 		
 //		DefUseAnalysis du = new DefUseAnalysis(p.getRoutines().get(0));
 //		du.analyze();
 //		du.dump();
 		
-//		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(1));
-//		cpo.optimize();
-//		cpo.dump();
+		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(1));
+		cpo.optimize();
+		cpo.dump();
 		
 		//ConstantPropOpt opt = new ConstantPropOpt(p.getRoutines().get(0));
 		//opt.optimize();

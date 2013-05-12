@@ -72,7 +72,7 @@ public class ConstantPropOpt {
 	}
 	
 	private void insertSSAWorkList(String var) {
-		for (Stmt stmt: du.getDefUseList(var))
+		for (Stmt stmt: du.getUseList(var))
 			ssaWorkList.add(stmt);
 	}
 	
@@ -241,9 +241,37 @@ public class ConstantPropOpt {
 		return count;
 	}
 	
+	private boolean containsPhiNode(List<Stmt> use) {
+		for (Stmt s: use)
+			if (s instanceof PhiNode)
+				return true;
+		return false;
+	}
+	
 	private void eliminateCode() {
 		Set<String> keys = varAttr.keySet();
 		
+		for (String var: keys) {
+			ConstantAttr attr = varAttr.get(var);
+			
+			if (attr.type == ConstantType.Constant) {
+				Stmt def = du.getDef(var);
+				List<Stmt> use = du.getUseList(var);
+				
+				if (!containsPhiNode(use)) {
+					def.getBlock().removeStmt(def);
+					for (Stmt stmt: use) {
+						int i;
+						for (i = 0; i < stmt.getRHS().size(); i++) {
+							Token t = stmt.getRHS().get(i);
+							if (t.toSSAString().equals(var))
+								break;
+						}
+						stmt.setRHS(i, new Constant(attr.value));
+					}
+				}
+			}
+		}
 	}
 	
 	public void optimize() {
@@ -296,6 +324,10 @@ public class ConstantPropOpt {
 					visitStmt(stmt);
 			}
 		}
+		
+		routine.dumpSSA();
+		System.out.println("**********************************");
+		eliminateCode();
 	}
 	
 	public void dump() {

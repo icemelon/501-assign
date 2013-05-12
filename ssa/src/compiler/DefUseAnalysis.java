@@ -24,7 +24,9 @@ public class DefUseAnalysis {
 	
 	public Set<String> getAllVarName() { return varDef.keySet(); }
 	
-	public List<Stmt> getDefUseList(String var) { return defUse.get(var); }
+	public List<Stmt> getUseList(String var) { return defUse.get(var); }
+	
+	public Stmt getDef(String var) { return varDef.get(var); }
 	
 	public void analyze() {
 		

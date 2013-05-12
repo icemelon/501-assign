@@ -232,10 +232,7 @@ public class Routine {
 		Set<Block> hasAlready = new HashSet<Block>();
 		
 		// place entry stmt
-		List<Stmt> newBody = new LinkedList<Stmt>();
-		newBody.add(new EntryStmt(localVars, entryBlock));
-		newBody.addAll(entryBlock.body);
-		entryBlock.body = newBody;
+		entryBlock.body.add(0, new EntryStmt(localVars, entryBlock));
 		
 		for (Variable var: localVars) {
 			workList.clear();
