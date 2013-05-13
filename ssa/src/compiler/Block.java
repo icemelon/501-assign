@@ -23,7 +23,6 @@ public class Block {
 	public final Routine routine;
 	
 	private List<PhiNode> phiNodeList = new LinkedList<PhiNode>();
-	//private List<Stmt> ssaStmts = new LinkedList<Stmt>();
 	
 	private List<Block> preds = new ArrayList<Block>();
 	private List<Block> succs = new ArrayList<Block>();
@@ -91,62 +90,23 @@ public class Block {
 		
 	}
 	
-	public void rename() {
-		
-//		System.out.println("rename block#" + index);
-		List<Variable> lhsList = new LinkedList<Variable>();
-		
-		for (int i = 0; i < phiNodeList.size(); i++) {
-			PhiNode phiNode = phiNodeList.get(i);
-			Variable lhs = (Variable) phiNode.getLHS().get(0);
-			routine.genSSAName(lhs);
-			lhsList.add(lhs);
-		}
-		
-		
-		for (Stmt stmt: body) {
-			for (Token t: stmt.getRHS())
-				if (t instanceof Variable)
-					routine.setSSAName((Variable) t);
-			for (Token t: stmt.getLHS()) {
-				if (t instanceof Variable) {
-					lhsList.add((Variable) t);
-					routine.genSSAName((Variable) t);
-				}
-			}
-			//ssaStmts.add(stmt);
-		}
-		
-		for (Block succ: succs)
-			succ.updatePhiStmt(this);
-		
-		/*for (Block succ: succs)
-			succ.rename();*/
-		
-		for (Block child: children)
-			child.rename();
-		
-		for (Variable v: lhsList)
-			routine.popSSAName(v);
-	}
 	
-	public void updatePhiStmt(Block refBlock) {
-		
-		int i;
-		for (i = 0; i < preds.size(); i++)
-			if (preds.get(i) == refBlock)
-				break;
-		for (PhiNode phiNode: phiNodeList) {
-			Variable refVar = new Variable(phiNode.getVarName());
-			routine.setSSAName(refVar);
-			phiNode.setRHS(i, refVar);
-		}
-	}
 	
 	public void removeStmt(Stmt stmt) {
-		System.out.println("block#" + index + " remove stmt:" + stmt.toSSAString());
+//		System.out.println("block#" + index + " remove stmt:" + stmt.toSSAString());
 		body.remove(stmt);
 //		dumpSSA();
+	}
+	
+	public void replaceStmt(Stmt oldStmt, Stmt newStmt) {
+		int i;
+		for (i = 0; i < body.size(); i++)
+			if (body.get(i) == oldStmt)
+				break;
+		if (i < body.size()) {
+//			System.out.println("block#" + index + " replace stmt" + oldStmt.toSSAString() + " by " + newStmt.toSSAString());
+			body.set(i, newStmt);
+		}
 	}
 	
 	public void dump() {

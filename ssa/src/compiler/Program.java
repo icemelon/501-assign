@@ -97,10 +97,17 @@ public class Program {
 		}
 	}
 	
-	public void genSSA() {
+	public void tranformToSSA() {
 		for (Routine r: routines) {
-			System.out.println("routine " + r.getName() + " gen SSA");
-			r.genSSA();
+//			System.out.println("routine " + r.getName() + " gen SSA");
+			r.tranformToSSA();
+		}
+	}
+	
+	public void transformBackFromSSA() {
+		for (Routine r: routines) {
+//			System.out.println("routine " + r.getName() + " gen SSA");
+			r.transformBackFromSSA();
 		}
 	}
 	
@@ -108,7 +115,7 @@ public class Program {
 		for (Routine r: routines) {
 			ConstantPropOpt cpo = new ConstantPropOpt(r);
 			cpo.optimize();
-			cpo.dump();
+//			cpo.dump();
 		}
 	}
 	
@@ -161,25 +168,21 @@ public class Program {
 		p.genDominator();
 		endTime = System.nanoTime();
 		
-		p.genSSA();
+		p.tranformToSSA();
 		//p.getRoutines().get(1).genSSA();
 		//p.simpleConstantProp();
 		
 		//System.out.println(((endTime - startTime) / 1000.0));
 		//System.out.println(BasicBlock.globalIndex);
 
-		//int max = 0;
-		//for (Routine r: p.getRoutines()) {
-		//	int b = r.getBlockCount();
-		//	if (b > max) max = b;
-		//}
-		//System.out.println(max);
-		
 		//p.dumpIR();
-//		p.dumpSSA();
+		p.dumpSSA();
+		
+		p.transformBackFromSSA();
+		p.dumpSSA();
 		
 //		p.constantPropOpt();
-		p.valueNumberOpt();
+//		p.valueNumberOpt();
 		
 //		DefUseAnalysis du = new DefUseAnalysis(p.getRoutines().get(0));
 //		du.analyze();

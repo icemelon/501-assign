@@ -5,6 +5,7 @@ import java.util.List;
 
 import compiler.Block;
 
+import token.Code;
 import token.Token;
 
 // br, blbc, blbs
@@ -16,6 +17,15 @@ public class BranchStmt extends Stmt {
 		super(index, op);
 		rhs = oprands;
 		lhs = new LinkedList();
+	}
+	
+	// br
+	public BranchStmt(int index, Block brBlock) {
+		super(index, Operator.br);
+		this.rhs = new LinkedList();
+		this.rhs.add(new Code(brBlock.body.get(0).index));
+		this.lhs = new LinkedList();
+		this.brBlock = brBlock;
 	}
 	
 	public void setBranchBlock(Block b) { brBlock = b; }

@@ -259,15 +259,38 @@ public class ConstantPropOpt {
 				if (!containsPhiNode(use)) {
 					def.getBlock().removeStmt(def);
 					for (Stmt stmt: use) {
-						int i;
-						for (i = 0; i < stmt.getRHS().size(); i++) {
-							Token t = stmt.getRHS().get(i);
-							if (t.toSSAString().equals(var))
-								break;
+						if (stmt instanceof BranchStmt) {
+							int brVal;
+							
+							if (stmt.getOperator() == Stmt.Operator.blbc)
+								brVal = 0;
+							else // blbs
+								brVal = 1;
+							
+							if (attr.value == brVal) {
+								stmt.getBlock().replaceStmt(stmt, new BranchStmt(stmt.index, ((BranchStmt) stmt).getBranchBlock()));
+							} else {
+								stmt.getBlock().removeStmt(stmt);
+							}
+							
+						} else {
+							int i;
+							for (i = 0; i < stmt.getRHS().size(); i++) {
+								Token t = stmt.getRHS().get(i);
+								if (t.toSSAString().equals(var))
+									break;
+							}
+							stmt.setRHS(i, new Constant(attr.value));
 						}
-						stmt.setRHS(i, new Constant(attr.value));
 					}
 				}
+			}
+		}
+		
+		for (Block b: routine.getBlocks()) {
+			int count = reachCount(b);
+			if (count == 0) {
+				System.out.println("Remove block#" + b.index);
 			}
 		}
 	}

@@ -37,7 +37,7 @@ void test(int x) {
 	c = 4;
 	d = 7;
 	t = 5;
-	if (t < 10) {
+	if (t > 10) {
 		y = a + b;
 	} else {
 		y = c + d;
@@ -53,6 +53,6 @@ void main() {
 	}
 	a = 1;
 	b = 2;
-	swap(a,b);
+	swap(a,3);
 }
 

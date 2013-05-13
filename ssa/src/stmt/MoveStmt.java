@@ -21,6 +21,14 @@ public class MoveStmt extends Stmt {
 		this.lhs = lhs;
 	}
 	
+	public MoveStmt(Token rhs, Token lhs) {
+		super(Operator.move);
+		this.rhs = new LinkedList<Token>(); 
+		this.rhs.add(rhs);
+		this.lhs = new LinkedList<Token>();
+		this.lhs.add(lhs);
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(100);

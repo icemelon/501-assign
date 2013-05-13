@@ -29,13 +29,10 @@ public class Routine {
 	private List<Stmt> body;
 	private List<Block> blocks = new LinkedList<Block>();
 	
-	// SSA renaming
-	private Stack<String> varStack[];
-	private int varCounter[];
-	private List<Variable> ssaVars;
-	
 	private int blockCount = 0;
 	private Block entryBlock;
+	
+	private SSATransform ssaTran;
 	
 	private Routine(String name, int startLine, List<Variable> vars) {
 		this.name = name;
@@ -60,6 +57,8 @@ public class Routine {
 	public int getBlockCount() { return blockCount; }
 	
 	public Block getEntryBlock() { return entryBlock; }
+	
+	public List<Variable> getLocalVars() { return localVars; } 
 	
 	private Block searchBlock(int stmtIndex) {
 		int left = 0;
@@ -211,122 +210,13 @@ public class Routine {
 //		}
 	}
 	
-	private void genDomFrontier() {
-		List<Block> topOrder = Tools.genTopOrder(blocks);
-		
-		for (Block block: topOrder) {
-			for (Block succ: block.getSuccs()) {
-				if (succ.getIdom() != block) {
-					block.addDF(succ);
-					//System.out.println("block " + block.index + " add " + succ.index);
-				}
-			}
-			for (Block child: block.getChildren())
-				for (Block df: child.getDF()) {
-					if (df.getIdom() != block) {
-						block.addDF(df);
-						//System.out.println("block " + block.index + " add " + df.index + " through " + child.index);
-					}
-				}
-		}
+	public void tranformToSSA() {
+		ssaTran = new SSATransform(this);
+		ssaTran.translateToSSA();
 	}
 	
-	private void placePhi() {
-		List<Block> workList = new LinkedList<Block>();
-		Set<Block> everOnWorkList = new HashSet<Block>();
-		Set<Block> hasAlready = new HashSet<Block>();
-		
-		// place entry stmt
-		entryBlock.body.add(0, new EntryStmt(localVars, entryBlock));
-		
-		for (Variable var: localVars) {
-			workList.clear();
-			everOnWorkList.clear();
-			hasAlready.clear();
-			
-			for (Block block: blocks)
-				if (block.hasAssignment(var)) {
-					workList.add(block);
-					everOnWorkList.add(block);
-				}
-			
-			while (!workList.isEmpty()) {
-				Block block = workList.get(0);
-				//System.out.println("Work on block " + block.index);
-				workList.remove(0);
-				for (Block df: block.getDF()) {
-					if (!hasAlready.contains(df)) {
-						df.insertPhiNode(var);
-						hasAlready.add(df);
-						if (!everOnWorkList.contains(df)) {
-							everOnWorkList.add(df);
-							workList.add(df);
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	public void genSSAName(Variable v) {
-		int i;
-		for (i = 0; i < localVars.size(); i++)
-			if (localVars.get(i).equals(v))
-				break;
-		
-		Integer index = varCounter[i]++;
-		String name = v.getName() + "$" + index;
-		v.setSSAName(name);
-		varStack[i].push(name);
-		ssaVars.add(new Variable(name));
-	}
-	
-	public void setSSAName(Variable v) {
-		int i;
-		for (i = 0; i < localVars.size(); i++)
-			if (localVars.get(i).equals(v))
-				break;
-		
-		v.setSSAName(varStack[i].peek());
-	}
-	
-	public void popSSAName(Variable v) {
-		int i;
-		for (i = 0; i < localVars.size(); i++)
-			if (localVars.get(i).equals(v))
-				break;
-		
-		varStack[i].pop();
-	}
-	
-	private void rename() {
-		int n = localVars.size();
-		varStack = new Stack[n];
-		varCounter = new int[n];
-		ssaVars = new ArrayList<Variable>();
-		
-		for (int i = 0; i < n; i++) {
-			Variable var = localVars.get(i);
-			Stack<String> stack = new Stack<String>(); 
-			
-			/*if (var.getOffset() > 0) {
-				varCounter[i] = 1;
-				String varName = var.getName() + "$" + "0";
-				stack.add(varName);
-				ssaVars.add(new Variable(varName));
-			} else
-				varCounter[i] = 0;*/
-			varCounter[i] = 0;
-			varStack[i] = stack;
-		}
-		
-		entryBlock.rename();
-	}
-	
-	public void genSSA() {
-		genDomFrontier();
-		placePhi();
-		rename();
+	public void transformBackFromSSA() {
+		ssaTran.translateBackFromSSA();
 	}
 	
 	@Override
