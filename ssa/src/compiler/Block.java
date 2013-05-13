@@ -92,12 +92,17 @@ public class Block {
 	}
 	
 	public void rename() {
+		
+//		System.out.println("rename block#" + index);
+		List<Variable> lhsList = new LinkedList<Variable>();
+		
 		for (int i = 0; i < phiNodeList.size(); i++) {
 			PhiNode phiNode = phiNodeList.get(i);
-			routine.genSSAName((Variable) phiNode.getLHS().get(0)); 
+			Variable lhs = (Variable) phiNode.getLHS().get(0);
+			routine.genSSAName(lhs);
+			lhsList.add(lhs);
 		}
 		
-		List<Variable> lhsList = new LinkedList<Variable>();
 		
 		for (Stmt stmt: body) {
 			for (Token t: stmt.getRHS())
@@ -114,6 +119,9 @@ public class Block {
 		
 		for (Block succ: succs)
 			succ.updatePhiStmt(this);
+		
+		/*for (Block succ: succs)
+			succ.rename();*/
 		
 		for (Block child: children)
 			child.rename();
@@ -154,8 +162,8 @@ public class Block {
 		
 		System.out.print(", Idom: " + idom.index);
 		
-		System.out.print(", DF:");
-		for (Block b: DF)
+		System.out.print(", child:");
+		for (Block b: children)
 			System.out.print(" " + b.index);
 		
 		System.out.println();
@@ -177,8 +185,8 @@ public class Block {
 		
 		System.out.print(", Idom: " + idom.index);
 		
-		System.out.print(", DF:");
-		for (Block b: DF)
+		System.out.print(", child:");
+		for (Block b: children)
 			System.out.print(" " + b.index);
 		
 		System.out.println();
@@ -201,8 +209,8 @@ public class Block {
 		
 		System.out.print(", Idom: " + idom.index);
 		
-		System.out.print(", DF:");
-		for (Block b: DF)
+		System.out.print(", child:");
+		for (Block b: children)
 			System.out.print(" " + b.index);
 		
 		System.out.println();

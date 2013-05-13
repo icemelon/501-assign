@@ -98,8 +98,10 @@ public class Program {
 	}
 	
 	public void genSSA() {
-		for (Routine r: routines)
+		for (Routine r: routines) {
+			System.out.println("routine " + r.getName() + " gen SSA");
 			r.genSSA();
+		}
 	}
 	
 	public void constantPropOpt() {
@@ -107,6 +109,15 @@ public class Program {
 			ConstantPropOpt cpo = new ConstantPropOpt(r);
 			cpo.optimize();
 			cpo.dump();
+		}
+	}
+	
+	public void valueNumberOpt() {
+		for (Routine r: routines) {
+			ValueNumberOpt vno = new ValueNumberOpt(r);
+//			r.dumpSSA();
+			vno.optimize();
+			System.out.println(r.toString() + " remove " + vno.counter + " expressions");
 		}
 	}
 	
@@ -168,17 +179,19 @@ public class Program {
 //		p.dumpSSA();
 		
 //		p.constantPropOpt();
+		p.valueNumberOpt();
 		
 //		DefUseAnalysis du = new DefUseAnalysis(p.getRoutines().get(0));
 //		du.analyze();
 //		du.dump();
 		
-		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(1));
-		cpo.optimize();
-		cpo.dump();
+//		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(1));
+//		cpo.optimize();
+//		cpo.dump();
 		
-		//ConstantPropOpt opt = new ConstantPropOpt(p.getRoutines().get(0));
-		//opt.optimize();
-		//opt.dump();
+//		ValueNumberOpt vno = new ValueNumberOpt(p.getRoutines().get(1));
+//		vno.dump();
+//		vno.optimize();
+//		vno.dump();
 	}
 }

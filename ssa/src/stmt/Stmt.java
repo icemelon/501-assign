@@ -13,45 +13,51 @@ import token.Token;
 public abstract class Stmt implements Cloneable {
 	
 	public enum Operator {
-		add("add"),
-		sub("sub"),
-		mul("mul"),
-		div("div"),
-		mod("mod"),
-		neg("neg"),
-		cmpeq("cmpeq"),
-		cmple("cmple"),
-		cmplt("cmplt"),
-		isnull("isnull"),
-		istype("istype"),
-		br("br"),
-		blbc("blbc"),
-		blbs("blbs"),
-		call("call"),
-		load("load"),
-		store("store"),
-		move("move"),
-		newtype("new"),
-		newlist("newlist"),
-		checknull("checknull"),
-		checktype("checktype"),
-		checkbounds("checkbounds"),
-		lddynamic("lddynmaic"),
-		stdynamic("stdynmaic"),
-		write("write"),
-		wrl("wrl"),
-		enter("enter"),
-		ret("ret"),
-		param("param"),
-		entrypc("entrypc"),
-		nop("nop"),
-		entry("entry"),
-		phi("phi"),
-		phinode("phinode");
+		add(0, "add"),
+		sub(1, "sub"),
+		mul(2, "mul"),
+		div(3, "div"),
+		mod(4, "mod"),
+		neg(5, "neg"),
+		cmpeq(6, "cmpeq"),
+		cmple(7, "cmple"),
+		cmplt(8, "cmplt"),
+		isnull(9, "isnull"),
+		istype(10, "istype"),
+		br(11, "br"),
+		blbc(12, "blbc"),
+		blbs(13, "blbs"),
+		call(14, "call"),
+		load(15, "load"),
+		store(16, "store"),
+		move(17, "move"),
+		newtype(18, "new"),
+		newlist(19, "newlist"),
+		checknull(20, "checknull"),
+		checktype(21, "checktype"),
+		checkbounds(22, "checkbounds"),
+		lddynamic(23, "lddynmaic"),
+		stdynamic(24, "stdynmaic"),
+		write(25, "write"),
+		wrl(26, "wrl"),
+		enter(27, "enter"),
+		ret(28, "ret"),
+		param(29, "param"),
+		entrypc(30, "entrypc"),
+		nop(31, "nop"),
+		entry(32, "entry"),
+		phi(33, "phi"),
+		phinode(34, "phinode");
 		
 		private String str;
+		private int index;
 		
-		private Operator(String s) { this.str = s; }
+		private Operator(int index, String str) {
+			this.index = index;
+			this.str = str; 
+		}
+		
+		public int getIndex() { return index; }
 		
 		@Override
 		public String toString() { return str; }

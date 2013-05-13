@@ -6,11 +6,27 @@ void swap(int x, int y) {
 		t = x;
 		x = y;
 		y = t;
-<<<<<<< HEAD
-=======
 		i = i + 1;
->>>>>>> ac8299b831ddb9bb8002e0a3257667764057e1ec
 	}
+}
+
+void foo(int l) {
+	int a, b, c, d, e, f;
+	int u, v, w, x, y, z;
+	u = a + b;
+	v = c + d;
+	w = e + f;
+
+	if (l > 0) {
+		x = c + d;
+		y = c + d;
+	} else {
+		u = a + b;
+		x = e + f;
+		y = e + f;
+	}
+	z = u + y;
+	u = b + a;
 }
 
 void test(int x) {
@@ -26,9 +42,6 @@ void test(int x) {
 	} else {
 		y = c + d;
 	}
-}
-
-void foo() {
 }
 
 void main() {

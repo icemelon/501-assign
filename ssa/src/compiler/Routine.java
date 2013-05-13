@@ -200,10 +200,15 @@ public class Routine {
 			}
 		}
 		
-		for (int i = blockCount - 2; i >= 0; --i) {
+		for (int i = 0; i < blockCount - 1; ++i) {
 			Block b = postorder.get(i);
 			b.getIdom().addChild(b);
 		}
+		
+//		for (int i = blockCount - 2; i >= 0; --i) {
+//			Block b = postorder.get(i);
+//			b.getIdom().addChild(b);
+//		}
 	}
 	
 	private void genDomFrontier() {
