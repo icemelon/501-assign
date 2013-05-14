@@ -32,7 +32,9 @@ public class Routine {
 	private int blockCount = 0;
 	private Block entryBlock;
 	
-	private SSATransform ssaTran;
+	public SSATransform ssaTrans = null;
+	public ValueNumberOpt vn = null;
+	public ConstantPropOpt cp = null;
 	
 	private Routine(String name, int startLine, List<Variable> vars) {
 		this.name = name;
@@ -212,19 +214,6 @@ public class Routine {
 		}
 	}
 	
-	public void tranformToSSA() {
-		ssaTran = new SSATransform(this);
-		ssaTran.translateToSSA();
-	}
-	
-	public void transformBackFromSSA() {
-		ssaTran.translateBackFromSSA();
-	}
-	
-	public void numberStmt() {
-		ssaTran.numberStmt();
-	}
-	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(500);
@@ -235,37 +224,44 @@ public class Routine {
 	}
 	
 	public void dump() {
-//		System.out.println(toString());
-//		System.out.println("Entryblock #" + entryBlock.index);
 		for (Block b: blocks) {
-//			System.out.println();
 			b.dump();
 		}
 	}
 	
 	public void dumpIR() {
-		System.out.print("method " + name + "@" + startLine + ":");
+		/*System.out.print("method " + name + "@" + startLine + ":");
 		for (Variable v: localVars)
 			System.out.print(" " + v.fullString());
-		System.out.println("\nEntryblock #" + entryBlock.index);
+		System.out.println();*/
 		for (Block b: blocks) {
-			System.out.println();
 			b.dumpIR();
 		}
 	}
 	
-	public void dumpSSA() {
-		System.out.print("method " + name + "@" + startLine + ":");
+	public void dumpCFG() {
+		/*System.out.print("method " + name + "@" + startLine + ":");
 		for (Variable v: localVars)
 			System.out.print(" " + v.fullString());
-		System.out.println("\nEntryblock #" + entryBlock.index);
+		System.out.println(" entryblock #" + entryBlock.index);*/
+		for (Block b: blocks) {
+			System.out.println();
+			b.dumpCFG();
+		}
+	}
+	
+	public void dumpSSA() {
+		/*System.out.print("method " + name + "@" + startLine + ":");
+		for (Variable v: localVars)
+			System.out.print(" " + v.fullString());
+		System.out.println(" entryblock #" + entryBlock.index);*/
 		for (Block b: blocks) {
 			System.out.println();
 			b.dumpSSA();
 		}
 	}
 	
-	public static Routine parseRoutine(String line) {
+	public static Routine parse(String line) {
 		String method = line.substring(7);
 		String name = method.substring(0, method.indexOf('@'));
 		int startLine = Integer.parseInt(method.substring(method.indexOf('@') + 1, method.indexOf(':')));
@@ -275,7 +271,7 @@ public class Routine {
 		List<Variable> varList = new ArrayList<Variable>();
 		for (String v: vars) 
 			if (v.length() > 0)
-				varList.add((Variable)Token.parseToken(v));
+				varList.add((Variable)Token.parse(v));
 		
 		/*for (Variable v: varList)
 			System.out.println(v.debug());*/

@@ -4,6 +4,6 @@ if [ $# -lt 1 ]
   then
     echo "run.sh [file:*.start]"
   else
-	java -jar ssa.jar $*
+	java -jar opt.jar $*
 fi
 

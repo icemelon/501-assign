@@ -48,6 +48,10 @@ public class ConstantPropOpt {
 	private List<Stmt> ssaWorkList = new LinkedList<Stmt>();
 	private HashMap<String, ConstantAttr> varAttr = new HashMap<String, ConstantAttr>();
 	
+	public int varCounter = 0;
+//	public int stmtCounter = 0;
+//	public int blockCounter = 0;
+	
 	public ConstantPropOpt(Routine r) {
 		this.routine = r;
 		this.du = new DefUseAnalysis(r);
@@ -255,7 +259,7 @@ public class ConstantPropOpt {
 			Block block = itBlock.next();
 			int count = reachCount(block);
 			if (count == 0) {
-				System.out.println("Remove block#" + block.index);
+//				System.out.println("Remove block#" + block.index);
 				for (Block pred: block.getPreds())
 					pred.getSuccs().remove(block);
 				for (Block succ: block.getSuccs()) {
@@ -281,6 +285,9 @@ public class ConstantPropOpt {
 			ConstantAttr attr = varAttr.get(var);
 			
 			if (attr.type == ConstantType.Constant) {
+				
+				varCounter ++;
+				
 				Stmt def = du.getDef(var);
 				List<Stmt> use = du.getUseList(var);
 				
@@ -372,8 +379,6 @@ public class ConstantPropOpt {
 			}
 		}
 		
-//		routine.dumpSSA();
-//		System.out.println("**********************************");
 		eliminateCode();
 	}
 	

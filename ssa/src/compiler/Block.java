@@ -18,9 +18,9 @@ import token.Variable;
 public class Block {
 	public static int globalIndex = 0;
 	
-	public final int index;
-	public final int startLine;
-	public final int endLine;
+	public int index;
+	public int startLine;
+	public int endLine;
 	public List<Stmt> body;
 	public final Routine routine;
 	
@@ -115,30 +115,17 @@ public class Block {
 	}
 	
 	public void dump() {
-		/*System.out.print("Block #" + index);
-		
-		System.out.print("  Preds:");
-		for (Block b: preds)
-			System.out.print(" " + b.index);
-		
-		System.out.print(", Succs:");
-		for (Block b: succs)
-			System.out.print(" " + b.index);
-		
-		System.out.print(", Idom: " + idom.index);
-		
-		System.out.print(", child:");
-		for (Block b: children)
-			System.out.print(" " + b.index);
-		
-		System.out.println();*/
-		
 		for (Stmt stmt: body)
 			System.out.println(stmt);
 	}
 	
 	public void dumpIR() {
-		System.out.print("Block #" + index);
+		for (Stmt stmt: body)
+			System.out.println(stmt.toIRString());
+	}
+	
+	public void dumpCFG() {
+		System.out.print("Block#" + index);
 		
 		System.out.print("  Preds:");
 		for (Block b: preds)
@@ -150,7 +137,7 @@ public class Block {
 		
 		System.out.print(", Idom: " + idom.index);
 		
-		System.out.print(", child:");
+		System.out.print(", Children:");
 		for (Block b: children)
 			System.out.print(" " + b.index);
 		
@@ -162,23 +149,7 @@ public class Block {
 	
 	
 	public void dumpSSA() {
-		System.out.print("Block #" + index);
-		
-		System.out.print("  Preds:");
-		for (Block b: preds)
-			System.out.print(" " + b.index);
-		
-		System.out.print(", Succs:");
-		for (Block b: succs)
-			System.out.print(" " + b.index);
-		
-		System.out.print(", Idom: " + idom.index);
-		
-		System.out.print(", child:");
-		for (Block b: children)
-			System.out.print(" " + b.index);
-		
-		System.out.println();
+		System.out.println("Block #" + index);
 		
 		for (PhiNode phiNode: phiNodeList) {
 			System.out.println(phiNode.toSSAString());

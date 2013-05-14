@@ -67,7 +67,7 @@ public class ValueNumberOpt {
 	}
 	
 	private Routine routine;
-	public int counter = 0;
+	public int exprCounter = 0;
 	
 	public ValueNumberOpt(Routine r) {
 		this.routine = r;
@@ -76,7 +76,7 @@ public class ValueNumberOpt {
 	private Token genNewToken(String val) {
 		int pos;
 		if ((pos = val.indexOf('$')) < 0) {
-			int index = Integer.parseInt(val.substring(1));
+			int index = Integer.parseInt(val.substring(1, val.length() - 1));
 			return new Register(index);
 		} else {
 			//System.out.println("ValueNumberOpt.genNewRegister error: parse in variable type (" + val + ")");
@@ -236,7 +236,7 @@ public class ValueNumberOpt {
 			int ret = visitPhiNode(phiNode, valueNumber, exprHash);
 			if (ret == 1) {
 				itPhi.remove();
-				++ counter;
+				++ exprCounter;
 				
 				String val = ((ValueNumberAttr)phiNode.getRHS().get(0).getAttr()).val;
 				List<Token> rhs = new LinkedList<Token>();
@@ -249,7 +249,7 @@ public class ValueNumberOpt {
 				
 			} else if (ret == 2) {
 				itPhi.remove();
-				++ counter;
+				++ exprCounter;
 				
 				String op1 = ((ValueNumberAttr)phiNode.getRHS().get(0).getAttr()).val;
 				String op2 = ((ValueNumberAttr)phiNode.getRHS().get(1).getAttr()).val;
@@ -271,7 +271,7 @@ public class ValueNumberOpt {
 			if (stmt instanceof ArithStmt) {
 				boolean del = visitArithStmt((ArithStmt) stmt, valueNumber, exprHash);
 				if (del) {
-					++ counter;
+					++ exprCounter;
 					itBody.remove();
 				}
 			} else if (stmt instanceof MoveStmt)

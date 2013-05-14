@@ -30,12 +30,12 @@ public class Register extends Token implements Cloneable {
 	
 	@Override
 	public String toIRString() {
-		return "r" + index;
+		return "(" + index + ")";
 	}
 	
 	@Override
 	public String toSSAString() {
-		return "r" + index;
+		return "(" + index + ")";
 	}
 	
 	public Object clone() {

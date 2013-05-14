@@ -397,8 +397,10 @@ public class SSATransform {
 						((Register) t).index = newIndexMap.get(((Register) t).index);
 					}
 			}
+			b.startLine = b.body.get(0).index;
+			b.index = b.startLine;
 		}
-		routine.setStartLine(entryBlock.body.get(0).index);
+		routine.setStartLine(entryBlock.startLine);
 	}
 	
 	public void translateBackFromSSA() {

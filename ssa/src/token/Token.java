@@ -10,7 +10,7 @@ public abstract class Token implements Cloneable {
 	
 	public void setAttr(Attribute attr) { this.attr = attr; }
 	
-	public static Token parseToken(String s) {
+	public static Token parse(String s) {
 		
 		try {
 			int value = Integer.parseInt(s);

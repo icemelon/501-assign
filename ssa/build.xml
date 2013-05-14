@@ -19,16 +19,16 @@
   <target name="dist" depends="compile"
     description="generate the distribution">
 	<!--mkdir dir="${dist}"/-->
-	<jar jarfile="ssa.jar" basedir="${build}">
+	<jar jarfile="opt.jar" basedir="${build}">
 	  <manifest>
-	    <attribute name="Main-Class" value="compiler.Program"/>
+	    <attribute name="Main-Class" value="compiler.Main"/>
 	  </manifest>
 	</jar>
   </target>
 
   <target name="clean">
     <delete dir="${build}"/>
-	<delete file="ssa.jar"/>
+	<delete file="opt.jar"/>
 	<!--delete dir="${dist}"/-->
   </target>
 

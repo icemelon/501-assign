@@ -36,7 +36,7 @@ public class Variable extends Token implements Cloneable {
 	
 	@Override
 	public String toIRString() {
-		return name + "#" + offset;
+		return name;
 	}
 	
 	@Override

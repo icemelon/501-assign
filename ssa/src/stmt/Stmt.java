@@ -196,7 +196,6 @@ public abstract class Stmt implements Cloneable {
 			o.lhs = new LinkedList<Token>();
 			for (Token t: lhs)
 				o.lhs.add((Token) t.clone());
-//			o.lhs = (Token) lhs.clone();
 			
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -205,32 +204,7 @@ public abstract class Stmt implements Cloneable {
 		return o;
 	}
 	
-	
-/*	
-	public List<Token> getRHS() {
-		if (instr.equals("add") || instr.equals("sub") || instr.equals("mul") ||
-			instr.equals("div") || instr.equals("mod") || instr.equals("neg") ||
-			instr.equals("cmpeq") || instr.equals("cmple") || instr.equals("cmplt") ||
-			instr.equals("isnull") || instr.equals("istype") || instr.equals("load") ||
-			instr.equals("checknull") || instr.equals("checktype") || instr.equals("checkbounds") ||
-			instr.equals("lddynamic") || instr.equals("write") || instr.equals("param")) {
-			return oprands;
-		} else if (instr.equals("store") || instr.equals("move") || instr.equals("stdynamic")) {
-			return oprands.subList(0, 1);
-		} else
-			return new LinkedList<Token>();
-	}
-	
-	public List<Token> getLHS() {
-		if (instr.equals("store") || instr.equals("move")) {
-			return oprands.subList(1, 2);
-		} else if (instr.equals("stdynamic")) {
-			return oprands.subList(1, 3);
-		} else
-			return new LinkedList<Token>();
-	}*/
-	
-	public static Stmt parseStmt(String line) {
+	public static Stmt parse(String line) {
 		
 		int index;
 		Operator op;
@@ -245,7 +219,7 @@ public abstract class Stmt implements Cloneable {
 			if (tokens[i].startsWith(":"))
 				oprands.add(new Register(index, tokens[i].substring(1)));
 			else if (tokens[i].length() > 0)
-				oprands.add(Token.parseToken(tokens[i]));
+				oprands.add(Token.parse(tokens[i]));
 		}
 		
 		Stmt stmt;

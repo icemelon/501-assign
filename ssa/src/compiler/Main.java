@@ -3,11 +3,21 @@ package compiler;
 public class Main {
 	
 	public static void main(String[] args) {
-		if (args.length < 1) {
-			System.out.println("SSA.jar [Input file]"	);
+		
+		Option option = new Option();
+		if (!option.parse(args)) {
+			option.usage();
 			return;
 		}
-		Program p = new Program();
+		
+		Program program = new Program();
+		program.run(option);
+		
+		/*if (args.length < 1) {
+			System.out.println("SSA.jar [Input file]"	);
+			return;
+		}*/
+		/*Program p = new Program();
 		p.scanFile(args[0]);
 
 		long startTime, endTime;
