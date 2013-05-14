@@ -1,10 +1,12 @@
 package token;
 
+import stmt.Stmt;
+
 public class Register extends Token implements Cloneable {
 	
-	private int index;
-	private String type;
-	private boolean pointer;
+	public int index;
+	public String type;
+	public boolean pointer;
 	
 	public Register(int index) {
 		this.index = index;
@@ -20,12 +22,6 @@ public class Register extends Token implements Cloneable {
 		else
 			this.pointer = false;
 	}
-	
-	public int getIndex() { return index; }
-	
-	public String getType() { return type; }
-	
-	public boolean isPointer() { return pointer; }
 	
 	@Override
 	public String toString() {

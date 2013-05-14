@@ -58,7 +58,9 @@ public class Routine {
 	
 	public Block getEntryBlock() { return entryBlock; }
 	
-	public List<Variable> getLocalVars() { return localVars; } 
+	public List<Variable> getLocalVars() { return localVars; }
+	
+	public void setLocalVars(List<Variable> vars) { localVars = vars; }
 	
 	private Block searchBlock(int stmtIndex) {
 		int left = 0;
@@ -219,20 +221,24 @@ public class Routine {
 		ssaTran.translateBackFromSSA();
 	}
 	
+	public void numberStmt() {
+		ssaTran.numberStmt();
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(500);
-		sb.append("method " + name + "@" + startLine + ":");
+		sb.append("    method " + name + "@" + startLine + ":");
 		for (Variable v: localVars)
 			sb.append(" " + v.fullString());
 		return sb.toString();
 	}
 	
 	public void dump() {
-		System.out.println(toString());
-		System.out.println("Entryblock #" + entryBlock.index);
+//		System.out.println(toString());
+//		System.out.println("Entryblock #" + entryBlock.index);
 		for (Block b: blocks) {
-			System.out.println();
+//			System.out.println();
 			b.dump();
 		}
 	}

@@ -26,10 +26,10 @@ public class EntryStmt extends Stmt {
 	//public List<Token> getRHS() { return new LinkedList<Token>(); }
 	
 	@Override
-	public String toString() { return ""; }
+	public String toString() { return "a"; }
 
 	@Override
-	public String toIRString() { return ""; }
+	public String toIRString() { return "a"; }
 
 	@Override
 	public String toSSAString() {

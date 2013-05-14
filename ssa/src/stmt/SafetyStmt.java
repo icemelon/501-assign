@@ -30,7 +30,7 @@ public class SafetyStmt extends Stmt {
 		for (Token t: rhs)
 			sb.append(" " + t);
 		if (lhs.size() > 0)
-			sb.append(" :" + ((Register) lhs.get(0)).getType());
+			sb.append(" :" + ((Register) lhs.get(0)).type);
 		return sb.toString();
 	}
 	

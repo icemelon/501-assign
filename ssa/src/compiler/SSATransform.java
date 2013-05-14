@@ -15,6 +15,9 @@ import stmt.EntryStmt;
 import stmt.MoveStmt;
 import stmt.PhiNode;
 import stmt.Stmt;
+import stmt.Stmt.Operator;
+import token.Constant;
+import token.Register;
 import token.Token;
 import token.Variable;
 
@@ -63,7 +66,8 @@ public class SSATransform {
 		Set<Block> hasAlready = new HashSet<Block>();
 		
 		// place entry stmt
-		routine.getEntryBlock().body.add(0, new EntryStmt(localVars, entryBlock));
+		if (localVars.size() > 0)
+			routine.getEntryBlock().body.add(0, new EntryStmt(localVars, entryBlock));
 		
 		for (Variable var: localVars) {
 			workList.clear();
@@ -206,10 +210,65 @@ public class SSATransform {
 		}
 	}
 	
+	private boolean eliminateEntry(EntryStmt entry, Token var) {
+		Iterator<Token> it = entry.getLHS().iterator();
+		while (it.hasNext()) {
+			Token t = it.next();
+			if (t == var) {
+				it.remove();
+				break;
+			}
+		}
+		if (entry.getLHS().size() == 0)
+			return true;
+		else
+			return false;
+	}
+	
+	private void eliminateUnused() {
+		DefUseAnalysis du = new DefUseAnalysis(routine);
+		du.analyze();
+		du.eliminateUnused();
+		/*
+		Stmt stmt = entryBlock.body.get(0);
+		if (stmt instanceof EntryStmt) {
+			EntryStmt entry = (EntryStmt) stmt;
+			boolean del = false;
+			
+			Iterator<Token> it = entry.getLHS().iterator();
+			while (it.hasNext()) {
+				Variable v = (Variable) it.next();
+				if (v.offset < 0) {
+					List<Stmt> useList = du.getUseList(v.ssaName);
+					if (useList.size() > 0) {
+						for (Stmt useStmt: useList) {
+							if (!(useStmt instanceof PhiNode)) {
+								System.out.println("error: use an uninitialized variable (" + v.name + ")");
+								PhiNode phiNode = (PhiNode) useStmt;
+								int i;
+								for (i = 0; i < )
+							}
+					}
+					it.remove();
+				}
+			}
+			
+			if (entry.getLHS().size() == 0)
+				entryBlock.removeStmt(entry);
+		}
+		*/
+	}
+	
 	public void translateToSSA() {
 		genDomFrontier();
 		placePhi();
 		rename();
+		
+//		routine.dumpSSA();
+//		System.out.println("\n*********************************************");
+		eliminateUnused();
+//		routine.dumpSSA();
+//		System.out.println("\n*********************************************");
 	}
 	
 	private void insertPhiMoveStmt(Block block, Stmt stmt) {
@@ -239,77 +298,115 @@ public class SSATransform {
 	
 	private void renameVariable() {
 		
-		Map<String, Variable> oldVarSet = new HashMap<String, Variable>();
-		Map<String, Variable> ssaVarSet = new HashMap<String, Variable>();
+		Map<String, Variable> oldVarMap = new HashMap<String, Variable>();
+		Map<String, Variable> ssaVarMap = new HashMap<String, Variable>();
+		List<Variable> newVarList = new LinkedList<Variable>();
 		
-		int offset = -4;
+		int offset = 0;
 		
 		for (Variable var: routine.getLocalVars())
-			oldVarSet.put(var.name, var);
+			oldVarMap.put(var.name, var);
 		
 		for (Block block: blocks) {
-			for (Stmt stmt: block.body) {
+			Iterator<Stmt> it = block.body.iterator();
+			while (it.hasNext()) {
+				Stmt stmt = it.next();
 				if (stmt instanceof EntryStmt) {
 					for (Token t: stmt.getLHS()) {
 						Variable var = (Variable) t;
-						Variable ref = oldVarSet.get(var.name);
+						Variable ref = oldVarMap.get(var.name);
 						
 						var.type = ref.type;
 						if (ref.offset > 0)
 							// param
 							var.offset = ref.offset;
 						else {
-							var.offset = offset;
 							offset -= 4;
+							var.offset = offset;
 						}
 						
 						var.name = var.ssaName;
-						ssaVarSet.put(var.name, var);
+						ssaVarMap.put(var.name, var);
+						newVarList.add(var);
 					}
+					it.remove();
 				} else {
-					for (Token t: stmt.getRHS()) {
+					for (Token t: stmt.getRHS())
 						if (t instanceof Variable) {
 							Variable var = (Variable) t;
-							Variable ref = ssaVarSet.get(var.ssaName);
-							if (ref == null) {
-								System.out.println(routine.getName());
-								System.out.println(stmt.toSSAString());
-								System.out.println(var.toIRString() + " " + var.toSSAString());
-							}
-							
+							Variable ref = ssaVarMap.get(var.ssaName);
 							var.offset = ref.offset;
 							var.type = ref.type;
-							
 							var.name = var.ssaName;
 						}
-					}
 					
-					for (Token t: stmt.getLHS()) {
+					for (Token t: stmt.getLHS())
 						if (t instanceof Variable) {
 							Variable var = (Variable) t;
-							Variable ref = oldVarSet.get(var.name);
-							if (ref == null) {
-								System.out.println(routine.getName());
-								System.out.println(stmt.toSSAString());
-								System.out.println(var.toIRString() + " " + var.toSSAString());
+							if (ssaVarMap.containsKey(var.ssaName)) {
+								Variable ref = ssaVarMap.get(var.ssaName);
+								var.type = ref.type;
+								var.offset = ref.offset;
+								var.name = var.ssaName;
+							} else {
+								Variable ref = oldVarMap.get(var.name);
+								var.type = ref.type;
+								offset -= 4;
+								var.offset = offset;
+								
+								var.name = var.ssaName;
+								ssaVarMap.put(var.name, var);
+								newVarList.add(var);
 							}
-							var.type = ref.type;
-							var.offset = offset;
-							offset -= 4;
-							
-							var.name = var.ssaName;
-							ssaVarSet.put(var.name, var);
 						}
-					}
 				}
+			}
+		}
+		routine.setLocalVars(newVarList);
+		
+		{
+			// set enter stack offset
+			Stmt enter = null;
+			int i; 
+			int n = entryBlock.body.size();
+			for (i = 0; i < n; i++) {
+				enter = entryBlock.body.get(i);
+				if (enter.getOperator() == Operator.enter)
+					break;
+			}
+			
+			if (i < n) {
+				enter.setRHS(0, new Constant(-offset));
 			}
 		}
 	}
 	
+	public void numberStmt() {
+		Map<Integer, Integer> newIndexMap = new HashMap<Integer, Integer>();
+		
+		for (Block b: blocks) {
+			for (Stmt s: b.body) {
+				newIndexMap.put(s.index, Stmt.globalIndex);
+				s.index = Stmt.globalIndex++;
+				
+				for (Token t: s.getRHS())
+					if (t instanceof Register) {
+						// TODO: remove debug code
+						if (!newIndexMap.containsKey(((Register) t).index))
+							System.out.println("a" + s.toIRString());
+						((Register) t).index = newIndexMap.get(((Register) t).index);
+					}
+			}
+		}
+		routine.setStartLine(entryBlock.body.get(0).index);
+	}
+	
 	public void translateBackFromSSA() {
 		removePhiNode();
-		routine.dumpSSA();
+//		routine.dumpSSA();
 		renameVariable();
-		routine.dumpIR();
+		
+//		routine.dumpIR();
 	}
+	
 }

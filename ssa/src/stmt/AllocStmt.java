@@ -20,7 +20,7 @@ public class AllocStmt extends Stmt {
 		sb.append("    instr " + index + ": " + op);
 		for (Token t: rhs)
 			sb.append(" " + t);
-		sb.append(" :" + ((Register) lhs.get(0)).getType());
+		sb.append(" :" + ((Register) lhs.get(0)).type);
 		return sb.toString();
 	}
 	

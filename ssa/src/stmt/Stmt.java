@@ -36,8 +36,8 @@ public abstract class Stmt implements Cloneable {
 		checknull(20, "checknull"),
 		checktype(21, "checktype"),
 		checkbounds(22, "checkbounds"),
-		lddynamic(23, "lddynmaic"),
-		stdynamic(24, "stdynmaic"),
+		lddynamic(23, "lddynamic"),
+		stdynamic(24, "stdynamic"),
 		write(25, "write"),
 		wrl(26, "wrl"),
 		enter(27, "enter"),
@@ -139,7 +139,7 @@ public abstract class Stmt implements Cloneable {
 	};
 	
 	public static int globalIndex;
-	public final int index;
+	public int index;
 	protected final Operator op;
 	protected List<Token> rhs = null;
 	protected List<Token> lhs = null;

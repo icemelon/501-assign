@@ -7,8 +7,10 @@ import java.util.List;
 
 import stmt.EntryStmt;
 import stmt.MoveStmt;
+import stmt.OtherStmt;
 import stmt.PhiNode;
 import stmt.Stmt;
+import stmt.Stmt.Operator;
 import token.Token;
 import token.Variable;
 
@@ -90,11 +92,14 @@ public class Block {
 		
 	}
 	
-	
-	
 	public void removeStmt(Stmt stmt) {
-		System.out.println("block#" + index + " remove stmt:" + stmt.toSSAString());
-		body.remove(stmt);
+//		System.out.println("block#" + index + " remove stmt:" + stmt.toSSAString());
+		if (body.contains(stmt)) {
+			body.remove(stmt);
+			if (body.size() == 0)
+				body.add(new OtherStmt(Operator.nop));
+		} else if (phiNodeList.contains(stmt))
+			phiNodeList.remove(stmt);
 //		dumpSSA();
 	}
 	
@@ -110,7 +115,7 @@ public class Block {
 	}
 	
 	public void dump() {
-		System.out.print("Block #" + index);
+		/*System.out.print("Block #" + index);
 		
 		System.out.print("  Preds:");
 		for (Block b: preds)
@@ -126,7 +131,7 @@ public class Block {
 		for (Block b: children)
 			System.out.print(" " + b.index);
 		
-		System.out.println();
+		System.out.println();*/
 		
 		for (Stmt stmt: body)
 			System.out.println(stmt);

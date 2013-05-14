@@ -102,7 +102,7 @@ public class ValueNumberOpt {
 		if (token instanceof Variable || token instanceof Register) {
 			val = valueNumber.get(token.toSSAString());
 			if (val == null) {
-				System.out.println("Token " + token.toSSAString());
+				System.out.println("ValueNumberOpt.getValue error: Token not found " + token.toSSAString());
 //				dumpValueNumber(valueNumber);
 			} else if (!val.equals(token.toSSAString())) {
 				Token newReg = genNewToken(val);
@@ -143,7 +143,7 @@ public class ValueNumberOpt {
 			valueNumber.put(lhs, exprHash.get(expr));
 			return 2;
 		} else {
-			System.out.println("phi: " + lhs + " := " + lhs);
+//			System.out.println("phi: " + lhs + " := " + lhs);
 			exprHash.put(expr, lhs);
 			valueNumber.put(lhs, lhs);
 			return 0;
@@ -220,6 +220,9 @@ public class ValueNumberOpt {
 				valueNumber.put(lhs, lhs);
 			}
 		}
+		
+		for (int i = 0; i < stmt.getRHS().size(); i++)
+			getValue(stmt, i, valueNumber);
 	}
 	
 	private void DVNT(Block block, HashMap<String, String> vnParent, HashMap<Expr, String> exprParent) {

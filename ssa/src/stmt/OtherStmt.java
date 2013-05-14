@@ -10,8 +10,14 @@ public class OtherStmt extends Stmt {
 	public OtherStmt(int index, Operator op, List<Token> oprands) {
 		super(index, op);
 		
-		rhs = oprands;
-		lhs = new LinkedList();
+		rhs = new LinkedList<Token>();
+		lhs = new LinkedList<Token>();
+	}
+	
+	public OtherStmt(Operator op) {
+		super(op);
+		rhs = new LinkedList<Token>();
+		lhs = new LinkedList<Token>();
 	}
 	
 	@Override

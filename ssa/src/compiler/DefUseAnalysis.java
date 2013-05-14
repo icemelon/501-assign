@@ -1,10 +1,12 @@
 package compiler;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Set;
 
+import stmt.EntryStmt;
 import stmt.MoveStmt;
 import stmt.PhiNode;
 import stmt.Stmt;
@@ -64,6 +66,50 @@ public class DefUseAnalysis {
 						if (list != null)
 							list.add(s);
 					}
+		}
+	}
+	
+	private void updateUseList(Stmt stmt) {
+		for (Token t: stmt.getRHS()) {
+			if (t instanceof Variable || t instanceof Register) {
+				String name = t.toSSAString();
+				List<Stmt> list = defUse.get(name);
+				if (list != null) {
+					list.remove(stmt);
+					if (list.size() == 0)
+						removeToken(t.toSSAString());
+				}
+			}
+		}
+	}
+	
+	private void removeToken(String var) {
+		Stmt def = varDef.get(var);
+		if (def instanceof EntryStmt) {
+			Iterator<Token> it = def.getLHS().iterator();
+			while (it.hasNext()) {
+				Token t = it.next();
+				if (t.toSSAString().equals(var)) {
+					it.remove();
+					break;
+				}
+			}
+			if (def.getLHS().size() == 0)
+				def.getBlock().removeStmt(def);
+		} else {
+			def.getBlock().removeStmt(def);
+			updateUseList(def);
+		}
+	}
+	
+	public void eliminateUnused() {
+		Set<String> keySet = defUse.keySet();
+		for (String var: keySet) {
+			List<Stmt> useList = defUse.get(var);
+			if (useList.size() == 0) {
+				removeToken(var);
+			}
+			//System.out.println("var " + key + " def: " + varDef.get(key).index);
 		}
 	}
 	

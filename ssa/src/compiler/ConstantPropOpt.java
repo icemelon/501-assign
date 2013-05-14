@@ -315,18 +315,7 @@ public class ConstantPropOpt {
 			} else if (attr.type == ConstantType.Top) {
 				Stmt def = du.getDef(var);
 				
-				if (def instanceof EntryStmt) {
-					Iterator<Token> it = def.getLHS().iterator();
-					while (it.hasNext()) {
-						Token t = it.next();
-						if (t.toSSAString().equals(var)) {
-							it.remove();
-							break;
-						}
-					}
-					if (def.getLHS().size() == 0)
-						def.getBlock().removeStmt(def);
-				} else
+				if (!(def instanceof EntryStmt))
 					def.getBlock().removeStmt(def);
 			}
 		}

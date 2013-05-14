@@ -1,4 +1,4 @@
-void swap(int x, int y) {
+/*void swap(int x, int y) {
 	int t;
 	int i, l;
 	l = 0;
@@ -11,9 +11,9 @@ void swap(int x, int y) {
 	}
 }
 
-void foo(int l) {
-	int a, b, c, d, e, f;
+void foo(int a, int b, int c, int d, int e, int f, int l) {
 	int u, v, w, x, y, z;
+
 	u = a + b;
 	v = c + d;
 	w = e + f;
@@ -28,6 +28,9 @@ void foo(int l) {
 	}
 	z = u + y;
 	u = b + a;
+	WriteLong(z);
+	WriteLong(u);
+	WriteLine();
 }
 
 void test(int x) {
@@ -44,7 +47,7 @@ void test(int x) {
 		y = c + d;
 	}
 }
-
+*/
 void main() {
 	int i;
 	int a, b;
@@ -54,6 +57,6 @@ void main() {
 	}
 	a = 1;
 	b = 2;
-	swap(a,3);
+	//swap(a,3);
 }
 

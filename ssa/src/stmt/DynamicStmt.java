@@ -1,5 +1,6 @@
 package stmt;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import token.Register;
@@ -15,8 +16,8 @@ public class DynamicStmt extends Stmt {
 			rhs = oprands.subList(0, 2);
 			lhs = oprands.subList(2, 3);
 		} else { // stdynamic
-			rhs = oprands.subList(0, 1);
-			lhs = oprands.subList(1, 3);
+			rhs = oprands;
+			lhs = new LinkedList<Token>(); //oprands.subList(1, 3);
 		}
 	}
 	
@@ -28,10 +29,9 @@ public class DynamicStmt extends Stmt {
 			sb.append(" " + t);
 		
 		if (op == Operator.lddynamic) {
-			sb.append(" :" + ((Register) lhs.get(0)).getType());
-		} else {
-			sb.append(" " + lhs.get(0) + " " + lhs.get(1));
-		}
+			sb.append(" :" + ((Register) lhs.get(0)).type);
+		} 
+		
 		return sb.toString();
 	}
 	
@@ -40,10 +40,9 @@ public class DynamicStmt extends Stmt {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
 		
-		for (Token t: lhs)
-			sb.append(" " + t.toIRString());
-		
-		sb.append(" := " + op);
+		if (op == Operator.lddynamic)
+			sb.append(lhs.get(0).toIRString() + " := ");
+		sb.append(op);
 		
 		for (Token t: rhs)
 			sb.append(" " + t.toIRString());
@@ -56,10 +55,9 @@ public class DynamicStmt extends Stmt {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("    instr " + index + ": ");
 		
-		for (Token t: lhs)
-			sb.append(" " + t.toSSAString());
-		
-		sb.append(" := " + op);
+		if (op == Operator.lddynamic)
+			sb.append(lhs.get(0).toSSAString() + " := ");
+		sb.append(op);
 		
 		for (Token t: rhs)
 			sb.append(" " + t.toSSAString());

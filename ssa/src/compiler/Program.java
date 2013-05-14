@@ -18,10 +18,14 @@ import token.Token;
 import token.Variable;
 
 public class Program {
+	private List<String> typeDec;
+	private List<String> globalVar;
 	private List<Stmt> stmts;
 	private List<Routine> routines;
 	
 	public Program() {
+		typeDec = new LinkedList<String>();
+		globalVar = new LinkedList<String>();
 		stmts = new LinkedList<Stmt>();
 		routines = new LinkedList<Routine>();
 	}
@@ -50,7 +54,10 @@ public class Program {
 						((CallStmt) s).setRoutine(r);
 					}
 					stmts.add(s);
-				}
+				} else if (line.startsWith("type"))
+					typeDec.add(line);
+				else if (line.startsWith("global"))
+					globalVar.add(line);
 			}
 			reader.close();
 			
@@ -59,11 +66,6 @@ public class Program {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-//		for (Stmt s: stmts)
-//			for (Token t: s.getRHS())
-//				if (t instanceof Code)
-//					((Code) t).setDstStmt(stmts.get(((Code) t).getIndex() - 1));
 		
 		{
 			int beginLine = routines.get(0).getStartLine();
@@ -109,12 +111,18 @@ public class Program {
 //			System.out.println("routine " + r.getName() + " gen SSA");
 			r.transformBackFromSSA();
 		}
+		
+		Stmt.globalIndex = 2;
+		for (Routine r: routines) {
+//			System.out.println("routine " + r.getName() + " gen SSA");
+			r.numberStmt();
+		}
 	}
 	
 	public void constantPropOpt() {
 		for (Routine r: routines) {
 			ConstantPropOpt cpo = new ConstantPropOpt(r);
-			r.dumpSSA();
+//			r.dumpSSA();
 			cpo.optimize();
 //			cpo.dump();
 		}
@@ -125,15 +133,22 @@ public class Program {
 			ValueNumberOpt vno = new ValueNumberOpt(r);
 //			r.dumpSSA();
 			vno.optimize();
-			System.out.println(r.toString() + " remove " + vno.counter + " expressions");
+//			System.out.println(r.toString() + " remove " + vno.counter + " expressions");
 		}
 	}
 	
 	public void dump() {
-		for (Routine r: routines) {
+		for (String type: typeDec)
+			System.out.println("    " + type);
+		for (Routine r: routines)
+			System.out.println(r.toString());
+		for (String global: globalVar)
+			System.out.println("    " + global);
+		
+		System.out.println(stmts.get(0));
+		for (Routine r: routines)
 			r.dump();
-			System.out.println("\n*********************************************");
-		}
+//			System.out.println("\n*********************************************");
 	}
 	
 	public void dumpIR() {
@@ -150,57 +165,4 @@ public class Program {
 		}
 	}
 	
-	public static void main(String[] args) {
-		if (args.length < 1) {
-			System.out.println("SSA.jar [Input file]"	);
-			return;
-		}
-		Program p = new Program();
-		p.scanFile(args[0]);
-
-		long startTime, endTime;
-		
-		startTime = System.nanoTime();
-		p.genCFG();
-		endTime = System.nanoTime();
-		//System.out.println(((endTime - startTime) / 1000.0));
-
-		startTime = System.nanoTime();
-		p.genDominator();
-		endTime = System.nanoTime();
-		
-		p.tranformToSSA();
-		//p.getRoutines().get(1).genSSA();
-		//p.simpleConstantProp();
-		
-		//System.out.println(((endTime - startTime) / 1000.0));
-		//System.out.println(BasicBlock.globalIndex);
-
-		//p.dumpIR();
-//		p.dumpSSA();
-		
-//		p.transformBackFromSSA();
-//		p.dumpIR();
-		Routine r = p.getRoutines().get(0);
-		
-		p.constantPropOpt();
-//		p.valueNumberOpt();
-//		p.dumpSSA();
-		
-		r.dumpSSA();
-		r.transformBackFromSSA();
-		
-//		DefUseAnalysis du = new DefUseAnalysis(p.getRoutines().get(0));
-//		du.analyze();
-//		du.dump();
-		
-//		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(2));
-//		cpo.optimize();
-//		cpo.dump();
-		
-//		ValueNumberOpt vno = new ValueNumberOpt(p.getRoutines().get(1));
-//		vno.dump();
-//		vno.optimize();
-//		vno.dump();
-	}
 }
