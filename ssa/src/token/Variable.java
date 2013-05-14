@@ -2,12 +2,12 @@ package token;
 
 public class Variable extends Token implements Cloneable {
 	
-	private String name;
-	private String type;
-	private int offset;
+	public String name;
+	public String type;
+	public int offset;	// 0 if not set; otherwise non-zero
 	
 	// for ssa
-	private String ssaName;
+	public String ssaName;
 	
 	public Variable(String name, int offset) {
 		this.name = name;
@@ -23,15 +23,11 @@ public class Variable extends Token implements Cloneable {
 	
 	public Variable(String name) {
 		this.name = name;
+		this.type = "";
+		this.offset = 0;
 	}
 	
-	public String getName() { return name; }
-	
-	public String getType() { return type; }
-	
-	public int getOffset() { return offset; }
-	
-	public void setSSAName(String name) { this.ssaName = name; }
+//	public void setSSAName(String name) { this.ssaName = name; }
 	
 	@Override
 	public String toString() {
@@ -53,7 +49,7 @@ public class Variable extends Token implements Cloneable {
 	}
 	
 	public boolean equals(Variable v) {
-		return name.equals(v.getName());
+		return name.equals(v.name);
 	}
 	
 	public Object clone() {

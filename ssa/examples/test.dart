@@ -1,6 +1,7 @@
 void swap(int x, int y) {
 	int t;
-	int i;
+	int i, l;
+	l = 0;
 	i = 0;
 	while (i < 10) {
 		t = x;

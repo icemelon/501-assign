@@ -82,7 +82,7 @@ public class ValueNumberOpt {
 			//System.out.println("ValueNumberOpt.genNewRegister error: parse in variable type (" + val + ")");
 			String name = val.substring(0, pos);
 			Variable v = new Variable(name);
-			v.setSSAName(val);
+			v.ssaName = val;
 			return v;
 		}
 	}

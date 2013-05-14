@@ -1,10 +1,12 @@
 package compiler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -26,7 +28,7 @@ public class SSATransform {
 	// SSA renaming
 	private Stack<String> varStack[];
 	private int varCounter[];
-	private List<Variable> ssaVars;
+	//private List<Variable> ssaVars;
 	
 	public SSATransform(Routine r) {
 		this.routine = r;
@@ -98,11 +100,15 @@ public class SSATransform {
 			if (localVars.get(i).equals(v))
 				break;
 		
+		if (i == localVars.size()) {
+			System.out.println(v.toIRString());
+		}
+			
 		Integer index = varCounter[i]++;
-		String name = v.getName() + "$" + index;
-		v.setSSAName(name);
+		String name = v.name + "$" + index;
+		v.ssaName = name;
 		varStack[i].push(name);
-		ssaVars.add(new Variable(name));
+//		ssaVars.add(new Variable(name));
 	}
 	
 	private void setSSAName(Variable v) {
@@ -111,7 +117,7 @@ public class SSATransform {
 			if (localVars.get(i).equals(v))
 				break;
 		
-		v.setSSAName(varStack[i].peek());
+		v.ssaName = varStack[i].peek();
 	}
 	
 	private void popSSAName(Variable v) {
@@ -127,7 +133,7 @@ public class SSATransform {
 		int n = localVars.size();
 		varStack = new Stack[n];
 		varCounter = new int[n];
-		ssaVars = new ArrayList<Variable>();
+//		ssaVars = new ArrayList<Variable>();
 		
 		for (int i = 0; i < n; i++) {
 			Variable var = localVars.get(i);
@@ -231,7 +237,79 @@ public class SSATransform {
 		}
 	}
 	
+	private void renameVariable() {
+		
+		Map<String, Variable> oldVarSet = new HashMap<String, Variable>();
+		Map<String, Variable> ssaVarSet = new HashMap<String, Variable>();
+		
+		int offset = -4;
+		
+		for (Variable var: routine.getLocalVars())
+			oldVarSet.put(var.name, var);
+		
+		for (Block block: blocks) {
+			for (Stmt stmt: block.body) {
+				if (stmt instanceof EntryStmt) {
+					for (Token t: stmt.getLHS()) {
+						Variable var = (Variable) t;
+						Variable ref = oldVarSet.get(var.name);
+						
+						var.type = ref.type;
+						if (ref.offset > 0)
+							// param
+							var.offset = ref.offset;
+						else {
+							var.offset = offset;
+							offset -= 4;
+						}
+						
+						var.name = var.ssaName;
+						ssaVarSet.put(var.name, var);
+					}
+				} else {
+					for (Token t: stmt.getRHS()) {
+						if (t instanceof Variable) {
+							Variable var = (Variable) t;
+							Variable ref = ssaVarSet.get(var.ssaName);
+							if (ref == null) {
+								System.out.println(routine.getName());
+								System.out.println(stmt.toSSAString());
+								System.out.println(var.toIRString() + " " + var.toSSAString());
+							}
+							
+							var.offset = ref.offset;
+							var.type = ref.type;
+							
+							var.name = var.ssaName;
+						}
+					}
+					
+					for (Token t: stmt.getLHS()) {
+						if (t instanceof Variable) {
+							Variable var = (Variable) t;
+							Variable ref = oldVarSet.get(var.name);
+							if (ref == null) {
+								System.out.println(routine.getName());
+								System.out.println(stmt.toSSAString());
+								System.out.println(var.toIRString() + " " + var.toSSAString());
+							}
+							var.type = ref.type;
+							var.offset = offset;
+							offset -= 4;
+							
+							var.name = var.ssaName;
+							ssaVarSet.put(var.name, var);
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	public void translateBackFromSSA() {
 		removePhiNode();
+		routine.dumpSSA();
+		renameVariable();
+		routine.dumpIR();
 	}
 }

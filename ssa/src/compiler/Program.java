@@ -114,6 +114,7 @@ public class Program {
 	public void constantPropOpt() {
 		for (Routine r: routines) {
 			ConstantPropOpt cpo = new ConstantPropOpt(r);
+			r.dumpSSA();
 			cpo.optimize();
 //			cpo.dump();
 		}
@@ -176,19 +177,24 @@ public class Program {
 		//System.out.println(BasicBlock.globalIndex);
 
 		//p.dumpIR();
-		p.dumpSSA();
+//		p.dumpSSA();
 		
-		p.transformBackFromSSA();
-		p.dumpSSA();
+//		p.transformBackFromSSA();
+//		p.dumpIR();
+		Routine r = p.getRoutines().get(0);
 		
-//		p.constantPropOpt();
+		p.constantPropOpt();
 //		p.valueNumberOpt();
+//		p.dumpSSA();
+		
+		r.dumpSSA();
+		r.transformBackFromSSA();
 		
 //		DefUseAnalysis du = new DefUseAnalysis(p.getRoutines().get(0));
 //		du.analyze();
 //		du.dump();
 		
-//		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(1));
+//		ConstantPropOpt cpo = new ConstantPropOpt(p.getRoutines().get(2));
 //		cpo.optimize();
 //		cpo.dump();
 		

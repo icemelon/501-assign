@@ -36,7 +36,7 @@ public class Block {
 		this.index = startLine;
 		this.startLine = startLine;
 		this.endLine = endLine;
-		this.body = new ArrayList(stmts);
+		this.body = new ArrayList<Stmt>(stmts);
 		this.routine = routine;
 	}
 	
@@ -86,14 +86,14 @@ public class Block {
 	
 	public void insertPhiNode(Variable v) {
 		
-		phiNodeList.add(new PhiNode(v.getName(), preds.size(), this));
+		phiNodeList.add(new PhiNode(v.name, preds.size(), this));
 		
 	}
 	
 	
 	
 	public void removeStmt(Stmt stmt) {
-//		System.out.println("block#" + index + " remove stmt:" + stmt.toSSAString());
+		System.out.println("block#" + index + " remove stmt:" + stmt.toSSAString());
 		body.remove(stmt);
 //		dumpSSA();
 	}

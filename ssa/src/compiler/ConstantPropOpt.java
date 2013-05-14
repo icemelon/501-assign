@@ -2,6 +2,7 @@ package compiler;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,7 @@ import stmt.AllocStmt;
 import stmt.ArithStmt;
 import stmt.BranchStmt;
 import stmt.DynamicStmt;
+import stmt.EntryStmt;
 import stmt.MemoryStmt;
 import stmt.MoveStmt;
 import stmt.ObjCmpStmt;
@@ -247,6 +249,32 @@ public class ConstantPropOpt {
 	}
 	
 	private void eliminateCode() {
+		
+		Iterator<Block> itBlock = routine.getBlocks().iterator();
+		while (itBlock.hasNext()) {
+			Block block = itBlock.next();
+			int count = reachCount(block);
+			if (count == 0) {
+				System.out.println("Remove block#" + block.index);
+				for (Block pred: block.getPreds())
+					pred.getSuccs().remove(block);
+				for (Block succ: block.getSuccs()) {
+					int i;
+					for (i = 0; i < succ.getPreds().size(); i++)
+						if (succ.getPreds().get(i) == block)
+							break;
+					Iterator<PhiNode> itPhi = succ.getPhiNode().iterator();
+					while (itPhi.hasNext()) {
+						PhiNode phi = itPhi.next();
+						if (phi.removeRHS(i))
+							itPhi.remove();
+					}
+					succ.getPreds().remove(block);
+				}
+				itBlock.remove();
+			}
+		}
+		
 		Set<String> keys = varAttr.keySet();
 		
 		for (String var: keys) {
@@ -284,13 +312,22 @@ public class ConstantPropOpt {
 						}
 					}
 				}
-			}
-		}
-		
-		for (Block b: routine.getBlocks()) {
-			int count = reachCount(b);
-			if (count == 0) {
-				System.out.println("Remove block#" + b.index);
+			} else if (attr.type == ConstantType.Top) {
+				Stmt def = du.getDef(var);
+				
+				if (def instanceof EntryStmt) {
+					Iterator<Token> it = def.getLHS().iterator();
+					while (it.hasNext()) {
+						Token t = it.next();
+						if (t.toSSAString().equals(var)) {
+							it.remove();
+							break;
+						}
+					}
+					if (def.getLHS().size() == 0)
+						def.getBlock().removeStmt(def);
+				} else
+					def.getBlock().removeStmt(def);
 			}
 		}
 	}
@@ -307,7 +344,7 @@ public class ConstantPropOpt {
 		
 		// set parameters bottom
 		for (Token t: entryBlock.body.get(0).getLHS())
-			if (((Variable) t).getOffset() > 0) {
+			if (((Variable) t).offset > 0) {
 				ConstantAttr attr = varAttr.get(t.toSSAString());
 				attr.type = ConstantAttr.ConstantType.Bottom;
 			}
@@ -346,8 +383,8 @@ public class ConstantPropOpt {
 			}
 		}
 		
-		routine.dumpSSA();
-		System.out.println("**********************************");
+//		routine.dumpSSA();
+//		System.out.println("**********************************");
 		eliminateCode();
 	}
 	

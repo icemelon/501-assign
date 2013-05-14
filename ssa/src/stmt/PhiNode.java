@@ -28,9 +28,18 @@ public class PhiNode extends Stmt {
 		moveStmt.setBlock(b);
 	}
 	
-	public String getVarName() { return ((Variable) lhs.get(0)).getName(); }
+	public String getVarName() { return ((Variable) lhs.get(0)).name; }
 	
 	public void setRHS(int index, Variable var) { rhs.set(index, (Variable) var.clone()); }
+	
+	// ret: true->delete the phi node; false-> don't delete
+	public boolean removeRHS(int index) {
+		rhs.remove(index);
+		if (rhs.size() == 1)
+			return true;
+		else
+			return false;
+	}
 
 	@Override
 	public String toString() { return ""; }

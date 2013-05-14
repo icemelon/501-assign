@@ -24,9 +24,9 @@ public class MoveStmt extends Stmt {
 	public MoveStmt(Token rhs, Token lhs) {
 		super(Operator.move);
 		this.rhs = new LinkedList<Token>(); 
-		this.rhs.add(rhs);
+		this.rhs.add((Token) rhs.clone());
 		this.lhs = new LinkedList<Token>();
-		this.lhs.add(lhs);
+		this.lhs.add((Token) lhs.clone());
 	}
 	
 	@Override
