@@ -263,12 +263,7 @@ public class SSATransform {
 		genDomFrontier();
 		placePhi();
 		rename();
-		
-//		routine.dumpSSA();
-//		System.out.println("\n*********************************************");
 		eliminateUnused();
-//		routine.dumpSSA();
-//		System.out.println("\n*********************************************");
 	}
 	
 	private void insertPhiMoveStmt(Block block, Stmt stmt) {

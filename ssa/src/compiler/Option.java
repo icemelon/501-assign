@@ -27,12 +27,12 @@ public class Option {
 	
 	public void usage() {
 		System.out.println("java -jar opt.jar <filename> [-opt=<optimize>] [-backend=<backend>]\n");
-		System.out.println("Optimiziation supported options:");
+		System.out.println("Optimization supported options:");
 		System.out.println("ssa\tSSA optimization");
 		System.out.println("cp\tConstant propagation optimization (depends on SSA)");
 		System.out.println("vn\tValue numbering optimization (depends on SSA)");
 		System.out.println("\nBackend supported options:");
-		System.out.println("asm\tAssembly code (default");
+		System.out.println("asm\tAssembly code (default)");
 		System.out.println("cfg\tControl flow graph");
 		System.out.println("ir\tIntermediate representation");
 		System.out.println("ssa\tSSA code");
