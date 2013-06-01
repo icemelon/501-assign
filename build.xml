@@ -19,7 +19,7 @@
   <target name="dist" depends="compile"
     description="generate the distribution">
 	<!--mkdir dir="${dist}"/-->
-	<jar jarfile="opt.jar" basedir="${build}">
+	<jar jarfile="compiler.jar" basedir="${build}">
 	  <manifest>
 	    <attribute name="Main-Class" value="compiler.Main"/>
 	  </manifest>
@@ -28,7 +28,7 @@
 
   <target name="clean">
     <delete dir="${build}"/>
-	<delete file="opt.jar"/>
+	<delete file="compiler.jar"/>
 	<!--delete dir="${dist}"/-->
   </target>
 
