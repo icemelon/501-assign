@@ -229,34 +229,6 @@ public class SSATransform {
 		DefUseAnalysis du = new DefUseAnalysis(routine);
 		du.analyze();
 		du.eliminateUnused();
-		/*
-		Stmt stmt = entryBlock.body.get(0);
-		if (stmt instanceof EntryStmt) {
-			EntryStmt entry = (EntryStmt) stmt;
-			boolean del = false;
-			
-			Iterator<Token> it = entry.getLHS().iterator();
-			while (it.hasNext()) {
-				Variable v = (Variable) it.next();
-				if (v.offset < 0) {
-					List<Stmt> useList = du.getUseList(v.ssaName);
-					if (useList.size() > 0) {
-						for (Stmt useStmt: useList) {
-							if (!(useStmt instanceof PhiNode)) {
-								System.out.println("error: use an uninitialized variable (" + v.name + ")");
-								PhiNode phiNode = (PhiNode) useStmt;
-								int i;
-								for (i = 0; i < )
-							}
-					}
-					it.remove();
-				}
-			}
-			
-			if (entry.getLHS().size() == 0)
-				entryBlock.removeStmt(entry);
-		}
-		*/
 	}
 	
 	public void translateToSSA() {
@@ -376,34 +348,9 @@ public class SSATransform {
 		}
 	}
 	
-	public void numberStmt() {
-		Map<Integer, Integer> newIndexMap = new HashMap<Integer, Integer>();
-		
-		for (Block b: blocks) {
-			for (Stmt s: b.body) {
-				newIndexMap.put(s.index, Stmt.globalIndex);
-				s.index = Stmt.globalIndex++;
-				
-				for (Token t: s.getRHS())
-					if (t instanceof Register) {
-						// TODO: remove debug code
-						if (!newIndexMap.containsKey(((Register) t).index))
-							System.out.println("a" + s.toIRString());
-						((Register) t).index = newIndexMap.get(((Register) t).index);
-					}
-			}
-			b.startLine = b.body.get(0).index;
-			b.index = b.startLine;
-		}
-		routine.setStartLine(entryBlock.startLine);
-	}
-	
 	public void translateBackFromSSA() {
 		removePhiNode();
-//		routine.dumpSSA();
 		renameVariable();
-		
-//		routine.dumpIR();
 	}
 	
 }

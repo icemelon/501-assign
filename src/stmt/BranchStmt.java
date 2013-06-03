@@ -20,8 +20,8 @@ public class BranchStmt extends Stmt {
 	}
 	
 	// br
-	public BranchStmt(int index, Block brBlock) {
-		super(index, Operator.br);
+	public BranchStmt(Block brBlock) {
+		super(Operator.br);
 		this.rhs = new LinkedList();
 		this.rhs.add(new Code(brBlock.body.get(0).index));
 		this.lhs = new LinkedList();

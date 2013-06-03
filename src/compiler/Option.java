@@ -18,6 +18,7 @@ public class Option {
 		CP, // 
 		VN,
 		SSA,
+		PROFILE,
 	};
 	
 	public List<String> options;
@@ -31,6 +32,7 @@ public class Option {
 		System.out.println("ssa\tSSA optimization");
 		System.out.println("cp\tConstant propagation optimization (depends on SSA)");
 		System.out.println("vn\tValue numbering optimization (depends on SSA)");
+		System.out.println("profile\tOptimization based on profiling program");
 		System.out.println("\nBackend supported options:");
 		System.out.println("asm\tAssembly code (default)");
 		System.out.println("cfg\tControl flow graph");
@@ -72,6 +74,8 @@ public class Option {
 						optimize.add(OptimizeOption.VN);
 					else if (s.equals("ssa"))
 						optimize.add(OptimizeOption.SSA);
+					else if (s.equals("profile"))
+						optimize.add(OptimizeOption.PROFILE);
 					else {
 						System.out.println("Unsupported optimization option: " + s + "\n");
 						return false;

@@ -5,28 +5,34 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import profile.Profile;
 
 
+import stmt.ArithStmt;
 import stmt.BranchStmt;
 import stmt.CallStmt;
 import stmt.Stmt;
 import token.Code;
 import token.Constant;
+import token.Register;
 import token.Token;
 import token.Variable;
 
-public class Program {
+public class Program extends Node {
+	
 	private List<String> typeDec;
-	private List<String> globalVar;
-	private List<Stmt> stmts;
+	private List<String> globalVars;
 	private List<Routine> routines;
+	private Stmt firstStmt;
 	
 	public Program() {
 		typeDec = new LinkedList<String>();
-		globalVar = new LinkedList<String>();
-		stmts = new LinkedList<Stmt>();
+		globalVars = new LinkedList<String>();
 		routines = new LinkedList<Routine>();
 	}
 	
@@ -38,6 +44,8 @@ public class Program {
 	}
 	
 	public boolean scanFile(String filename) {
+		
+		List<Stmt> stmts = new LinkedList<Stmt>();
 		
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
@@ -57,7 +65,7 @@ public class Program {
 				} else if (line.startsWith("type"))
 					typeDec.add(line);
 				else if (line.startsWith("global"))
-					globalVar.add(line);
+					globalVars.add(line);
 			}
 			reader.close();
 			
@@ -86,6 +94,8 @@ public class Program {
 			routine.setBody(stmts.subList(beginLine - 1, endLine));
 		}
 		
+		firstStmt = stmts.get(0);
+		
 		return true;
 	}
 	
@@ -106,17 +116,50 @@ public class Program {
 		}
 	}
 	
+	public void renumberStmt() {
+		Stmt.GlobalIndex = 1;
+		Map<Integer, Integer> newIndexMap = new HashMap<Integer, Integer>();
+		
+		for (Routine routine: routines) {
+			
+			for (Block b: routine.getBlocks()) {
+				for (Stmt s: b.body) {
+					
+					++ Stmt.GlobalIndex;
+					newIndexMap.put(s.index, Stmt.GlobalIndex);
+					s.index = Stmt.GlobalIndex;
+					
+					for (Token t: s.getRHS())
+						if (t instanceof Register) {
+							if (!newIndexMap.containsKey(((Register) t).index))
+								System.out.println("Program.renumberStmt error: Cannot find register (" + s.toIRString() + ")");
+							((Register) t).index = newIndexMap.get(((Register) t).index);
+						}
+				}
+				
+				BranchStmt profBrStmt = b.getProfBranchStmt();
+				if (profBrStmt != null) {
+					++ Stmt.GlobalIndex;
+					newIndexMap.put(profBrStmt.index, Stmt.GlobalIndex);
+					profBrStmt.index = Stmt.GlobalIndex;
+				}
+				
+				b.startLine = b.body.get(0).index;
+			}
+			
+			routine.setStartLine(routine.getEntryBlock().startLine);
+			newIndexMap.clear();
+		}
+	}
+	
 	public void transformBackFromSSA() {
 		for (Routine r: routines) {
 			r.ssaTrans.translateBackFromSSA();
 		}
 		
-		Stmt.globalIndex = 2;
-		
-		for (Routine r: routines) {
-			r.ssaTrans.numberStmt();
-		}
+		renumberStmt();
 	}
+	
 	
 	public void constantPropOpt() {
 		for (Routine r: routines) {
@@ -136,14 +179,23 @@ public class Program {
 		}
 	}
 	
+	public void profile() {
+		for (Routine r: routines) {
+			r.profile = new Profile(r);
+			r.profile.instrument();
+		}
+		
+		renumberStmt();
+	}
+	
 	public void dump() {
 		for (String type: typeDec)
 			System.out.println("    " + type);
 		for (Routine r: routines)
 			System.out.println(r.toString());
-		for (String global: globalVar)
+		for (String global: globalVars)
 			System.out.println("    " + global);
-		System.out.println(stmts.get(0));
+		System.out.println(firstStmt);
 		
 		for (Routine r: routines)
 			r.dump();
@@ -153,10 +205,10 @@ public class Program {
 		for (String type: typeDec)
 			System.out.println("    " + type);
 		for (Routine r: routines)
-			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().index + "]");
-		for (String global: globalVar)
+			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]");
+		for (String global: globalVars)
 			System.out.println("    " + global);
-		System.out.println("\n" + stmts.get(0));
+		System.out.println("\n" + firstStmt);
 		
 		for (Routine r: routines)
 			r.dumpIR();
@@ -166,10 +218,10 @@ public class Program {
 		for (String type: typeDec)
 			System.out.println("    " + type);
 		for (Routine r: routines)
-			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().index + "]");
-		for (String global: globalVar)
+			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]");
+		for (String global: globalVars)
 			System.out.println("    " + global);
-		System.out.println("\n" + stmts.get(0));
+		System.out.println("\n" + firstStmt);
 		
 		for (Routine r: routines)
 			r.dumpCFG();
@@ -179,10 +231,10 @@ public class Program {
 		for (String type: typeDec)
 			System.out.println("    " + type);
 		for (Routine r: routines)
-			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().index + "]");
-		for (String global: globalVar)
+			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]");
+		for (String global: globalVars)
 			System.out.println("    " + global);
-		System.out.println("\n" + stmts.get(0));
+		System.out.println("\n" + firstStmt);
 		
 		for (Routine r: routines)
 			r.dumpSSA();
@@ -209,10 +261,20 @@ public class Program {
 			// need SSA
 			transformToSSA();
 			ssa = true;
-		} if (option.optimize.contains(Option.OptimizeOption.CP))
+		} 
+		
+		if (option.optimize.contains(Option.OptimizeOption.CP))
 			constantPropOpt();
 		if (option.optimize.contains(Option.OptimizeOption.VN))
 			valueNumberOpt();
+		
+		if (option.optimize.contains(Option.OptimizeOption.PROFILE)) {
+			if (ssa) {
+				transformBackFromSSA();
+				ssa = false;
+			}
+			profile();
+		}
 		
 		if (option.backend == Option.BackendOption.SSA) {
 			if (!ssa)
@@ -231,5 +293,7 @@ public class Program {
 			else if (option.backend == Option.BackendOption.CFG)
 				dumpCFG();
 		}
+		
+		
 	}
 }

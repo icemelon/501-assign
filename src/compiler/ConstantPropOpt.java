@@ -49,8 +49,6 @@ public class ConstantPropOpt {
 	private HashMap<String, ConstantAttr> varAttr = new HashMap<String, ConstantAttr>();
 	
 	public int varCounter = 0;
-//	public int stmtCounter = 0;
-//	public int blockCounter = 0;
 	
 	public ConstantPropOpt(Routine r) {
 		this.routine = r;
@@ -59,16 +57,16 @@ public class ConstantPropOpt {
 	
 	private String getFlowEdgeString(FlowEdge e) {
 		if (e.src == null)
-			return "b#" + "->" + "b#" + e.dst.index;
+			return "b#" + "->" + "b#" + e.dst.getIndex();
 		else
-			return "b#" + e.src.index + "->" + "b#" + e.dst.index; 
+			return "b#" + e.src.getIndex() + "->" + "b#" + e.dst.getIndex(); 
 	}
 	
 	private String getFlowEdgeString(Block src, Block dst) {
 		if (src == null)
-			return "b#" + "->" + "b#" + dst.index;
+			return "b#" + "->" + "b#" + dst.getIndex();
 		else
-			return "b#" + src.index + "->" + "b#" + dst.index;
+			return "b#" + src.getIndex() + "->" + "b#" + dst.getIndex();
 	}
 	
 	private void insertFlowWorkList(Block src, Block dst) {
@@ -303,7 +301,7 @@ public class ConstantPropOpt {
 								brVal = 1;
 							
 							if (attr.value == brVal) {
-								stmt.getBlock().replaceStmt(stmt, new BranchStmt(stmt.index, ((BranchStmt) stmt).getBranchBlock()));
+								stmt.getBlock().replaceStmt(stmt, new BranchStmt(((BranchStmt) stmt).getBranchBlock()));
 							} else {
 								stmt.getBlock().removeStmt(stmt);
 							}

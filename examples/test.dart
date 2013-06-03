@@ -55,8 +55,8 @@ void main() {
 	while (i < 10) {
 		i = i + 1;
 	}
-	a = 1;
-	b = 2;
-	//swap(a,3);
+
+	WriteLong(i);
+	WriteLine();
 }
 

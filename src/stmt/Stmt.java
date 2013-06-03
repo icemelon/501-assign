@@ -47,7 +47,8 @@ public abstract class Stmt implements Cloneable {
 		nop(31, "nop"),
 		entry(32, "entry"),
 		phi(33, "phi"),
-		phinode(34, "phinode");
+		phinode(34, "phinode"),
+		count(35, "count");
 		
 		private String str;
 		private int index;
@@ -133,12 +134,15 @@ public abstract class Stmt implements Cloneable {
 				return phi;
 			if (op.equals("phinode"))
 				return phinode;
+			if (op.equals("count"))
+				return count;
 
 			return null;
 		}
 	};
 	
-	public static int globalIndex;
+	public static int GlobalIndex = 0;
+	
 	public int index;
 	protected final Operator op;
 	protected List<Token> rhs = null;
@@ -147,13 +151,13 @@ public abstract class Stmt implements Cloneable {
 	protected Block block = null;
 	
 	protected Stmt(int index, Operator op) {
-		++globalIndex;
+		++GlobalIndex;
 		this.index = index;
 		this.op = op;
 	}
 	
 	protected Stmt(Operator op) {
-		this.index = ++globalIndex;
+		this.index = ++GlobalIndex;
 		this.op = op;
 	}
 	
@@ -185,9 +189,9 @@ public abstract class Stmt implements Cloneable {
 	@Override
 	public Object clone() {
 		
-		ArithStmt o = null;
+		Stmt o = null;
 		try {
-			o = (ArithStmt) super.clone();
+			o = (Stmt) super.clone();
 			
 			o.rhs = new LinkedList<Token>();
 			for (Token t: rhs)
@@ -249,6 +253,8 @@ public abstract class Stmt implements Cloneable {
 			stmt = new StackStmt(index, op, oprands); break;
 		case entrypc: case nop:
 			stmt = new OtherStmt(index, op, oprands); break;
+		case count:
+			stmt = new CountStmt(index, op, oprands); break;
 		default:
 			System.out.println("Stmt parsing error!");
 			stmt = null;

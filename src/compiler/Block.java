@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
+import stmt.BranchStmt;
 import stmt.EntryStmt;
 import stmt.MoveStmt;
 import stmt.OtherStmt;
@@ -14,17 +15,18 @@ import stmt.Stmt.Operator;
 import token.Token;
 import token.Variable;
 
-
-public class Block {
-	public static int globalIndex = 0;
+public class Block extends Node {
 	
-	public int index;
+	public static int GlobalIdCounter = 0;
+	
+	public final int id;
 	public int startLine;
 	public int endLine;
 	public List<Stmt> body;
 	public final Routine routine;
 	
 	private List<PhiNode> phiNodeList = new LinkedList<PhiNode>();
+	private BranchStmt profBrStmt = null;
 	
 	private List<Block> preds = new ArrayList<Block>();
 	private List<Block> succs = new ArrayList<Block>();
@@ -33,9 +35,14 @@ public class Block {
 	private List<Block> children = new ArrayList<Block>();
 	private List<Block> DF = new ArrayList<Block>();
 	
+	public Block(Routine routine) {
+		this.id = GlobalIdCounter++;
+		this.body = new ArrayList<Stmt>();
+		this.routine = routine;
+	}
+	
 	public Block(int startLine, int endLine, List<Stmt> stmts, Routine routine) {
-		globalIndex++;
-		this.index = startLine;
+		this.id = GlobalIdCounter++;
 		this.startLine = startLine;
 		this.endLine = endLine;
 		this.body = new ArrayList<Stmt>(stmts);
@@ -73,6 +80,12 @@ public class Block {
 	
 	public Block getIdom() { return idom; }
 	
+	public int getIndex() { return body.get(0).index; }
+	
+	public void setProfBranchStmt(BranchStmt s) { profBrStmt = s; }
+	
+	public BranchStmt getProfBranchStmt() { return profBrStmt; }
+	
 	public boolean hasAssignment(Variable v) {
 		
 		for (Stmt stmt: body) {
@@ -100,7 +113,6 @@ public class Block {
 				body.add(new OtherStmt(Operator.nop));
 		} else if (phiNodeList.contains(stmt))
 			phiNodeList.remove(stmt);
-//		dumpSSA();
 	}
 	
 	public void replaceStmt(Stmt oldStmt, Stmt newStmt) {
@@ -117,39 +129,50 @@ public class Block {
 	public void dump() {
 		for (Stmt stmt: body)
 			System.out.println(stmt);
+		
+		if (profBrStmt != null)
+			System.out.println(profBrStmt.toString());
 	}
 	
 	public void dumpIR() {
 		for (Stmt stmt: body)
 			System.out.println(stmt.toIRString());
+		
+		if (profBrStmt != null)
+			System.out.println(profBrStmt.toIRString());
 	}
 	
 	public void dumpCFG() {
-		System.out.print("Block#" + index);
+		System.out.print("Block#" + getIndex());
 		
 		System.out.print("  Preds:");
 		for (Block b: preds)
-			System.out.print(" " + b.index);
+			System.out.print(" " + b.getIndex());
 		
 		System.out.print(", Succs:");
 		for (Block b: succs)
-			System.out.print(" " + b.index);
+			System.out.print(" " + b.getIndex());
 		
-		System.out.print(", Idom: " + idom.index);
+		System.out.print(", Idom:");
+		if (idom != null)
+			System.out.print(" " + idom.getIndex());
 		
 		System.out.print(", Children:");
 		for (Block b: children)
-			System.out.print(" " + b.index);
+			System.out.print(" " + b.getIndex());
 		
 		System.out.println();
 		
 		for (Stmt stmt: body)
 			System.out.println(stmt.toIRString());
+		
+		if (profBrStmt != null)
+			System.out.println(profBrStmt.toIRString());
 	}
 	
 	
 	public void dumpSSA() {
-		System.out.println("Block #" + index);
+		System.out.println("Block #" + getIndex());
 		
 		for (PhiNode phiNode: phiNodeList) {
 			System.out.println(phiNode.toSSAString());
@@ -157,5 +180,8 @@ public class Block {
 		
 		for (Stmt stmt: body)
 			System.out.println(stmt.toSSAString());
+		
+		if (profBrStmt != null)
+			System.out.println(profBrStmt.toSSAString());
 	}
 }

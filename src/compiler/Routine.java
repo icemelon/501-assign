@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import profile.Profile;
+
 
 import stmt.BranchStmt;
 import stmt.EntryStmt;
@@ -20,7 +22,8 @@ import token.Token;
 import token.Code;
 import token.Variable;
 
-public class Routine {
+public class Routine extends Node {
+	
 	private int startLine;
 	private int endLine;
 	private String name;
@@ -35,6 +38,7 @@ public class Routine {
 	public SSATransform ssaTrans = null;
 	public ValueNumberOpt vn = null;
 	public ConstantPropOpt cp = null;
+	public Profile profile = null;
 	
 	private Routine(String name, int startLine, List<Variable> vars) {
 		this.name = name;
@@ -157,10 +161,10 @@ public class Routine {
 	}
 	
 	private Block intersect(Block b1, Block b2) {
-		while (b1.index != b2.index) {
-			while (b2.index < b1.index)
+		while (b1.getIndex() != b2.getIndex()) {
+			while (b2.getIndex() < b1.getIndex())
 				b1 = b1.getIdom();
-			while (b1.index < b2.index)
+			while (b1.getIndex() < b2.getIndex())
 				b2 = b2.getIdom();
 		}
 		return b1;
