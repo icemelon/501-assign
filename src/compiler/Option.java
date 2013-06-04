@@ -6,6 +6,8 @@ import java.util.List;
 
 public class Option {
 	
+	public static String START_LOC = "start";
+	
 	public enum BackendOption {
 		ASM,
 		CFG,
@@ -18,33 +20,42 @@ public class Option {
 		CP, // 
 		VN,
 		SSA,
-		PROFILE,
+	};
+	
+	public enum ProfileOption {
+		CFG,
+		INLINE,
 	};
 	
 	public List<String> options;
 	public String fileName;
-	public List<OptimizeOption> optimize;
-	public BackendOption backend; 
+	public List<OptimizeOption> optimizeList;
+	public List<ProfileOption> profileList;
+	public BackendOption backend;
 	
 	public void usage() {
-		System.out.println("java -jar opt.jar <filename> [-opt=<optimize>] [-backend=<backend>]\n");
+		System.out.println("java -jar opt.jar <filename> [-opt=<optimize>] [-backend=<backend>] [-profile=<profile>]\n");
 		System.out.println("Optimization supported options:");
 		System.out.println("ssa\tSSA optimization");
 		System.out.println("cp\tConstant propagation optimization (depends on SSA)");
 		System.out.println("vn\tValue numbering optimization (depends on SSA)");
-		System.out.println("profile\tOptimization based on profiling program");
+		System.out.println("\nProfile supported options:");
+		System.out.println("cfg\tCode block postion to optimize branch prediction and icache");
+		System.out.println("inline\tInline methods");
 		System.out.println("\nBackend supported options:");
 		System.out.println("asm\tAssembly code (default)");
 		System.out.println("cfg\tControl flow graph");
 		System.out.println("ir\tIntermediate representation");
 		System.out.println("ssa\tSSA code");
 		System.out.println("report\tReport");
+		
 	}
 	
 	public boolean parse(String[] args) {
 
 		options = new LinkedList<String>();
-		optimize = new LinkedList<OptimizeOption>();
+		optimizeList = new LinkedList<OptimizeOption>();
+		profileList = new LinkedList<ProfileOption>();
 		backend = BackendOption.IR;
 		
 		for (int i = 0; i < args.length; i++)
@@ -69,13 +80,11 @@ public class Option {
 				String[] term = arg.split(",");
 				for (String s: term) {
 					if (s.equals("cp"))
-						optimize.add(OptimizeOption.CP);
+						optimizeList.add(OptimizeOption.CP);
 					else if (s.equals("vn"))
-						optimize.add(OptimizeOption.VN);
+						optimizeList.add(OptimizeOption.VN);
 					else if (s.equals("ssa"))
-						optimize.add(OptimizeOption.SSA);
-					else if (s.equals("profile"))
-						optimize.add(OptimizeOption.PROFILE);
+						optimizeList.add(OptimizeOption.SSA);
 					else {
 						System.out.println("Unsupported optimization option: " + s + "\n");
 						return false;
@@ -97,6 +106,19 @@ public class Option {
 				else {
 					System.out.println("Unsupported backend option: " + arg + "\n");
 					return false;
+				}
+			} else if (arg.startsWith("profile")) {
+				arg = arg.substring(arg.indexOf('=') + 1).toLowerCase();
+				String[] term = arg.split(",");
+				for (String s: term) {
+					if (s.equals("cfg"))
+						profileList.add(ProfileOption.CFG);
+					else if (s.equals("inline"))
+						profileList.add(ProfileOption.INLINE);
+					else {
+						System.out.println("Unsupported profile option: " + s + "\n");
+						return false;
+					}
 				}
 			}
 		}

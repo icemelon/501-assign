@@ -1,8 +1,12 @@
 package compiler;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -160,7 +164,6 @@ public class Program extends Node {
 		renumberStmt();
 	}
 	
-	
 	public void constantPropOpt() {
 		for (Routine r: routines) {
 			r.cp = new ConstantPropOpt(r);
@@ -179,65 +182,117 @@ public class Program extends Node {
 		}
 	}
 	
-	public void profile() {
+	public void profile(Option option) {
 		for (Routine r: routines) {
 			r.profile = new Profile(r);
 			r.profile.instrument();
 		}
 		
 		renumberStmt();
+		
+		String fileName = option.fileName.substring(0, option.fileName.lastIndexOf('.')); 
+		String outFileName = fileName + "-prof.start";
+		File f = new File(outFileName);
+		
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(f));
+			writer.write(dump());
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		Runtime run = Runtime.getRuntime();
+		String cmd = Option.START_LOC + " -r --stats " + outFileName;
+		try {
+			Process p = run.exec(cmd);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String lineStr;
+			boolean profStart = false;
+			while ((lineStr = reader.readLine()) != null) {
+				if (lineStr.contains("Counts")) {
+					profStart = true;
+					continue;
+				}
+				
+				if (profStart) {
+					
+				}
+			}
+//				System.out.println(lineStr);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		f.delete();
 	}
 	
-	public void dump() {
+	public String dump() {
+		StringBuilder sb = new StringBuilder();
+		
 		for (String type: typeDec)
-			System.out.println("    " + type);
+			sb.append("    " + type + "\n");
 		for (Routine r: routines)
-			System.out.println(r.toString());
+			sb.append(r.toString() + "\n");
 		for (String global: globalVars)
-			System.out.println("    " + global);
-		System.out.println(firstStmt);
+			sb.append("    " + global + "\n");
+		sb.append(firstStmt + "\n");
 		
 		for (Routine r: routines)
-			r.dump();
+			sb.append(r.dump());
+		
+		return sb.toString();
 	}
 	
-	public void dumpIR() {
+	public String dumpIR() {
+		StringBuilder sb = new StringBuilder();
+		
 		for (String type: typeDec)
-			System.out.println("    " + type);
+			sb.append("    " + type + "\n");
 		for (Routine r: routines)
-			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]");
+			sb.append(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]\n");
 		for (String global: globalVars)
-			System.out.println("    " + global);
-		System.out.println("\n" + firstStmt);
+			sb.append("    " + global + "\n");
+		sb.append(firstStmt + "\n");
 		
 		for (Routine r: routines)
-			r.dumpIR();
+			sb.append(r.dumpIR());
+		
+		return sb.toString();
 	}
 	
-	public void dumpCFG() {
+	public String dumpCFG() {
+		StringBuilder sb = new StringBuilder();
+		
 		for (String type: typeDec)
-			System.out.println("    " + type);
+			sb.append("    " + type + "\n");
 		for (Routine r: routines)
-			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]");
+			sb.append(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]\n");
 		for (String global: globalVars)
-			System.out.println("    " + global);
-		System.out.println("\n" + firstStmt);
+			sb.append("    " + global + "\n");
+		sb.append(firstStmt + "\n");
 		
 		for (Routine r: routines)
-			r.dumpCFG();
+			sb.append(r.dumpCFG());
+		
+		return sb.toString();
 	}
 	
-	public void dumpSSA() {
+	public String dumpSSA() {
+		StringBuilder sb = new StringBuilder();
+		
 		for (String type: typeDec)
-			System.out.println("    " + type);
+			sb.append("    " + type + "\n");
 		for (Routine r: routines)
-			System.out.println(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]");
+			sb.append(r.toString() + " [entryblock#" + r.getEntryBlock().getIndex() + "]\n");
 		for (String global: globalVars)
-			System.out.println("    " + global);
-		System.out.println("\n" + firstStmt);
+			sb.append("    " + global + "\n");
+		sb.append(firstStmt + "\n");
 		
 		for (Routine r: routines)
-			r.dumpSSA();
+			sb.append(r.dumpSSA());
+		
+		return sb.toString();
 	}
 	
 	public void printReport() {
@@ -257,23 +312,24 @@ public class Program extends Node {
 		
 		boolean ssa = false;
 		
-		if (option.optimize.size() > 0) { 
+		if (option.optimizeList.size() > 0) { 
 			// need SSA
 			transformToSSA();
 			ssa = true;
 		} 
 		
-		if (option.optimize.contains(Option.OptimizeOption.CP))
+		if (option.optimizeList.contains(Option.OptimizeOption.CP))
 			constantPropOpt();
-		if (option.optimize.contains(Option.OptimizeOption.VN))
+		if (option.optimizeList.contains(Option.OptimizeOption.VN))
 			valueNumberOpt();
 		
-		if (option.optimize.contains(Option.OptimizeOption.PROFILE)) {
+		if (option.profileList.size() > 0) {
 			if (ssa) {
 				transformBackFromSSA();
 				ssa = false;
 			}
-			profile();
+			profile(option);
+			return;
 		}
 		
 		if (option.backend == Option.BackendOption.SSA) {
@@ -287,11 +343,11 @@ public class Program extends Node {
 				transformBackFromSSA();
 			
 			if (option.backend == Option.BackendOption.ASM)
-				dump();
+				System.out.print(dump());
 			else if (option.backend == Option.BackendOption.IR)
-				dumpIR();
+				System.out.print(dumpIR());
 			else if (option.backend == Option.BackendOption.CFG)
-				dumpCFG();
+				System.out.print(dumpCFG());
 		}
 		
 		

@@ -227,42 +227,48 @@ public class Routine extends Node {
 		return sb.toString();
 	}
 	
-	public void dump() {
+	public String dump() {
+		StringBuilder sb = new StringBuilder();
 		for (Block b: blocks) {
-			b.dump();
+			sb.append(b.dump());
 		}
+		return sb.toString();
 	}
 	
-	public void dumpIR() {
+	public String dumpIR() {
 		/*System.out.print("method " + name + "@" + startLine + ":");
 		for (Variable v: localVars)
 			System.out.print(" " + v.fullString());
 		System.out.println();*/
+		StringBuilder sb = new StringBuilder();
 		for (Block b: blocks) {
-			b.dumpIR();
+			sb.append(b.dumpIR());
 		}
+		return sb.toString();
 	}
 	
-	public void dumpCFG() {
+	public String dumpCFG() {
 		/*System.out.print("method " + name + "@" + startLine + ":");
 		for (Variable v: localVars)
 			System.out.print(" " + v.fullString());
 		System.out.println(" entryblock #" + entryBlock.index);*/
+		StringBuilder sb = new StringBuilder();
 		for (Block b: blocks) {
-			System.out.println();
-			b.dumpCFG();
+			sb.append("\n" + b.dumpCFG());
 		}
+		return sb.toString();
 	}
 	
-	public void dumpSSA() {
+	public String dumpSSA() {
 		/*System.out.print("method " + name + "@" + startLine + ":");
 		for (Variable v: localVars)
 			System.out.print(" " + v.fullString());
 		System.out.println(" entryblock #" + entryBlock.index);*/
+		StringBuilder sb = new StringBuilder();
 		for (Block b: blocks) {
-			System.out.println();
-			b.dumpSSA();
+			sb.append("\n" + b.dumpSSA());
 		}
+		return sb.toString();
 	}
 	
 	public static Routine parse(String line) {

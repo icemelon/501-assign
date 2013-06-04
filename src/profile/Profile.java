@@ -15,14 +15,14 @@ import compiler.Routine;
 
 public class Profile {
 	
+	
+	private List<Edge> routineEdgeList = new LinkedList<Edge>();
 	private Routine routine;
 	private List<Block> blocks;
-	private List<Edge> edgeList;
 	
 	public Profile(Routine routine) {
 		this.routine = routine;
 		this.blocks = routine.getBlocks();
-		this.edgeList = new LinkedList<Edge>();
 		
 		genEdges();
 	}
@@ -31,7 +31,8 @@ public class Profile {
 		for (Block b: blocks) {
 			for (Block succ: b.getSuccs()) {
 				Edge e = new Edge(b, succ);
-				edgeList.add(e);
+				routineEdgeList.add(e);
+				Edge.ProfEdgeList.add(e);
 				
 				if (b.attr == null || !(b.attr instanceof EdgeAttr))
 					b.attr = new EdgeAttr();
@@ -70,11 +71,11 @@ public class Profile {
 		}
 		
 		blocks.add(profBlock);
-		edge.setProfileBlock(profBlock);
+		edge.profBlock = profBlock;
 	}
 	
 	public void instrument() {
-		for (Edge e: edgeList) {
+		for (Edge e: routineEdgeList) {
 			profileEdge(e);
 		}
 	}

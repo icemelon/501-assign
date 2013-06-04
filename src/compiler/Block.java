@@ -126,62 +126,72 @@ public class Block extends Node {
 		}
 	}
 	
-	public void dump() {
+	public String dump() {
+		StringBuilder sb = new StringBuilder();
 		for (Stmt stmt: body)
-			System.out.println(stmt);
+			sb.append(stmt + "\n");
 		
 		if (profBrStmt != null)
-			System.out.println(profBrStmt.toString());
+			sb.append(profBrStmt.toString() + "\n");
+		return sb.toString();
 	}
 	
-	public void dumpIR() {
+	public String dumpIR() {
+		StringBuilder sb = new StringBuilder();
 		for (Stmt stmt: body)
-			System.out.println(stmt.toIRString());
+			sb.append(stmt.toIRString() + "\n");
 		
 		if (profBrStmt != null)
-			System.out.println(profBrStmt.toIRString());
+			sb.append(profBrStmt.toIRString() + "\n");
+		
+		return sb.toString();
 	}
 	
-	public void dumpCFG() {
-		System.out.print("Block#" + getIndex());
+	public String dumpCFG() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Block#" + getIndex());
 		
-		System.out.print("  Preds:");
+		sb.append("  Preds:");
 		for (Block b: preds)
-			System.out.print(" " + b.getIndex());
+			sb.append(" " + b.getIndex());
 		
-		System.out.print(", Succs:");
+		sb.append(", Succs:");
 		for (Block b: succs)
-			System.out.print(" " + b.getIndex());
+			sb.append(" " + b.getIndex());
 		
-		System.out.print(", Idom:");
+		sb.append(", Idom:");
 		if (idom != null)
-			System.out.print(" " + idom.getIndex());
+			sb.append(" " + idom.getIndex());
 		
-		System.out.print(", Children:");
+		sb.append(", Children:");
 		for (Block b: children)
-			System.out.print(" " + b.getIndex());
+			sb.append(" " + b.getIndex());
 		
-		System.out.println();
+		sb.append("\n");
 		
 		for (Stmt stmt: body)
-			System.out.println(stmt.toIRString());
+			sb.append(stmt.toIRString() + "\n");
 		
 		if (profBrStmt != null)
-			System.out.println(profBrStmt.toIRString());
+			sb.append(profBrStmt.toIRString() + "\n");
+		return sb.toString();
 	}
 	
 	
-	public void dumpSSA() {
-		System.out.println("Block #" + getIndex());
+	public String dumpSSA() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Block #" + getIndex() + "\n");
 		
 		for (PhiNode phiNode: phiNodeList) {
-			System.out.println(phiNode.toSSAString());
+			sb.append(phiNode.toSSAString() + "\n");
 		}
 		
 		for (Stmt stmt: body)
-			System.out.println(stmt.toSSAString());
+			sb.append(stmt.toSSAString() + "\n");
 		
 		if (profBrStmt != null)
-			System.out.println(profBrStmt.toSSAString());
+			sb.append(profBrStmt.toSSAString() + "\n");
+		
+		return sb.toString();
 	}
 }
