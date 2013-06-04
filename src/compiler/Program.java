@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import profile.Profile;
+import profile.CFGProfile;
 
 
 import stmt.ArithStmt;
@@ -182,51 +182,6 @@ public class Program extends Node {
 		}
 	}
 	
-	public void profile(Option option) {
-		for (Routine r: routines) {
-			r.profile = new Profile(r);
-			r.profile.instrument();
-		}
-		
-		renumberStmt();
-		
-		String fileName = option.fileName.substring(0, option.fileName.lastIndexOf('.')); 
-		String outFileName = fileName + "-prof.start";
-		File f = new File(outFileName);
-		
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(f));
-			writer.write(dump());
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		Runtime run = Runtime.getRuntime();
-		String cmd = Option.START_LOC + " -r --stats " + outFileName;
-		try {
-			Process p = run.exec(cmd);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String lineStr;
-			boolean profStart = false;
-			while ((lineStr = reader.readLine()) != null) {
-				if (lineStr.contains("Counts")) {
-					profStart = true;
-					continue;
-				}
-				
-				if (profStart) {
-					
-				}
-			}
-//				System.out.println(lineStr);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		f.delete();
-	}
-	
 	public String dump() {
 		StringBuilder sb = new StringBuilder();
 		
@@ -303,53 +258,5 @@ public class Program extends Node {
 			if (r.vn != null)
 				System.out.println("Number of expressions eliminated: " + r.vn.exprCounter);
 		}
-	}
-	
-	public void run(Option option) {
-		if (!scanFile(option.fileName))
-			return;
-		genCFG();
-		
-		boolean ssa = false;
-		
-		if (option.optimizeList.size() > 0) { 
-			// need SSA
-			transformToSSA();
-			ssa = true;
-		} 
-		
-		if (option.optimizeList.contains(Option.OptimizeOption.CP))
-			constantPropOpt();
-		if (option.optimizeList.contains(Option.OptimizeOption.VN))
-			valueNumberOpt();
-		
-		if (option.profileList.size() > 0) {
-			if (ssa) {
-				transformBackFromSSA();
-				ssa = false;
-			}
-			profile(option);
-			return;
-		}
-		
-		if (option.backend == Option.BackendOption.SSA) {
-			if (!ssa)
-				transformToSSA();
-			dumpSSA();
-		} else if (option.backend == Option.BackendOption.Report) {
-			printReport();
-		} else {
-			if (ssa)
-				transformBackFromSSA();
-			
-			if (option.backend == Option.BackendOption.ASM)
-				System.out.print(dump());
-			else if (option.backend == Option.BackendOption.IR)
-				System.out.print(dumpIR());
-			else if (option.backend == Option.BackendOption.CFG)
-				System.out.print(dumpCFG());
-		}
-		
-		
 	}
 }

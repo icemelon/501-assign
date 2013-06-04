@@ -8,7 +8,6 @@ import compiler.Block;
 public class Edge {
 	
 	public static int GlobalIndex = 0; 
-	public static List<Edge> ProfEdgeList = new LinkedList<Edge>();
 	
 	public final int index;
 	public final Block src, dst;

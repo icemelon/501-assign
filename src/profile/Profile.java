@@ -1,82 +1,89 @@
 package profile;
 
-import java.util.LinkedList;
-import java.util.List;                                         
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-import stmt.BranchStmt;
-import stmt.CountStmt;
-import stmt.Stmt;
-import token.Constant;
+import attr.RoutineProfileAttr;
 
-import attr.EdgeAttr;
-
-import compiler.Block;
+import compiler.Option;
+import compiler.Program;
 import compiler.Routine;
 
 public class Profile {
 	
+	private Program program;
 	
-	private List<Edge> routineEdgeList = new LinkedList<Edge>();
-	private Routine routine;
-	private List<Block> blocks;
-	
-	public Profile(Routine routine) {
-		this.routine = routine;
-		this.blocks = routine.getBlocks();
-		
-		genEdges();
+	public Profile( Program program ) {
+		this.program = program;
 	}
 	
-	private void genEdges() {
-		for (Block b: blocks) {
-			for (Block succ: b.getSuccs()) {
-				Edge e = new Edge(b, succ);
-				routineEdgeList.add(e);
-				Edge.ProfEdgeList.add(e);
+	public void run( Option option ) {
+		
+		for (Routine r: program.getRoutines()) {
+			
+			RoutineProfileAttr attr = new RoutineProfileAttr();
+			attr.cfgProfile = new CFGProfile( r );
+			attr.cfgProfile.instrument();
+			
+			r.attr = attr;
+		}
+		
+		program.renumberStmt();
+		
+		String fileName = option.fileName.substring( 0, option.fileName.lastIndexOf( '.' ) ); 
+		String outFileName = fileName + "-prof.start";
+		File f = new File( outFileName );
+		
+		try {
+			BufferedWriter writer = new BufferedWriter( new FileWriter( f ) );
+			writer.write( program.dump() );
+			writer.close();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+		
+		Runtime run = Runtime.getRuntime();
+		String cmd = Option.START_LOC + " -r --stats " + outFileName;
+		try {
+			Process p = run.exec( cmd );
+			BufferedReader reader = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+			String lineStr;
+			boolean profStart = false;
+			while ( (lineStr = reader.readLine()) != null ) {
 				
-				if (b.attr == null || !(b.attr instanceof EdgeAttr))
-					b.attr = new EdgeAttr();
-				((EdgeAttr) b.attr).addEdge(e);
+//				System.out.println( lineStr );
 				
-				if (succ.attr == null || !(succ.attr instanceof EdgeAttr))
-					succ.attr = new EdgeAttr();
-				((EdgeAttr) succ.attr).addEdge(e);
+				if ( lineStr.contains( "Counts" ) ) {
+					profStart = true;
+					continue;
+				}
+				
+				if ( profStart ) {
+					int id = Integer.parseInt( lineStr.substring( 0, lineStr.indexOf( ':' ) ).trim() );
+					int cnt = Integer.parseInt( lineStr.substring( lineStr.indexOf( ':' ) + 1 ).trim() );
+					CFGProfile.ProfEdgeList.get( id - 1 ).counter = cnt;
+				}
+				
 			}
-		}
-	}
-	
-	private void profileEdge(Edge edge) {
-		
-		Block srcBlock = edge.src;
-		Block dstBlock = edge.dst;
-		Block profBlock = new Block(routine);
-		
-		// set up profile block
-		{
-			CountStmt count = new CountStmt(new Constant(edge.index));
-			BranchStmt branch = new BranchStmt(dstBlock);
-			profBlock.body.add(count);
-			profBlock.body.add(branch);
+//				System.out.println(lineStr);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
-		// modify CFG
-		Stmt lastStmt = srcBlock.body.get(srcBlock.body.size() - 1);
+		f.delete();
 		
-		if ((lastStmt instanceof BranchStmt) && (((BranchStmt) lastStmt).getBranchBlock() == dstBlock)) {
-			
-			((BranchStmt) lastStmt).setBranchBlock(profBlock);
-			
-		} else {
-			srcBlock.setProfBranchStmt(new BranchStmt(profBlock));
+		for ( Edge e: CFGProfile.ProfEdgeList ) {
+			System.out.println( "edge#" + e.index + ": " + e.counter );
 		}
 		
-		blocks.add(profBlock);
-		edge.profBlock = profBlock;
-	}
-	
-	public void instrument() {
-		for (Edge e: routineEdgeList) {
-			profileEdge(e);
+		for ( Routine r: program.getRoutines() ) {
+			((RoutineProfileAttr) r.attr).cfgProfile.optimize();
 		}
+		
+		System.out.print( program.dumpCFG() );
 	}
 }

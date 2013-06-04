@@ -86,6 +86,8 @@ public class Block extends Node {
 	
 	public BranchStmt getProfBranchStmt() { return profBrStmt; }
 	
+	public void removeProfBranchStmt() { profBrStmt = null; }
+	
 	public boolean hasAssignment(Variable v) {
 		
 		for (Stmt stmt: body) {

@@ -5,11 +5,11 @@ import java.util.List;
 
 import profile.Edge;
 
-public class EdgeAttr extends Attribute {
+public class BlockEdgeAttr extends Attribute {
 	
 	private List<Edge> edgeList;
 	
-	public EdgeAttr() {
+	public BlockEdgeAttr() {
 		edgeList = new LinkedList<Edge>();
 	}
 	

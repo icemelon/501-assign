@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import profile.Profile;
+import profile.CFGProfile;
 
 
 import stmt.BranchStmt;
@@ -38,7 +38,6 @@ public class Routine extends Node {
 	public SSATransform ssaTrans = null;
 	public ValueNumberOpt vn = null;
 	public ConstantPropOpt cp = null;
-	public Profile profile = null;
 	
 	private Routine(String name, int startLine, List<Variable> vars) {
 		this.name = name;
