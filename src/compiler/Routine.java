@@ -58,6 +58,8 @@ public class Routine extends Node {
 	public int getEndLine() { return endLine; }
 	
 	public List<Block> getBlocks() { return blocks; }
+	
+	public void setBlocks(List<Block> blocks) { this.blocks = blocks; }
 
 	public int getBlockCount() { return blockCount; }
 	

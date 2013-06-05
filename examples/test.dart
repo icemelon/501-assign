@@ -50,13 +50,26 @@ void test(int x) {
 */
 void main() {
 	int i;
-	int a, b;
+	int a;
 	i = 0;
-	while (i < 10) {
+	a = 0;
+/*	while (i < 10) {
 		i = i + 1;
+		a = i * 2;
+
+		if ( a > 50 ) {
+			a = a - 50;
+		} else {
+			a = a + 1;
+		}
+	}*/
+	if (i < 1) {
+		a = 2;
+	} else {
+		a = 1;
 	}
 
-	WriteLong(i);
+	WriteLong(a);
 	WriteLine();
 }
 

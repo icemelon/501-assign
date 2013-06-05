@@ -144,7 +144,7 @@ public abstract class Stmt implements Cloneable {
 	public static int GlobalIndex = 0;
 	
 	public int index;
-	protected final Operator op;
+	protected Operator op;
 	protected List<Token> rhs = null;
 	protected List<Token> lhs = null;
 	protected Attribute attr = null;
@@ -162,6 +162,8 @@ public abstract class Stmt implements Cloneable {
 	}
 	
 	public Operator getOperator() { return op; }
+	
+	public void setOperator(Operator op) { this.op = op; }
 	
 	public List<Token> getRHS() { return rhs; }
 	

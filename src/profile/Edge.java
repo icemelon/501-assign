@@ -15,11 +15,17 @@ public class Edge {
 	//public double weight;
 	public int counter;
 	public Block profBlock;
+	public boolean isBackEdge;
 	
 	public Edge(Block src, Block dst) {
 		this.index = ++GlobalIndex;
 		this.src = src;
 		this.dst = dst;
+		this.isBackEdge = ( src.getIndex() > dst.getIndex() );
 	}
 	
+	@Override
+	public String toString() {
+		return "edge#" + index + "(block#" + src.getIndex() + "->block#" + dst.getIndex() + ")";
+	}
 }

@@ -1,6 +1,6 @@
 package compiler;
 
-import profile.Profile;
+import profile.ProfileMain;
 
 public class Main {
 	
@@ -13,7 +13,7 @@ public class Main {
 		}
 		
 		Program program = new Program();
-		Profile profile;
+		ProfileMain profile;
 		
 		if ( !program.scanFile( option.fileName ) )
 			return;
@@ -38,8 +38,9 @@ public class Main {
 				program.transformBackFromSSA();
 				ssaTrans = false;
 			}
-			profile = new Profile(program);
+			profile = new ProfileMain(program);
 			profile.run ( option );
+			
 			return;
 		}
 		
