@@ -1,0 +1,1663 @@
+    type Packet: link#4:Packet id#8:int kind#12:int a1#16:int a2#20:List
+    type State: bits#4:List
+    type TaskControlBlock: link#4:TaskControlBlock id#8:int priority#12:int queue#16:Packet task#20:dynamic state#24:State
+    type Scheduler: queueCount#4:int holdCount#8:int currentTcb#12:TaskControlBlock currentId#16:int list#20:TaskControlBlock blocks#24:List
+    type IdleTask: scheduler#4:Scheduler v1#8:State count#12:int
+    type DeviceTask: scheduler#4:Scheduler v1#8:Packet
+    type WorkerTask: scheduler#4:Scheduler v1#8:int v2#12:int
+    type HandlerTask: scheduler#4:Scheduler v1#8:Packet v2#12:Packet
+    method State_set@2: state#20:State runnable#16:int suspended#12:int held#8:int i#-4:int
+    method new_State@62: runnable#16:int suspended#12:int held#8:int s#-4:State
+    method and@73: i#12:int j#8:int
+    method or@83: i#12:int j#8:int
+    method State_and@93: s1#12:State s2#8:State s#-4:State i#-8:int
+    method State_or@152: s1#12:State s2#8:State s#-4:State i#-8:int
+    method State_rshift@211: s1#8:State s#-4:State i#-8:int
+    method State_equals@258: s1#12:State s2#8:State i#-4:int miss#-8:int
+    method initializeState@304:
+    method Packet_initialize@354: packet#20:Packet link#16:Packet id#12:int kind#8:int
+    method new_Packet@372: link#16:Packet id#12:int kind#8:int p#-4:Packet
+    method Packet_addTo@383: packet#12:Packet queue#8:Packet peek#-4:Packet next#-8:Packet
+    method TaskControlBlock_initialize@411: tcb#28:TaskControlBlock link#24:TaskControlBlock id#20:int priority#16:int queue#12:Packet task#8:dynamic
+    method TaskControlBlock_setRunning@440: tcb#8:TaskControlBlock
+    method TaskControlBlock_markAsNotHeld@447: tcb#8:TaskControlBlock
+    method TaskControlBlock_markAsHeld@462: tcb#8:TaskControlBlock
+    method TaskControlBlock_isHeldOrSuspended@477: tcb#8:TaskControlBlock
+    method TaskControlBlock_markAsSuspended@515: tcb#8:TaskControlBlock
+    method TaskControlBlock_markAsRunnable@530: tcb#8:TaskControlBlock
+    method TaskControlBlock_checkPriorityAdd@545: tcb#16:TaskControlBlock task#12:TaskControlBlock packet#8:Packet
+    method Scheduler_holdCurrent@584: scheduler#8:Scheduler
+    method Scheduler_release@606: scheduler#12:Scheduler id#8:int tcb#-4:TaskControlBlock
+    method Scheduler_suspendCurrent@645: scheduler#8:Scheduler
+    method Scheduler_queue@657: scheduler#12:Scheduler packet#8:Packet t#-4:TaskControlBlock
+    method IdleTask_initialize@705: task#20:IdleTask scheduler#16:Scheduler v1#12:State count#8:int
+    method IdleTask_run@716: task#12:IdleTask packet#8:Packet
+    method DeviceTask_initialize@927: task#12:DeviceTask scheduler#8:Scheduler
+    method DeviceTask_run@932: task#12:DeviceTask packet#8:Packet v#-4:Packet
+    method WorkerTask_initialize@981: task#20:WorkerTask scheduler#16:Scheduler v1#12:int v2#8:int
+    method WorkerTask_run@992: task#12:WorkerTask packet#8:Packet i#-4:int
+    method HandlerTask_initialize@1073: task#12:HandlerTask scheduler#8:Scheduler
+    method HandlerTask_run@1078: task#12:HandlerTask packet#8:Packet count#-4:int v#-8:Packet
+    method Task_run@1222: task#12:dynamic packet#8:Packet
+    method TaskControlBlock_run@1254: tcb#8:TaskControlBlock packet#-4:Packet
+    method Scheduler_initialize@1305: scheduler#8:Scheduler
+    method Scheduler_addTask@1326: scheduler#24:Scheduler id#20:int priority#16:int queue#12:Packet task#8:dynamic
+    method Scheduler_addRunningTask@1363: scheduler#24:Scheduler id#20:int priority#16:int queue#12:Packet task#8:dynamic
+    method Scheduler_addIdleTask@1376: scheduler#24:Scheduler id#20:int priority#16:int queue#12:Packet count#8:int idleTask#-4:IdleTask
+    method Scheduler_addWorkerTask@1393: scheduler#20:Scheduler id#16:int priority#12:int queue#8:Packet workerTask#-4:WorkerTask
+    method Scheduler_addHandlerTask@1408: scheduler#20:Scheduler id#16:int priority#12:int queue#8:Packet handlerTask#-4:HandlerTask
+    method Scheduler_addDeviceTask@1421: scheduler#20:Scheduler id#16:int priority#12:int queue#8:Packet deviceTask#-4:DeviceTask
+    method Scheduler_schedule@1434: scheduler#8:Scheduler
+    method run@1486: scheduler#-4:Scheduler
+    method main@1582:
+    global STATE_RUNNING#32764:State
+    global STATE_RUNNABLE#32760:State
+    global STATE_SUSPENDED#32756:State
+    global STATE_HELD#32752:State
+    global STATE_SUSPENDED_RUNNABLE#32748:State
+    global STATE_NOT_HELD#32744:State
+    global new_State_result#32740:State
+    global State_and_result#32736:State
+    global State_or_result#32732:State
+    global State_rshift_result#32728:State
+    global State_equals_result#32724:int
+    global and_result#32720:int
+    global or_result#32716:int
+    global Scheduler_release_result#32712:TaskControlBlock
+    global Scheduler_holdCurrent_result#32708:TaskControlBlock
+    global Scheduler_suspendCurrent_result#32704:TaskControlBlock
+    global Scheduler_queue_result#32700:TaskControlBlock
+    global TaskControlBlock_run_result#32696:TaskControlBlock
+    global TaskControlBlock_checkPriorityAdd_result#32692:TaskControlBlock
+    global TaskControlBlock_isHeldOrSuspended_result#32688:int
+    global Task_run_result#32684:TaskControlBlock
+    global new_Packet_result#32680:Packet
+    global Packet_addTo_result#32676:Packet
+    instr 1: nop
+    instr 2: enter 4
+    instr 3: checknull state#20 :State
+    instr 4: add (3) bits_offset#4 :List*
+    instr 5: newlist 16 :List
+    instr 6: store (5) (4)
+    instr 7: checknull state#20 :State
+    instr 8: add (7) bits_offset#4 :List*
+    instr 9: load (8) :List
+    instr 10: checknull (9) :List
+    instr 11: checkbounds (10) 0
+    instr 12: add (10) 8 :dynamic*
+    instr 13: mul 0 4 :int
+    instr 14: add (12) (13) :dynamic*
+    instr 15: new Integer_type#8 :Integer
+    instr 16: add (15) value_offset#4 :int*
+    instr 17: store runnable#16 (16)
+    instr 18: store (15) (14)
+    instr 19: checknull state#20 :State
+    instr 20: add (19) bits_offset#4 :List*
+    instr 21: load (20) :List
+    instr 22: checknull (21) :List
+    instr 23: checkbounds (22) 1
+    instr 24: add (22) 8 :dynamic*
+    instr 25: mul 1 4 :int
+    instr 26: add (24) (25) :dynamic*
+    instr 27: new Integer_type#8 :Integer
+    instr 28: add (27) value_offset#4 :int*
+    instr 29: store suspended#12 (28)
+    instr 30: store (27) (26)
+    instr 31: checknull state#20 :State
+    instr 32: add (31) bits_offset#4 :List*
+    instr 33: load (32) :List
+    instr 34: checknull (33) :List
+    instr 35: checkbounds (34) 2
+    instr 36: add (34) 8 :dynamic*
+    instr 37: mul 2 4 :int
+    instr 38: add (36) (37) :dynamic*
+    instr 39: new Integer_type#8 :Integer
+    instr 40: add (39) value_offset#4 :int*
+    instr 41: store held#8 (40)
+    instr 42: store (39) (38)
+    instr 43: move 3 i#-4
+    instr 44: cmplt i#-4 16 :bool
+    instr 45: blbc (44) [61]
+    instr 46: checknull state#20 :State
+    instr 47: add (46) bits_offset#4 :List*
+    instr 48: load (47) :List
+    instr 49: checknull (48) :List
+    instr 50: checkbounds (49) i#-4
+    instr 51: add (49) 8 :dynamic*
+    instr 52: mul i#-4 4 :int
+    instr 53: add (51) (52) :dynamic*
+    instr 54: new Integer_type#8 :Integer
+    instr 55: add (54) value_offset#4 :int*
+    instr 56: store 0 (55)
+    instr 57: store (54) (53)
+    instr 58: add i#-4 1 :int
+    instr 59: move (58) i#-4
+    instr 60: br [44]
+    instr 61: ret 16
+    instr 62: enter 4
+    instr 63: new State_type#8 :State
+    instr 64: move (63) s#-4
+    instr 65: param s#-4
+    instr 66: param runnable#16
+    instr 67: param suspended#12
+    instr 68: param held#8
+    instr 69: call [2]
+    instr 70: add new_State_result_base#32740 GP :State*
+    instr 71: store s#-4 (70)
+    instr 72: ret 12
+    instr 73: enter 0
+    instr 74: add and_result_base#32720 GP :int*
+    instr 75: store 0 (74)
+    instr 76: cmpeq i#12 0 :bool
+    instr 77: blbs (76) [82]
+    instr 78: cmpeq j#8 0 :bool
+    instr 79: blbs (78) [82]
+    instr 80: add and_result_base#32720 GP :int*
+    instr 81: store 1 (80)
+    instr 82: ret 8
+    instr 83: enter 0
+    instr 84: add or_result_base#32716 GP :int*
+    instr 85: store 1 (84)
+    instr 86: cmpeq i#12 0 :bool
+    instr 87: blbc (86) [92]
+    instr 88: cmpeq j#8 0 :bool
+    instr 89: blbc (88) [92]
+    instr 90: add or_result_base#32716 GP :int*
+    instr 91: store 0 (90)
+    instr 92: ret 8
+    instr 93: enter 8
+    instr 94: new State_type#8 :State
+    instr 95: move (94) s#-4
+    instr 96: checknull s#-4 :State
+    instr 97: add (96) bits_offset#4 :List*
+    instr 98: newlist 16 :List
+    instr 99: store (98) (97)
+    instr 100: move 0 i#-8
+    instr 101: cmplt i#-8 16 :bool
+    instr 102: blbc (101) [149]
+    instr 103: checknull s1#12 :State
+    instr 104: add (103) bits_offset#4 :List*
+    instr 105: load (104) :List
+    instr 106: checknull (105) :List
+    instr 107: checkbounds (106) i#-8
+    instr 108: add (106) 8 :dynamic*
+    instr 109: mul i#-8 4 :int
+    instr 110: add (108) (109) :dynamic*
+    instr 111: load (110) :dynamic
+    instr 112: checknull (111) :dynamic
+    instr 113: checktype (112) Integer_type#8 :Integer
+    instr 114: add (113) value_offset#4 :int*
+    instr 115: load (114) :int
+    instr 116: param (115)
+    instr 117: checknull s2#8 :State
+    instr 118: add (117) bits_offset#4 :List*
+    instr 119: load (118) :List
+    instr 120: checknull (119) :List
+    instr 121: checkbounds (120) i#-8
+    instr 122: add (120) 8 :dynamic*
+    instr 123: mul i#-8 4 :int
+    instr 124: add (122) (123) :dynamic*
+    instr 125: load (124) :dynamic
+    instr 126: checknull (125) :dynamic
+    instr 127: checktype (126) Integer_type#8 :Integer
+    instr 128: add (127) value_offset#4 :int*
+    instr 129: load (128) :int
+    instr 130: param (129)
+    instr 131: call [73]
+    instr 132: checknull s#-4 :State
+    instr 133: add (132) bits_offset#4 :List*
+    instr 134: load (133) :List
+    instr 135: checknull (134) :List
+    instr 136: checkbounds (135) i#-8
+    instr 137: add (135) 8 :dynamic*
+    instr 138: mul i#-8 4 :int
+    instr 139: add (137) (138) :dynamic*
+    instr 140: add and_result_base#32720 GP :int*
+    instr 141: load (140) :int
+    instr 142: new Integer_type#8 :Integer
+    instr 143: add (142) value_offset#4 :int*
+    instr 144: store (141) (143)
+    instr 145: store (142) (139)
+    instr 146: add i#-8 1 :int
+    instr 147: move (146) i#-8
+    instr 148: br [101]
+    instr 149: add State_and_result_base#32736 GP :State*
+    instr 150: store s#-4 (149)
+    instr 151: ret 8
+    instr 152: enter 8
+    instr 153: new State_type#8 :State
+    instr 154: move (153) s#-4
+    instr 155: checknull s#-4 :State
+    instr 156: add (155) bits_offset#4 :List*
+    instr 157: newlist 16 :List
+    instr 158: store (157) (156)
+    instr 159: move 0 i#-8
+    instr 160: cmplt i#-8 16 :bool
+    instr 161: blbc (160) [208]
+    instr 162: checknull s1#12 :State
+    instr 163: add (162) bits_offset#4 :List*
+    instr 164: load (163) :List
+    instr 165: checknull (164) :List
+    instr 166: checkbounds (165) i#-8
+    instr 167: add (165) 8 :dynamic*
+    instr 168: mul i#-8 4 :int
+    instr 169: add (167) (168) :dynamic*
+    instr 170: load (169) :dynamic
+    instr 171: checknull (170) :dynamic
+    instr 172: checktype (171) Integer_type#8 :Integer
+    instr 173: add (172) value_offset#4 :int*
+    instr 174: load (173) :int
+    instr 175: param (174)
+    instr 176: checknull s2#8 :State
+    instr 177: add (176) bits_offset#4 :List*
+    instr 178: load (177) :List
+    instr 179: checknull (178) :List
+    instr 180: checkbounds (179) i#-8
+    instr 181: add (179) 8 :dynamic*
+    instr 182: mul i#-8 4 :int
+    instr 183: add (181) (182) :dynamic*
+    instr 184: load (183) :dynamic
+    instr 185: checknull (184) :dynamic
+    instr 186: checktype (185) Integer_type#8 :Integer
+    instr 187: add (186) value_offset#4 :int*
+    instr 188: load (187) :int
+    instr 189: param (188)
+    instr 190: call [83]
+    instr 191: checknull s#-4 :State
+    instr 192: add (191) bits_offset#4 :List*
+    instr 193: load (192) :List
+    instr 194: checknull (193) :List
+    instr 195: checkbounds (194) i#-8
+    instr 196: add (194) 8 :dynamic*
+    instr 197: mul i#-8 4 :int
+    instr 198: add (196) (197) :dynamic*
+    instr 199: add or_result_base#32716 GP :int*
+    instr 200: load (199) :int
+    instr 201: new Integer_type#8 :Integer
+    instr 202: add (201) value_offset#4 :int*
+    instr 203: store (200) (202)
+    instr 204: store (201) (198)
+    instr 205: add i#-8 1 :int
+    instr 206: move (205) i#-8
+    instr 207: br [160]
+    instr 208: add State_or_result_base#32732 GP :State*
+    instr 209: store s#-4 (208)
+    instr 210: ret 8
+    instr 211: enter 8
+    instr 212: new State_type#8 :State
+    instr 213: move (212) s#-4
+    instr 214: checknull s#-4 :State
+    instr 215: add (214) bits_offset#4 :List*
+    instr 216: newlist 16 :List
+    instr 217: store (216) (215)
+    instr 218: move 0 i#-8
+    instr 219: cmplt i#-8 15 :bool
+    instr 220: blbc (219) [243]
+    instr 221: checknull s#-4 :State
+    instr 222: add (221) bits_offset#4 :List*
+    instr 223: load (222) :List
+    instr 224: checknull (223) :List
+    instr 225: checkbounds (224) i#-8
+    instr 226: add (224) 8 :dynamic*
+    instr 227: mul i#-8 4 :int
+    instr 228: add (226) (227) :dynamic*
+    instr 229: checknull s1#8 :State
+    instr 230: add (229) bits_offset#4 :List*
+    instr 231: load (230) :List
+    instr 232: add i#-8 1 :int
+    instr 233: checknull (231) :List
+    instr 234: checkbounds (233) (232)
+    instr 235: add (233) 8 :dynamic*
+    instr 236: mul (232) 4 :int
+    instr 237: add (235) (236) :dynamic*
+    instr 238: load (237) :dynamic
+    instr 239: store (238) (228)
+    instr 240: add i#-8 1 :int
+    instr 241: move (240) i#-8
+    instr 242: br [219]
+    instr 243: checknull s#-4 :State
+    instr 244: add (243) bits_offset#4 :List*
+    instr 245: load (244) :List
+    instr 246: checknull (245) :List
+    instr 247: checkbounds (246) 15
+    instr 248: add (246) 8 :dynamic*
+    instr 249: mul 15 4 :int
+    instr 250: add (248) (249) :dynamic*
+    instr 251: new Integer_type#8 :Integer
+    instr 252: add (251) value_offset#4 :int*
+    instr 253: store 0 (252)
+    instr 254: store (251) (250)
+    instr 255: add State_rshift_result_base#32728 GP :State*
+    instr 256: store s#-4 (255)
+    instr 257: ret 4
+    instr 258: enter 8
+    instr 259: move 0 i#-4
+    instr 260: move 0 miss#-8
+    instr 261: cmplt i#-4 16 :bool
+    instr 262: blbc (261) [296]
+    instr 263: checknull s1#12 :State
+    instr 264: add (263) bits_offset#4 :List*
+    instr 265: load (264) :List
+    instr 266: checknull (265) :List
+    instr 267: checkbounds (266) i#-4
+    instr 268: add (266) 8 :dynamic*
+    instr 269: mul i#-4 4 :int
+    instr 270: add (268) (269) :dynamic*
+    instr 271: load (270) :dynamic
+    instr 272: checknull s2#8 :State
+    instr 273: add (272) bits_offset#4 :List*
+    instr 274: load (273) :List
+    instr 275: checknull (274) :List
+    instr 276: checkbounds (275) i#-4
+    instr 277: add (275) 8 :dynamic*
+    instr 278: mul i#-4 4 :int
+    instr 279: add (277) (278) :dynamic*
+    instr 280: load (279) :dynamic
+    instr 281: checknull (271) :dynamic
+    instr 282: checktype (281) Integer_type#8 :Integer
+    instr 283: add (282) value_offset#4 :int*
+    instr 284: load (283) :int
+    instr 285: checknull (280) :dynamic
+    instr 286: checktype (285) Integer_type#8 :Integer
+    instr 287: add (286) value_offset#4 :int*
+    instr 288: load (287) :int
+    instr 289: cmpeq (284) (288) :bool
+    instr 290: blbs (289) [293]
+    instr 291: add miss#-8 1 :int
+    instr 292: move (291) miss#-8
+    instr 293: add i#-4 1 :int
+    instr 294: move (293) i#-4
+    instr 295: br [261]
+    instr 296: cmple miss#-8 0 :bool
+    instr 297: blbs (296) [301]
+    instr 298: add State_equals_result_base#32724 GP :int*
+    instr 299: store 0 (298)
+    instr 300: br [303]
+    instr 301: add State_equals_result_base#32724 GP :int*
+    instr 302: store 1 (301)
+    instr 303: ret 8
+    instr 304: enter 0
+    instr 305: param 0
+    instr 306: param 0
+    instr 307: param 0
+    instr 308: call [62]
+    instr 309: add new_State_result_base#32740 GP :State*
+    instr 310: load (309) :State
+    instr 311: add STATE_RUNNING_base#32764 GP :State*
+    instr 312: store (310) (311)
+    instr 313: param 1
+    instr 314: param 0
+    instr 315: param 0
+    instr 316: call [62]
+    instr 317: add new_State_result_base#32740 GP :State*
+    instr 318: load (317) :State
+    instr 319: add STATE_RUNNABLE_base#32760 GP :State*
+    instr 320: store (318) (319)
+    instr 321: param 0
+    instr 322: param 1
+    instr 323: param 0
+    instr 324: call [62]
+    instr 325: add new_State_result_base#32740 GP :State*
+    instr 326: load (325) :State
+    instr 327: add STATE_SUSPENDED_base#32756 GP :State*
+    instr 328: store (326) (327)
+    instr 329: param 0
+    instr 330: param 0
+    instr 331: param 1
+    instr 332: call [62]
+    instr 333: add new_State_result_base#32740 GP :State*
+    instr 334: load (333) :State
+    instr 335: add STATE_HELD_base#32752 GP :State*
+    instr 336: store (334) (335)
+    instr 337: param 1
+    instr 338: param 1
+    instr 339: param 0
+    instr 340: call [62]
+    instr 341: add new_State_result_base#32740 GP :State*
+    instr 342: load (341) :State
+    instr 343: add STATE_SUSPENDED_RUNNABLE_base#32748 GP :State*
+    instr 344: store (342) (343)
+    instr 345: param 1
+    instr 346: param 1
+    instr 347: param 0
+    instr 348: call [62]
+    instr 349: add new_State_result_base#32740 GP :State*
+    instr 350: load (349) :State
+    instr 351: add STATE_NOT_HELD_base#32744 GP :State*
+    instr 352: store (350) (351)
+    instr 353: ret 0
+    instr 354: enter 0
+    instr 355: checknull packet#20 :Packet
+    instr 356: add (355) link_offset#4 :Packet*
+    instr 357: store link#16 (356)
+    instr 358: checknull packet#20 :Packet
+    instr 359: add (358) id_offset#8 :int*
+    instr 360: store id#12 (359)
+    instr 361: checknull packet#20 :Packet
+    instr 362: add (361) kind_offset#12 :int*
+    instr 363: store kind#8 (362)
+    instr 364: checknull packet#20 :Packet
+    instr 365: add (364) a1_offset#16 :int*
+    instr 366: store 0 (365)
+    instr 367: checknull packet#20 :Packet
+    instr 368: add (367) a2_offset#20 :List*
+    instr 369: newlist 4 :List
+    instr 370: store (369) (368)
+    instr 371: ret 16
+    instr 372: enter 4
+    instr 373: new Packet_type#24 :Packet
+    instr 374: move (373) p#-4
+    instr 375: param p#-4
+    instr 376: param link#16
+    instr 377: param id#12
+    instr 378: param kind#8
+    instr 379: call [354]
+    instr 380: add new_Packet_result_base#32680 GP :Packet*
+    instr 381: store p#-4 (380)
+    instr 382: ret 12
+    instr 383: enter 8
+    instr 384: checknull packet#12 :Packet
+    instr 385: add (384) link_offset#4 :Packet*
+    instr 386: store 0 (385)
+    instr 387: isnull queue#8 :bool
+    instr 388: blbc (387) [392]
+    instr 389: add Packet_addTo_result_base#32676 GP :Packet*
+    instr 390: store packet#12 (389)
+    instr 391: br [410]
+    instr 392: move queue#8 next#-8
+    instr 393: checknull next#-8 :Packet
+    instr 394: add (393) link_offset#4 :Packet*
+    instr 395: load (394) :Packet
+    instr 396: move (395) peek#-4
+    instr 397: isnull peek#-4 :bool
+    instr 398: blbs (397) [405]
+    instr 399: move peek#-4 next#-8
+    instr 400: checknull next#-8 :Packet
+    instr 401: add (400) link_offset#4 :Packet*
+    instr 402: load (401) :Packet
+    instr 403: move (402) peek#-4
+    instr 404: br [397]
+    instr 405: checknull next#-8 :Packet
+    instr 406: add (405) link_offset#4 :Packet*
+    instr 407: store packet#12 (406)
+    instr 408: add Packet_addTo_result_base#32676 GP :Packet*
+    instr 409: store queue#8 (408)
+    instr 410: ret 8
+    instr 411: enter 0
+    instr 412: checknull tcb#28 :TaskControlBlock
+    instr 413: add (412) link_offset#4 :TaskControlBlock*
+    instr 414: store link#24 (413)
+    instr 415: checknull tcb#28 :TaskControlBlock
+    instr 416: add (415) id_offset#8 :int*
+    instr 417: store id#20 (416)
+    instr 418: checknull tcb#28 :TaskControlBlock
+    instr 419: add (418) priority_offset#12 :int*
+    instr 420: store priority#16 (419)
+    instr 421: checknull tcb#28 :TaskControlBlock
+    instr 422: add (421) queue_offset#16 :Packet*
+    instr 423: store queue#12 (422)
+    instr 424: checknull tcb#28 :TaskControlBlock
+    instr 425: stdynamic task#8 (424) task_offset#?
+    instr 426: isnull queue#12 :bool
+    instr 427: blbc (426) [434]
+    instr 428: checknull tcb#28 :TaskControlBlock
+    instr 429: add (428) state_offset#24 :State*
+    instr 430: add STATE_SUSPENDED_base#32756 GP :State*
+    instr 431: load (430) :State
+    instr 432: store (431) (429)
+    instr 433: br [439]
+    instr 434: checknull tcb#28 :TaskControlBlock
+    instr 435: add (434) state_offset#24 :State*
+    instr 436: add STATE_SUSPENDED_RUNNABLE_base#32748 GP :State*
+    instr 437: load (436) :State
+    instr 438: store (437) (435)
+    instr 439: ret 24
+    instr 440: enter 0
+    instr 441: checknull tcb#8 :TaskControlBlock
+    instr 442: add (441) state_offset#24 :State*
+    instr 443: add STATE_RUNNING_base#32764 GP :State*
+    instr 444: load (443) :State
+    instr 445: store (444) (442)
+    instr 446: ret 4
+    instr 447: enter 0
+    instr 448: checknull tcb#8 :TaskControlBlock
+    instr 449: add (448) state_offset#24 :State*
+    instr 450: load (449) :State
+    instr 451: param (450)
+    instr 452: add STATE_NOT_HELD_base#32744 GP :State*
+    instr 453: load (452) :State
+    instr 454: param (453)
+    instr 455: call [93]
+    instr 456: checknull tcb#8 :TaskControlBlock
+    instr 457: add (456) state_offset#24 :State*
+    instr 458: add State_and_result_base#32736 GP :State*
+    instr 459: load (458) :State
+    instr 460: store (459) (457)
+    instr 461: ret 4
+    instr 462: enter 0
+    instr 463: checknull tcb#8 :TaskControlBlock
+    instr 464: add (463) state_offset#24 :State*
+    instr 465: load (464) :State
+    instr 466: param (465)
+    instr 467: add STATE_HELD_base#32752 GP :State*
+    instr 468: load (467) :State
+    instr 469: param (468)
+    instr 470: call [152]
+    instr 471: checknull tcb#8 :TaskControlBlock
+    instr 472: add (471) state_offset#24 :State*
+    instr 473: add State_or_result_base#32732 GP :State*
+    instr 474: load (473) :State
+    instr 475: store (474) (472)
+    instr 476: ret 4
+    instr 477: enter 0
+    instr 478: add TaskControlBlock_isHeldOrSuspended_result_base#32688 GP :int*
+    instr 479: store 0 (478)
+    instr 480: checknull tcb#8 :TaskControlBlock
+    instr 481: add (480) state_offset#24 :State*
+    instr 482: load (481) :State
+    instr 483: checknull (482) :State
+    instr 484: add (483) bits_offset#4 :List*
+    instr 485: load (484) :List
+    instr 486: checknull (485) :List
+    instr 487: checkbounds (486) 2
+    instr 488: add (486) 8 :dynamic*
+    instr 489: mul 2 4 :int
+    instr 490: add (488) (489) :dynamic*
+    instr 491: load (490) :dynamic
+    instr 492: checknull (491) :dynamic
+    instr 493: checktype (492) Integer_type#8 :Integer
+    instr 494: add (493) value_offset#4 :int*
+    instr 495: load (494) :int
+    instr 496: cmpeq (495) 0 :bool
+    instr 497: blbs (496) [500]
+    instr 498: add TaskControlBlock_isHeldOrSuspended_result_base#32688 GP :int*
+    instr 499: store 1 (498)
+    instr 500: checknull tcb#8 :TaskControlBlock
+    instr 501: add (500) state_offset#24 :State*
+    instr 502: load (501) :State
+    instr 503: param (502)
+    instr 504: add STATE_SUSPENDED_base#32756 GP :State*
+    instr 505: load (504) :State
+    instr 506: param (505)
+    instr 507: call [258]
+    instr 508: add State_equals_result_base#32724 GP :int*
+    instr 509: load (508) :int
+    instr 510: cmple (509) 0 :bool
+    instr 511: blbs (510) [514]
+    instr 512: add TaskControlBlock_isHeldOrSuspended_result_base#32688 GP :int*
+    instr 513: store 1 (512)
+    instr 514: ret 4
+    instr 515: enter 0
+    instr 516: checknull tcb#8 :TaskControlBlock
+    instr 517: add (516) state_offset#24 :State*
+    instr 518: load (517) :State
+    instr 519: param (518)
+    instr 520: add STATE_SUSPENDED_base#32756 GP :State*
+    instr 521: load (520) :State
+    instr 522: param (521)
+    instr 523: call [152]
+    instr 524: checknull tcb#8 :TaskControlBlock
+    instr 525: add (524) state_offset#24 :State*
+    instr 526: add State_or_result_base#32732 GP :State*
+    instr 527: load (526) :State
+    instr 528: store (527) (525)
+    instr 529: ret 4
+    instr 530: enter 0
+    instr 531: checknull tcb#8 :TaskControlBlock
+    instr 532: add (531) state_offset#24 :State*
+    instr 533: load (532) :State
+    instr 534: param (533)
+    instr 535: add STATE_RUNNABLE_base#32760 GP :State*
+    instr 536: load (535) :State
+    instr 537: param (536)
+    instr 538: call [152]
+    instr 539: checknull tcb#8 :TaskControlBlock
+    instr 540: add (539) state_offset#24 :State*
+    instr 541: add State_or_result_base#32732 GP :State*
+    instr 542: load (541) :State
+    instr 543: store (542) (540)
+    instr 544: ret 4
+    instr 545: enter 0
+    instr 546: checknull tcb#16 :TaskControlBlock
+    instr 547: add (546) queue_offset#16 :Packet*
+    instr 548: load (547) :Packet
+    instr 549: isnull (548) :bool
+    instr 550: blbc (549) [570]
+    instr 551: checknull tcb#16 :TaskControlBlock
+    instr 552: add (551) queue_offset#16 :Packet*
+    instr 553: store packet#8 (552)
+    instr 554: param tcb#16
+    instr 555: call [530]
+    instr 556: checknull tcb#16 :TaskControlBlock
+    instr 557: add (556) priority_offset#12 :int*
+    instr 558: load (557) :int
+    instr 559: checknull task#12 :TaskControlBlock
+    instr 560: add (559) priority_offset#12 :int*
+    instr 561: load (560) :int
+    instr 562: cmple (558) (561) :bool
+    instr 563: blbs (562) [567]
+    instr 564: add TaskControlBlock_checkPriorityAdd_result_base#32692 GP :TaskControlBlock*
+    instr 565: store tcb#16 (564)
+    instr 566: br [569]
+    instr 567: add TaskControlBlock_checkPriorityAdd_result_base#32692 GP :TaskControlBlock*
+    instr 568: store task#12 (567)
+    instr 569: br [583]
+    instr 570: param packet#8
+    instr 571: checknull tcb#16 :TaskControlBlock
+    instr 572: add (571) queue_offset#16 :Packet*
+    instr 573: load (572) :Packet
+    instr 574: param (573)
+    instr 575: call [383]
+    instr 576: checknull tcb#16 :TaskControlBlock
+    instr 577: add (576) queue_offset#16 :Packet*
+    instr 578: add Packet_addTo_result_base#32676 GP :Packet*
+    instr 579: load (578) :Packet
+    instr 580: store (579) (577)
+    instr 581: add TaskControlBlock_checkPriorityAdd_result_base#32692 GP :TaskControlBlock*
+    instr 582: store task#12 (581)
+    instr 583: ret 12
+    instr 584: enter 0
+    instr 585: checknull scheduler#8 :Scheduler
+    instr 586: add (585) holdCount_offset#8 :int*
+    instr 587: checknull scheduler#8 :Scheduler
+    instr 588: add (587) holdCount_offset#8 :int*
+    instr 589: load (588) :int
+    instr 590: add (589) 1 :int
+    instr 591: store (590) (586)
+    instr 592: checknull scheduler#8 :Scheduler
+    instr 593: add (592) currentTcb_offset#12 :TaskControlBlock*
+    instr 594: load (593) :TaskControlBlock
+    instr 595: param (594)
+    instr 596: call [462]
+    instr 597: checknull scheduler#8 :Scheduler
+    instr 598: add (597) currentTcb_offset#12 :TaskControlBlock*
+    instr 599: load (598) :TaskControlBlock
+    instr 600: checknull (599) :TaskControlBlock
+    instr 601: add (600) link_offset#4 :TaskControlBlock*
+    instr 602: load (601) :TaskControlBlock
+    instr 603: add Scheduler_holdCurrent_result_base#32708 GP :TaskControlBlock*
+    instr 604: store (602) (603)
+    instr 605: ret 4
+    instr 606: enter 4
+    instr 607: checknull scheduler#12 :Scheduler
+    instr 608: add (607) blocks_offset#24 :List*
+    instr 609: load (608) :List
+    instr 610: checknull (609) :List
+    instr 611: checkbounds (610) id#8
+    instr 612: add (610) 8 :dynamic*
+    instr 613: mul id#8 4 :int
+    instr 614: add (612) (613) :dynamic*
+    instr 615: load (614) :dynamic
+    instr 616: checktype (615) TaskControlBlock_type#28 :TaskControlBlock
+    instr 617: move (616) tcb#-4
+    instr 618: isnull tcb#-4 :bool
+    instr 619: blbc (618) [623]
+    instr 620: add Scheduler_release_result_base#32712 GP :TaskControlBlock*
+    instr 621: store tcb#-4 (620)
+    instr 622: br [644]
+    instr 623: param tcb#-4
+    instr 624: call [447]
+    instr 625: checknull tcb#-4 :TaskControlBlock
+    instr 626: add (625) priority_offset#12 :int*
+    instr 627: load (626) :int
+    instr 628: checknull scheduler#12 :Scheduler
+    instr 629: add (628) currentTcb_offset#12 :TaskControlBlock*
+    instr 630: load (629) :TaskControlBlock
+    instr 631: checknull (630) :TaskControlBlock
+    instr 632: add (631) priority_offset#12 :int*
+    instr 633: load (632) :int
+    instr 634: cmple (627) (633) :bool
+    instr 635: blbs (634) [639]
+    instr 636: add Scheduler_release_result_base#32712 GP :TaskControlBlock*
+    instr 637: store tcb#-4 (636)
+    instr 638: br [644]
+    instr 639: checknull scheduler#12 :Scheduler
+    instr 640: add (639) currentTcb_offset#12 :TaskControlBlock*
+    instr 641: load (640) :TaskControlBlock
+    instr 642: add Scheduler_release_result_base#32712 GP :TaskControlBlock*
+    instr 643: store (641) (642)
+    instr 644: ret 8
+    instr 645: enter 0
+    instr 646: checknull scheduler#8 :Scheduler
+    instr 647: add (646) currentTcb_offset#12 :TaskControlBlock*
+    instr 648: load (647) :TaskControlBlock
+    instr 649: param (648)
+    instr 650: call [515]
+    instr 651: checknull scheduler#8 :Scheduler
+    instr 652: add (651) currentTcb_offset#12 :TaskControlBlock*
+    instr 653: load (652) :TaskControlBlock
+    instr 654: add Scheduler_suspendCurrent_result_base#32704 GP :TaskControlBlock*
+    instr 655: store (653) (654)
+    instr 656: ret 4
+    instr 657: enter 4
+    instr 658: checknull scheduler#12 :Scheduler
+    instr 659: add (658) blocks_offset#24 :List*
+    instr 660: load (659) :List
+    instr 661: checknull packet#8 :Packet
+    instr 662: add (661) id_offset#8 :int*
+    instr 663: load (662) :int
+    instr 664: checknull (660) :List
+    instr 665: checkbounds (664) (663)
+    instr 666: add (664) 8 :dynamic*
+    instr 667: mul (663) 4 :int
+    instr 668: add (666) (667) :dynamic*
+    instr 669: load (668) :dynamic
+    instr 670: checktype (669) TaskControlBlock_type#28 :TaskControlBlock
+    instr 671: move (670) t#-4
+    instr 672: isnull t#-4 :bool
+    instr 673: blbc (672) [677]
+    instr 674: add Scheduler_queue_result_base#32700 GP :TaskControlBlock*
+    instr 675: store t#-4 (674)
+    instr 676: br [704]
+    instr 677: checknull scheduler#12 :Scheduler
+    instr 678: add (677) queueCount_offset#4 :int*
+    instr 679: checknull scheduler#12 :Scheduler
+    instr 680: add (679) queueCount_offset#4 :int*
+    instr 681: load (680) :int
+    instr 682: add (681) 1 :int
+    instr 683: store (682) (678)
+    instr 684: checknull packet#8 :Packet
+    instr 685: add (684) link_offset#4 :Packet*
+    instr 686: store 0 (685)
+    instr 687: checknull packet#8 :Packet
+    instr 688: add (687) id_offset#8 :int*
+    instr 689: checknull scheduler#12 :Scheduler
+    instr 690: add (689) currentId_offset#16 :int*
+    instr 691: load (690) :int
+    instr 692: store (691) (688)
+    instr 693: param t#-4
+    instr 694: checknull scheduler#12 :Scheduler
+    instr 695: add (694) currentTcb_offset#12 :TaskControlBlock*
+    instr 696: load (695) :TaskControlBlock
+    instr 697: param (696)
+    instr 698: param packet#8
+    instr 699: call [545]
+    instr 700: add TaskControlBlock_checkPriorityAdd_result_base#32692 GP :TaskControlBlock*
+    instr 701: load (700) :TaskControlBlock
+    instr 702: add Scheduler_queue_result_base#32700 GP :TaskControlBlock*
+    instr 703: store (701) (702)
+    instr 704: ret 8
+    instr 705: enter 0
+    instr 706: checknull task#20 :IdleTask
+    instr 707: add (706) scheduler_offset#4 :Scheduler*
+    instr 708: store scheduler#16 (707)
+    instr 709: checknull task#20 :IdleTask
+    instr 710: add (709) v1_offset#8 :State*
+    instr 711: store v1#12 (710)
+    instr 712: checknull task#20 :IdleTask
+    instr 713: add (712) count_offset#12 :int*
+    instr 714: store count#8 (713)
+    instr 715: ret 16
+    instr 716: enter 0
+    instr 717: checknull task#12 :IdleTask
+    instr 718: add (717) count_offset#12 :int*
+    instr 719: checknull task#12 :IdleTask
+    instr 720: add (719) count_offset#12 :int*
+    instr 721: load (720) :int
+    instr 722: sub (721) 1 :int
+    instr 723: store (722) (718)
+    instr 724: checknull task#12 :IdleTask
+    instr 725: add (724) count_offset#12 :int*
+    instr 726: load (725) :int
+    instr 727: cmpeq (726) 0 :bool
+    instr 728: blbc (727) [739]
+    instr 729: checknull task#12 :IdleTask
+    instr 730: add (729) scheduler_offset#4 :Scheduler*
+    instr 731: load (730) :Scheduler
+    instr 732: param (731)
+    instr 733: call [584]
+    instr 734: add Scheduler_holdCurrent_result_base#32708 GP :TaskControlBlock*
+    instr 735: load (734) :TaskControlBlock
+    instr 736: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 737: store (735) (736)
+    instr 738: br [926]
+    instr 739: checknull task#12 :IdleTask
+    instr 740: add (739) v1_offset#8 :State*
+    instr 741: load (740) :State
+    instr 742: checknull (741) :State
+    instr 743: add (742) bits_offset#4 :List*
+    instr 744: load (743) :List
+    instr 745: checknull (744) :List
+    instr 746: checkbounds (745) 0
+    instr 747: add (745) 8 :dynamic*
+    instr 748: mul 0 4 :int
+    instr 749: add (747) (748) :dynamic*
+    instr 750: load (749) :dynamic
+    instr 751: checknull (750) :dynamic
+    instr 752: checktype (751) Integer_type#8 :Integer
+    instr 753: add (752) value_offset#4 :int*
+    instr 754: load (753) :int
+    instr 755: cmpeq (754) 0 :bool
+    instr 756: blbc (755) [778]
+    instr 757: checknull task#12 :IdleTask
+    instr 758: add (757) v1_offset#8 :State*
+    instr 759: load (758) :State
+    instr 760: param (759)
+    instr 761: call [211]
+    instr 762: checknull task#12 :IdleTask
+    instr 763: add (762) v1_offset#8 :State*
+    instr 764: add State_rshift_result_base#32728 GP :State*
+    instr 765: load (764) :State
+    instr 766: store (765) (763)
+    instr 767: checknull task#12 :IdleTask
+    instr 768: add (767) scheduler_offset#4 :Scheduler*
+    instr 769: load (768) :Scheduler
+    instr 770: param (769)
+    instr 771: param 4
+    instr 772: call [606]
+    instr 773: add Scheduler_release_result_base#32712 GP :TaskControlBlock*
+    instr 774: load (773) :TaskControlBlock
+    instr 775: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 776: store (774) (775)
+    instr 777: br [926]
+    instr 778: checknull task#12 :IdleTask
+    instr 779: add (778) v1_offset#8 :State*
+    instr 780: load (779) :State
+    instr 781: param (780)
+    instr 782: call [211]
+    instr 783: checknull task#12 :IdleTask
+    instr 784: add (783) v1_offset#8 :State*
+    instr 785: add State_rshift_result_base#32728 GP :State*
+    instr 786: load (785) :State
+    instr 787: store (786) (784)
+    instr 788: checknull task#12 :IdleTask
+    instr 789: add (788) v1_offset#8 :State*
+    instr 790: load (789) :State
+    instr 791: checknull (790) :State
+    instr 792: add (791) bits_offset#4 :List*
+    instr 793: load (792) :List
+    instr 794: checknull (793) :List
+    instr 795: checkbounds (794) 3
+    instr 796: add (794) 8 :dynamic*
+    instr 797: mul 3 4 :int
+    instr 798: add (796) (797) :dynamic*
+    instr 799: checknull task#12 :IdleTask
+    instr 800: add (799) v1_offset#8 :State*
+    instr 801: load (800) :State
+    instr 802: checknull (801) :State
+    instr 803: add (802) bits_offset#4 :List*
+    instr 804: load (803) :List
+    instr 805: checknull (804) :List
+    instr 806: checkbounds (805) 3
+    instr 807: add (805) 8 :dynamic*
+    instr 808: mul 3 4 :int
+    instr 809: add (807) (808) :dynamic*
+    instr 810: load (809) :dynamic
+    instr 811: checknull (810) :dynamic
+    instr 812: checktype (811) Integer_type#8 :Integer
+    instr 813: add (812) value_offset#4 :int*
+    instr 814: load (813) :int
+    instr 815: sub 1 (814) :int
+    instr 816: new Integer_type#8 :Integer
+    instr 817: add (816) value_offset#4 :int*
+    instr 818: store (815) (817)
+    instr 819: store (816) (798)
+    instr 820: checknull task#12 :IdleTask
+    instr 821: add (820) v1_offset#8 :State*
+    instr 822: load (821) :State
+    instr 823: checknull (822) :State
+    instr 824: add (823) bits_offset#4 :List*
+    instr 825: load (824) :List
+    instr 826: checknull (825) :List
+    instr 827: checkbounds (826) 12
+    instr 828: add (826) 8 :dynamic*
+    instr 829: mul 12 4 :int
+    instr 830: add (828) (829) :dynamic*
+    instr 831: checknull task#12 :IdleTask
+    instr 832: add (831) v1_offset#8 :State*
+    instr 833: load (832) :State
+    instr 834: checknull (833) :State
+    instr 835: add (834) bits_offset#4 :List*
+    instr 836: load (835) :List
+    instr 837: checknull (836) :List
+    instr 838: checkbounds (837) 12
+    instr 839: add (837) 8 :dynamic*
+    instr 840: mul 12 4 :int
+    instr 841: add (839) (840) :dynamic*
+    instr 842: load (841) :dynamic
+    instr 843: checknull (842) :dynamic
+    instr 844: checktype (843) Integer_type#8 :Integer
+    instr 845: add (844) value_offset#4 :int*
+    instr 846: load (845) :int
+    instr 847: sub 1 (846) :int
+    instr 848: new Integer_type#8 :Integer
+    instr 849: add (848) value_offset#4 :int*
+    instr 850: store (847) (849)
+    instr 851: store (848) (830)
+    instr 852: checknull task#12 :IdleTask
+    instr 853: add (852) v1_offset#8 :State*
+    instr 854: load (853) :State
+    instr 855: checknull (854) :State
+    instr 856: add (855) bits_offset#4 :List*
+    instr 857: load (856) :List
+    instr 858: checknull (857) :List
+    instr 859: checkbounds (858) 14
+    instr 860: add (858) 8 :dynamic*
+    instr 861: mul 14 4 :int
+    instr 862: add (860) (861) :dynamic*
+    instr 863: checknull task#12 :IdleTask
+    instr 864: add (863) v1_offset#8 :State*
+    instr 865: load (864) :State
+    instr 866: checknull (865) :State
+    instr 867: add (866) bits_offset#4 :List*
+    instr 868: load (867) :List
+    instr 869: checknull (868) :List
+    instr 870: checkbounds (869) 14
+    instr 871: add (869) 8 :dynamic*
+    instr 872: mul 14 4 :int
+    instr 873: add (871) (872) :dynamic*
+    instr 874: load (873) :dynamic
+    instr 875: checknull (874) :dynamic
+    instr 876: checktype (875) Integer_type#8 :Integer
+    instr 877: add (876) value_offset#4 :int*
+    instr 878: load (877) :int
+    instr 879: sub 1 (878) :int
+    instr 880: new Integer_type#8 :Integer
+    instr 881: add (880) value_offset#4 :int*
+    instr 882: store (879) (881)
+    instr 883: store (880) (862)
+    instr 884: checknull task#12 :IdleTask
+    instr 885: add (884) v1_offset#8 :State*
+    instr 886: load (885) :State
+    instr 887: checknull (886) :State
+    instr 888: add (887) bits_offset#4 :List*
+    instr 889: load (888) :List
+    instr 890: checknull (889) :List
+    instr 891: checkbounds (890) 15
+    instr 892: add (890) 8 :dynamic*
+    instr 893: mul 15 4 :int
+    instr 894: add (892) (893) :dynamic*
+    instr 895: checknull task#12 :IdleTask
+    instr 896: add (895) v1_offset#8 :State*
+    instr 897: load (896) :State
+    instr 898: checknull (897) :State
+    instr 899: add (898) bits_offset#4 :List*
+    instr 900: load (899) :List
+    instr 901: checknull (900) :List
+    instr 902: checkbounds (901) 15
+    instr 903: add (901) 8 :dynamic*
+    instr 904: mul 15 4 :int
+    instr 905: add (903) (904) :dynamic*
+    instr 906: load (905) :dynamic
+    instr 907: checknull (906) :dynamic
+    instr 908: checktype (907) Integer_type#8 :Integer
+    instr 909: add (908) value_offset#4 :int*
+    instr 910: load (909) :int
+    instr 911: sub 1 (910) :int
+    instr 912: new Integer_type#8 :Integer
+    instr 913: add (912) value_offset#4 :int*
+    instr 914: store (911) (913)
+    instr 915: store (912) (894)
+    instr 916: checknull task#12 :IdleTask
+    instr 917: add (916) scheduler_offset#4 :Scheduler*
+    instr 918: load (917) :Scheduler
+    instr 919: param (918)
+    instr 920: param 5
+    instr 921: call [606]
+    instr 922: add Scheduler_release_result_base#32712 GP :TaskControlBlock*
+    instr 923: load (922) :TaskControlBlock
+    instr 924: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 925: store (923) (924)
+    instr 926: ret 8
+    instr 927: enter 0
+    instr 928: checknull task#12 :DeviceTask
+    instr 929: add (928) scheduler_offset#4 :Scheduler*
+    instr 930: store scheduler#8 (929)
+    instr 931: ret 8
+    instr 932: enter 4
+    instr 933: isnull packet#8 :bool
+    instr 934: blbc (933) [968]
+    instr 935: checknull task#12 :DeviceTask
+    instr 936: add (935) v1_offset#8 :Packet*
+    instr 937: load (936) :Packet
+    instr 938: isnull (937) :bool
+    instr 939: blbc (938) [950]
+    instr 940: checknull task#12 :DeviceTask
+    instr 941: add (940) scheduler_offset#4 :Scheduler*
+    instr 942: load (941) :Scheduler
+    instr 943: param (942)
+    instr 944: call [645]
+    instr 945: add Scheduler_suspendCurrent_result_base#32704 GP :TaskControlBlock*
+    instr 946: load (945) :TaskControlBlock
+    instr 947: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 948: store (946) (947)
+    instr 949: br [967]
+    instr 950: checknull task#12 :DeviceTask
+    instr 951: add (950) v1_offset#8 :Packet*
+    instr 952: load (951) :Packet
+    instr 953: move (952) v#-4
+    instr 954: checknull task#12 :DeviceTask
+    instr 955: add (954) v1_offset#8 :Packet*
+    instr 956: store 0 (955)
+    instr 957: checknull task#12 :DeviceTask
+    instr 958: add (957) scheduler_offset#4 :Scheduler*
+    instr 959: load (958) :Scheduler
+    instr 960: param (959)
+    instr 961: param v#-4
+    instr 962: call [657]
+    instr 963: add Scheduler_queue_result_base#32700 GP :TaskControlBlock*
+    instr 964: load (963) :TaskControlBlock
+    instr 965: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 966: store (964) (965)
+    instr 967: br [980]
+    instr 968: checknull task#12 :DeviceTask
+    instr 969: add (968) v1_offset#8 :Packet*
+    instr 970: store packet#8 (969)
+    instr 971: checknull task#12 :DeviceTask
+    instr 972: add (971) scheduler_offset#4 :Scheduler*
+    instr 973: load (972) :Scheduler
+    instr 974: param (973)
+    instr 975: call [584]
+    instr 976: add Scheduler_holdCurrent_result_base#32708 GP :TaskControlBlock*
+    instr 977: load (976) :TaskControlBlock
+    instr 978: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 979: store (977) (978)
+    instr 980: ret 8
+    instr 981: enter 0
+    instr 982: checknull task#20 :WorkerTask
+    instr 983: add (982) scheduler_offset#4 :Scheduler*
+    instr 984: store scheduler#16 (983)
+    instr 985: checknull task#20 :WorkerTask
+    instr 986: add (985) v1_offset#8 :int*
+    instr 987: store v1#12 (986)
+    instr 988: checknull task#20 :WorkerTask
+    instr 989: add (988) v2_offset#12 :int*
+    instr 990: store v2#8 (989)
+    instr 991: ret 16
+    instr 992: enter 4
+    instr 993: isnull packet#8 :bool
+    instr 994: blbc (993) [1005]
+    instr 995: checknull task#12 :WorkerTask
+    instr 996: add (995) scheduler_offset#4 :Scheduler*
+    instr 997: load (996) :Scheduler
+    instr 998: param (997)
+    instr 999: call [645]
+    instr 1000: add Scheduler_suspendCurrent_result_base#32704 GP :TaskControlBlock*
+    instr 1001: load (1000) :TaskControlBlock
+    instr 1002: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1003: store (1001) (1002)
+    instr 1004: br [1072]
+    instr 1005: checknull task#12 :WorkerTask
+    instr 1006: add (1005) v1_offset#8 :int*
+    instr 1007: load (1006) :int
+    instr 1008: cmpeq (1007) 2 :bool
+    instr 1009: blbc (1008) [1014]
+    instr 1010: checknull task#12 :WorkerTask
+    instr 1011: add (1010) v1_offset#8 :int*
+    instr 1012: store 3 (1011)
+    instr 1013: br [1017]
+    instr 1014: checknull task#12 :WorkerTask
+    instr 1015: add (1014) v1_offset#8 :int*
+    instr 1016: store 2 (1015)
+    instr 1017: checknull packet#8 :Packet
+    instr 1018: add (1017) id_offset#8 :int*
+    instr 1019: checknull task#12 :WorkerTask
+    instr 1020: add (1019) v1_offset#8 :int*
+    instr 1021: load (1020) :int
+    instr 1022: store (1021) (1018)
+    instr 1023: checknull packet#8 :Packet
+    instr 1024: add (1023) a1_offset#16 :int*
+    instr 1025: store 0 (1024)
+    instr 1026: move 0 i#-4
+    instr 1027: cmplt i#-4 4 :bool
+    instr 1028: blbc (1027) [1062]
+    instr 1029: checknull task#12 :WorkerTask
+    instr 1030: add (1029) v2_offset#12 :int*
+    instr 1031: checknull task#12 :WorkerTask
+    instr 1032: add (1031) v2_offset#12 :int*
+    instr 1033: load (1032) :int
+    instr 1034: add (1033) 1 :int
+    instr 1035: store (1034) (1030)
+    instr 1036: checknull task#12 :WorkerTask
+    instr 1037: add (1036) v2_offset#12 :int*
+    instr 1038: load (1037) :int
+    instr 1039: cmple (1038) 26 :bool
+    instr 1040: blbs (1039) [1044]
+    instr 1041: checknull task#12 :WorkerTask
+    instr 1042: add (1041) v2_offset#12 :int*
+    instr 1043: store 1 (1042)
+    instr 1044: checknull packet#8 :Packet
+    instr 1045: add (1044) a2_offset#20 :List*
+    instr 1046: load (1045) :List
+    instr 1047: checknull (1046) :List
+    instr 1048: checkbounds (1047) i#-4
+    instr 1049: add (1047) 8 :dynamic*
+    instr 1050: mul i#-4 4 :int
+    instr 1051: add (1049) (1050) :dynamic*
+    instr 1052: checknull task#12 :WorkerTask
+    instr 1053: add (1052) v2_offset#12 :int*
+    instr 1054: load (1053) :int
+    instr 1055: new Integer_type#8 :Integer
+    instr 1056: add (1055) value_offset#4 :int*
+    instr 1057: store (1054) (1056)
+    instr 1058: store (1055) (1051)
+    instr 1059: add i#-4 1 :int
+    instr 1060: move (1059) i#-4
+    instr 1061: br [1027]
+    instr 1062: checknull task#12 :WorkerTask
+    instr 1063: add (1062) scheduler_offset#4 :Scheduler*
+    instr 1064: load (1063) :Scheduler
+    instr 1065: param (1064)
+    instr 1066: param packet#8
+    instr 1067: call [657]
+    instr 1068: add Scheduler_queue_result_base#32700 GP :TaskControlBlock*
+    instr 1069: load (1068) :TaskControlBlock
+    instr 1070: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1071: store (1069) (1070)
+    instr 1072: ret 8
+    instr 1073: enter 0
+    instr 1074: checknull task#12 :HandlerTask
+    instr 1075: add (1074) scheduler_offset#4 :Scheduler*
+    instr 1076: store scheduler#8 (1075)
+    instr 1077: ret 8
+    instr 1078: enter 8
+    instr 1079: isnull packet#8 :bool
+    instr 1080: blbs (1079) [1109]
+    instr 1081: checknull packet#8 :Packet
+    instr 1082: add (1081) kind_offset#12 :int*
+    instr 1083: load (1082) :int
+    instr 1084: cmpeq (1083) 1 :bool
+    instr 1085: blbc (1084) [1098]
+    instr 1086: param packet#8
+    instr 1087: checknull task#12 :HandlerTask
+    instr 1088: add (1087) v1_offset#8 :Packet*
+    instr 1089: load (1088) :Packet
+    instr 1090: param (1089)
+    instr 1091: call [383]
+    instr 1092: checknull task#12 :HandlerTask
+    instr 1093: add (1092) v1_offset#8 :Packet*
+    instr 1094: add Packet_addTo_result_base#32676 GP :Packet*
+    instr 1095: load (1094) :Packet
+    instr 1096: store (1095) (1093)
+    instr 1097: br [1109]
+    instr 1098: param packet#8
+    instr 1099: checknull task#12 :HandlerTask
+    instr 1100: add (1099) v2_offset#12 :Packet*
+    instr 1101: load (1100) :Packet
+    instr 1102: param (1101)
+    instr 1103: call [383]
+    instr 1104: checknull task#12 :HandlerTask
+    instr 1105: add (1104) v2_offset#12 :Packet*
+    instr 1106: add Packet_addTo_result_base#32676 GP :Packet*
+    instr 1107: load (1106) :Packet
+    instr 1108: store (1107) (1105)
+    instr 1109: checknull task#12 :HandlerTask
+    instr 1110: add (1109) v1_offset#8 :Packet*
+    instr 1111: load (1110) :Packet
+    instr 1112: isnull (1111) :bool
+    instr 1113: blbs (1112) [1212]
+    instr 1114: checknull task#12 :HandlerTask
+    instr 1115: add (1114) v1_offset#8 :Packet*
+    instr 1116: load (1115) :Packet
+    instr 1117: checknull (1116) :Packet
+    instr 1118: add (1117) a1_offset#16 :int*
+    instr 1119: load (1118) :int
+    instr 1120: move (1119) count#-4
+    instr 1121: cmplt count#-4 4 :bool
+    instr 1122: blbc (1121) [1188]
+    instr 1123: checknull task#12 :HandlerTask
+    instr 1124: add (1123) v2_offset#12 :Packet*
+    instr 1125: load (1124) :Packet
+    instr 1126: isnull (1125) :bool
+    instr 1127: blbs (1126) [1178]
+    instr 1128: checknull task#12 :HandlerTask
+    instr 1129: add (1128) v2_offset#12 :Packet*
+    instr 1130: load (1129) :Packet
+    instr 1131: move (1130) v#-8
+    instr 1132: checknull task#12 :HandlerTask
+    instr 1133: add (1132) v2_offset#12 :Packet*
+    instr 1134: checknull task#12 :HandlerTask
+    instr 1135: add (1134) v2_offset#12 :Packet*
+    instr 1136: load (1135) :Packet
+    instr 1137: checknull (1136) :Packet
+    instr 1138: add (1137) link_offset#4 :Packet*
+    instr 1139: load (1138) :Packet
+    instr 1140: store (1139) (1133)
+    instr 1141: checknull v#-8 :Packet
+    instr 1142: add (1141) a1_offset#16 :int*
+    instr 1143: checknull task#12 :HandlerTask
+    instr 1144: add (1143) v1_offset#8 :Packet*
+    instr 1145: load (1144) :Packet
+    instr 1146: checknull (1145) :Packet
+    instr 1147: add (1146) a2_offset#20 :List*
+    instr 1148: load (1147) :List
+    instr 1149: checknull (1148) :List
+    instr 1150: checkbounds (1149) count#-4
+    instr 1151: add (1149) 8 :dynamic*
+    instr 1152: mul count#-4 4 :int
+    instr 1153: add (1151) (1152) :dynamic*
+    instr 1154: load (1153) :dynamic
+    instr 1155: checknull (1154) :dynamic
+    instr 1156: checktype (1155) Integer_type#8 :Integer
+    instr 1157: add (1156) value_offset#4 :int*
+    instr 1158: load (1157) :int
+    instr 1159: store (1158) (1142)
+    instr 1160: checknull task#12 :HandlerTask
+    instr 1161: add (1160) v1_offset#8 :Packet*
+    instr 1162: load (1161) :Packet
+    instr 1163: checknull (1162) :Packet
+    instr 1164: add (1163) a1_offset#16 :int*
+    instr 1165: add count#-4 1 :int
+    instr 1166: store (1165) (1164)
+    instr 1167: checknull task#12 :HandlerTask
+    instr 1168: add (1167) scheduler_offset#4 :Scheduler*
+    instr 1169: load (1168) :Scheduler
+    instr 1170: param (1169)
+    instr 1171: param v#-8
+    instr 1172: call [657]
+    instr 1173: add Scheduler_queue_result_base#32700 GP :TaskControlBlock*
+    instr 1174: load (1173) :TaskControlBlock
+    instr 1175: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1176: store (1174) (1175)
+    instr 1177: br [1187]
+    instr 1178: checknull task#12 :HandlerTask
+    instr 1179: add (1178) scheduler_offset#4 :Scheduler*
+    instr 1180: load (1179) :Scheduler
+    instr 1181: param (1180)
+    instr 1182: call [645]
+    instr 1183: add Scheduler_suspendCurrent_result_base#32704 GP :TaskControlBlock*
+    instr 1184: load (1183) :TaskControlBlock
+    instr 1185: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1186: store (1184) (1185)
+    instr 1187: br [1211]
+    instr 1188: checknull task#12 :HandlerTask
+    instr 1189: add (1188) v1_offset#8 :Packet*
+    instr 1190: load (1189) :Packet
+    instr 1191: move (1190) v#-8
+    instr 1192: checknull task#12 :HandlerTask
+    instr 1193: add (1192) v1_offset#8 :Packet*
+    instr 1194: checknull task#12 :HandlerTask
+    instr 1195: add (1194) v1_offset#8 :Packet*
+    instr 1196: load (1195) :Packet
+    instr 1197: checknull (1196) :Packet
+    instr 1198: add (1197) link_offset#4 :Packet*
+    instr 1199: load (1198) :Packet
+    instr 1200: store (1199) (1193)
+    instr 1201: checknull task#12 :HandlerTask
+    instr 1202: add (1201) scheduler_offset#4 :Scheduler*
+    instr 1203: load (1202) :Scheduler
+    instr 1204: param (1203)
+    instr 1205: param v#-8
+    instr 1206: call [657]
+    instr 1207: add Scheduler_queue_result_base#32700 GP :TaskControlBlock*
+    instr 1208: load (1207) :TaskControlBlock
+    instr 1209: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1210: store (1208) (1209)
+    instr 1211: br [1221]
+    instr 1212: checknull task#12 :HandlerTask
+    instr 1213: add (1212) scheduler_offset#4 :Scheduler*
+    instr 1214: load (1213) :Scheduler
+    instr 1215: param (1214)
+    instr 1216: call [645]
+    instr 1217: add Scheduler_suspendCurrent_result_base#32704 GP :TaskControlBlock*
+    instr 1218: load (1217) :TaskControlBlock
+    instr 1219: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1220: store (1218) (1219)
+    instr 1221: ret 8
+    instr 1222: enter 0
+    instr 1223: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1224: store 0 (1223)
+    instr 1225: istype task#12 IdleTask_type#16 :bool
+    instr 1226: blbc (1225) [1232]
+    instr 1227: checktype task#12 IdleTask_type#16 :IdleTask
+    instr 1228: param (1227)
+    instr 1229: param packet#8
+    instr 1230: call [716]
+    instr 1231: br [1253]
+    instr 1232: istype task#12 DeviceTask_type#12 :bool
+    instr 1233: blbc (1232) [1239]
+    instr 1234: checktype task#12 DeviceTask_type#12 :DeviceTask
+    instr 1235: param (1234)
+    instr 1236: param packet#8
+    instr 1237: call [932]
+    instr 1238: br [1253]
+    instr 1239: istype task#12 WorkerTask_type#16 :bool
+    instr 1240: blbc (1239) [1246]
+    instr 1241: checktype task#12 WorkerTask_type#16 :WorkerTask
+    instr 1242: param (1241)
+    instr 1243: param packet#8
+    instr 1244: call [992]
+    instr 1245: br [1253]
+    instr 1246: istype task#12 HandlerTask_type#16 :bool
+    instr 1247: blbc (1246) [1253]
+    instr 1248: checktype task#12 HandlerTask_type#16 :HandlerTask
+    instr 1249: param (1248)
+    instr 1250: param packet#8
+    instr 1251: call [1078]
+    instr 1252: br [1253]
+    instr 1253: ret 8
+    instr 1254: enter 4
+    instr 1255: checknull tcb#8 :TaskControlBlock
+    instr 1256: add (1255) state_offset#24 :State*
+    instr 1257: load (1256) :State
+    instr 1258: param (1257)
+    instr 1259: add STATE_SUSPENDED_RUNNABLE_base#32748 GP :State*
+    instr 1260: load (1259) :State
+    instr 1261: param (1260)
+    instr 1262: call [258]
+    instr 1263: add State_equals_result_base#32724 GP :int*
+    instr 1264: load (1263) :int
+    instr 1265: cmpeq (1264) 0 :bool
+    instr 1266: blbs (1265) [1294]
+    instr 1267: checknull tcb#8 :TaskControlBlock
+    instr 1268: add (1267) queue_offset#16 :Packet*
+    instr 1269: load (1268) :Packet
+    instr 1270: move (1269) packet#-4
+    instr 1271: checknull tcb#8 :TaskControlBlock
+    instr 1272: add (1271) queue_offset#16 :Packet*
+    instr 1273: checknull packet#-4 :Packet
+    instr 1274: add (1273) link_offset#4 :Packet*
+    instr 1275: load (1274) :Packet
+    instr 1276: store (1275) (1272)
+    instr 1277: checknull tcb#8 :TaskControlBlock
+    instr 1278: add (1277) queue_offset#16 :Packet*
+    instr 1279: load (1278) :Packet
+    instr 1280: isnull (1279) :bool
+    instr 1281: blbc (1280) [1288]
+    instr 1282: checknull tcb#8 :TaskControlBlock
+    instr 1283: add (1282) state_offset#24 :State*
+    instr 1284: add STATE_RUNNING_base#32764 GP :State*
+    instr 1285: load (1284) :State
+    instr 1286: store (1285) (1283)
+    instr 1287: br [1293]
+    instr 1288: checknull tcb#8 :TaskControlBlock
+    instr 1289: add (1288) state_offset#24 :State*
+    instr 1290: add STATE_RUNNABLE_base#32760 GP :State*
+    instr 1291: load (1290) :State
+    instr 1292: store (1291) (1289)
+    instr 1293: br [1295]
+    instr 1294: move 0 packet#-4
+    instr 1295: checknull tcb#8 :TaskControlBlock
+    instr 1296: lddynamic (1295) task_offset#? :dynamic
+    instr 1297: param (1296)
+    instr 1298: param packet#-4
+    instr 1299: call [1222]
+    instr 1300: add Task_run_result_base#32684 GP :TaskControlBlock*
+    instr 1301: load (1300) :TaskControlBlock
+    instr 1302: add TaskControlBlock_run_result_base#32696 GP :TaskControlBlock*
+    instr 1303: store (1301) (1302)
+    instr 1304: ret 4
+    instr 1305: enter 0
+    instr 1306: checknull scheduler#8 :Scheduler
+    instr 1307: add (1306) queueCount_offset#4 :int*
+    instr 1308: store 0 (1307)
+    instr 1309: checknull scheduler#8 :Scheduler
+    instr 1310: add (1309) holdCount_offset#8 :int*
+    instr 1311: store 0 (1310)
+    instr 1312: checknull scheduler#8 :Scheduler
+    instr 1313: add (1312) currentTcb_offset#12 :TaskControlBlock*
+    instr 1314: store 0 (1313)
+    instr 1315: checknull scheduler#8 :Scheduler
+    instr 1316: add (1315) currentId_offset#16 :int*
+    instr 1317: store 0 (1316)
+    instr 1318: checknull scheduler#8 :Scheduler
+    instr 1319: add (1318) list_offset#20 :TaskControlBlock*
+    instr 1320: store 0 (1319)
+    instr 1321: checknull scheduler#8 :Scheduler
+    instr 1322: add (1321) blocks_offset#24 :List*
+    instr 1323: newlist 6 :List
+    instr 1324: store (1323) (1322)
+    instr 1325: ret 4
+    instr 1326: enter 0
+    instr 1327: checknull scheduler#24 :Scheduler
+    instr 1328: add (1327) currentTcb_offset#12 :TaskControlBlock*
+    instr 1329: new TaskControlBlock_type#28 :TaskControlBlock
+    instr 1330: store (1329) (1328)
+    instr 1331: checknull scheduler#24 :Scheduler
+    instr 1332: add (1331) currentTcb_offset#12 :TaskControlBlock*
+    instr 1333: load (1332) :TaskControlBlock
+    instr 1334: param (1333)
+    instr 1335: checknull scheduler#24 :Scheduler
+    instr 1336: add (1335) list_offset#20 :TaskControlBlock*
+    instr 1337: load (1336) :TaskControlBlock
+    instr 1338: param (1337)
+    instr 1339: param id#20
+    instr 1340: param priority#16
+    instr 1341: param queue#12
+    instr 1342: param task#8
+    instr 1343: call [411]
+    instr 1344: checknull scheduler#24 :Scheduler
+    instr 1345: add (1344) list_offset#20 :TaskControlBlock*
+    instr 1346: checknull scheduler#24 :Scheduler
+    instr 1347: add (1346) currentTcb_offset#12 :TaskControlBlock*
+    instr 1348: load (1347) :TaskControlBlock
+    instr 1349: store (1348) (1345)
+    instr 1350: checknull scheduler#24 :Scheduler
+    instr 1351: add (1350) blocks_offset#24 :List*
+    instr 1352: load (1351) :List
+    instr 1353: checknull (1352) :List
+    instr 1354: checkbounds (1353) id#20
+    instr 1355: add (1353) 8 :dynamic*
+    instr 1356: mul id#20 4 :int
+    instr 1357: add (1355) (1356) :dynamic*
+    instr 1358: checknull scheduler#24 :Scheduler
+    instr 1359: add (1358) currentTcb_offset#12 :TaskControlBlock*
+    instr 1360: load (1359) :TaskControlBlock
+    instr 1361: store (1360) (1357)
+    instr 1362: ret 20
+    instr 1363: enter 0
+    instr 1364: param scheduler#24
+    instr 1365: param id#20
+    instr 1366: param priority#16
+    instr 1367: param queue#12
+    instr 1368: param task#8
+    instr 1369: call [1326]
+    instr 1370: checknull scheduler#24 :Scheduler
+    instr 1371: add (1370) currentTcb_offset#12 :TaskControlBlock*
+    instr 1372: load (1371) :TaskControlBlock
+    instr 1373: param (1372)
+    instr 1374: call [440]
+    instr 1375: ret 20
+    instr 1376: enter 4
+    instr 1377: new IdleTask_type#16 :IdleTask
+    instr 1378: move (1377) idleTask#-4
+    instr 1379: param idleTask#-4
+    instr 1380: param scheduler#24
+    instr 1381: add STATE_RUNNABLE_base#32760 GP :State*
+    instr 1382: load (1381) :State
+    instr 1383: param (1382)
+    instr 1384: param count#8
+    instr 1385: call [705]
+    instr 1386: param scheduler#24
+    instr 1387: param id#20
+    instr 1388: param priority#16
+    instr 1389: param queue#12
+    instr 1390: param idleTask#-4
+    instr 1391: call [1363]
+    instr 1392: ret 20
+    instr 1393: enter 4
+    instr 1394: new WorkerTask_type#16 :WorkerTask
+    instr 1395: move (1394) workerTask#-4
+    instr 1396: param workerTask#-4
+    instr 1397: param scheduler#20
+    instr 1398: param 2
+    instr 1399: param 0
+    instr 1400: call [981]
+    instr 1401: param scheduler#20
+    instr 1402: param id#16
+    instr 1403: param priority#12
+    instr 1404: param queue#8
+    instr 1405: param workerTask#-4
+    instr 1406: call [1326]
+    instr 1407: ret 16
+    instr 1408: enter 4
+    instr 1409: new HandlerTask_type#16 :HandlerTask
+    instr 1410: move (1409) handlerTask#-4
+    instr 1411: param handlerTask#-4
+    instr 1412: param scheduler#20
+    instr 1413: call [1073]
+    instr 1414: param scheduler#20
+    instr 1415: param id#16
+    instr 1416: param priority#12
+    instr 1417: param queue#8
+    instr 1418: param handlerTask#-4
+    instr 1419: call [1326]
+    instr 1420: ret 16
+    instr 1421: enter 4
+    instr 1422: new DeviceTask_type#12 :DeviceTask
+    instr 1423: move (1422) deviceTask#-4
+    instr 1424: param deviceTask#-4
+    instr 1425: param scheduler#20
+    instr 1426: call [927]
+    instr 1427: param scheduler#20
+    instr 1428: param id#16
+    instr 1429: param priority#12
+    instr 1430: param queue#8
+    instr 1431: param deviceTask#-4
+    instr 1432: call [1326]
+    instr 1433: ret 16
+    instr 1434: enter 0
+    instr 1435: checknull scheduler#8 :Scheduler
+    instr 1436: add (1435) currentTcb_offset#12 :TaskControlBlock*
+    instr 1437: checknull scheduler#8 :Scheduler
+    instr 1438: add (1437) list_offset#20 :TaskControlBlock*
+    instr 1439: load (1438) :TaskControlBlock
+    instr 1440: store (1439) (1436)
+    instr 1441: checknull scheduler#8 :Scheduler
+    instr 1442: add (1441) currentTcb_offset#12 :TaskControlBlock*
+    instr 1443: load (1442) :TaskControlBlock
+    instr 1444: isnull (1443) :bool
+    instr 1445: blbs (1444) [1485]
+    instr 1446: checknull scheduler#8 :Scheduler
+    instr 1447: add (1446) currentTcb_offset#12 :TaskControlBlock*
+    instr 1448: load (1447) :TaskControlBlock
+    instr 1449: param (1448)
+    instr 1450: call [477]
+    instr 1451: add TaskControlBlock_isHeldOrSuspended_result_base#32688 GP :int*
+    instr 1452: load (1451) :int
+    instr 1453: cmpeq (1452) 0 :bool
+    instr 1454: blbs (1453) [1465]
+    instr 1455: checknull scheduler#8 :Scheduler
+    instr 1456: add (1455) currentTcb_offset#12 :TaskControlBlock*
+    instr 1457: checknull scheduler#8 :Scheduler
+    instr 1458: add (1457) currentTcb_offset#12 :TaskControlBlock*
+    instr 1459: load (1458) :TaskControlBlock
+    instr 1460: checknull (1459) :TaskControlBlock
+    instr 1461: add (1460) link_offset#4 :TaskControlBlock*
+    instr 1462: load (1461) :TaskControlBlock
+    instr 1463: store (1462) (1456)
+    instr 1464: br [1484]
+    instr 1465: checknull scheduler#8 :Scheduler
+    instr 1466: add (1465) currentId_offset#16 :int*
+    instr 1467: checknull scheduler#8 :Scheduler
+    instr 1468: add (1467) currentTcb_offset#12 :TaskControlBlock*
+    instr 1469: load (1468) :TaskControlBlock
+    instr 1470: checknull (1469) :TaskControlBlock
+    instr 1471: add (1470) id_offset#8 :int*
+    instr 1472: load (1471) :int
+    instr 1473: store (1472) (1466)
+    instr 1474: checknull scheduler#8 :Scheduler
+    instr 1475: add (1474) currentTcb_offset#12 :TaskControlBlock*
+    instr 1476: load (1475) :TaskControlBlock
+    instr 1477: param (1476)
+    instr 1478: call [1254]
+    instr 1479: checknull scheduler#8 :Scheduler
+    instr 1480: add (1479) currentTcb_offset#12 :TaskControlBlock*
+    instr 1481: add TaskControlBlock_run_result_base#32696 GP :TaskControlBlock*
+    instr 1482: load (1481) :TaskControlBlock
+    instr 1483: store (1482) (1480)
+    instr 1484: br [1441]
+    instr 1485: ret 4
+    instr 1486: enter 4
+    instr 1487: new Scheduler_type#28 :Scheduler
+    instr 1488: move (1487) scheduler#-4
+    instr 1489: param scheduler#-4
+    instr 1490: call [1305]
+    instr 1491: param scheduler#-4
+    instr 1492: param 0
+    instr 1493: param 0
+    instr 1494: param 0
+    instr 1495: param 1000
+    instr 1496: call [1376]
+    instr 1497: param 0
+    instr 1498: param 1
+    instr 1499: param 1
+    instr 1500: call [372]
+    instr 1501: add new_Packet_result_base#32680 GP :Packet*
+    instr 1502: load (1501) :Packet
+    instr 1503: param (1502)
+    instr 1504: param 1
+    instr 1505: param 1
+    instr 1506: call [372]
+    instr 1507: param scheduler#-4
+    instr 1508: param 1
+    instr 1509: param 1000
+    instr 1510: add new_Packet_result_base#32680 GP :Packet*
+    instr 1511: load (1510) :Packet
+    instr 1512: param (1511)
+    instr 1513: call [1393]
+    instr 1514: param 0
+    instr 1515: param 4
+    instr 1516: param 0
+    instr 1517: call [372]
+    instr 1518: add new_Packet_result_base#32680 GP :Packet*
+    instr 1519: load (1518) :Packet
+    instr 1520: param (1519)
+    instr 1521: param 4
+    instr 1522: param 0
+    instr 1523: call [372]
+    instr 1524: add new_Packet_result_base#32680 GP :Packet*
+    instr 1525: load (1524) :Packet
+    instr 1526: param (1525)
+    instr 1527: param 4
+    instr 1528: param 0
+    instr 1529: call [372]
+    instr 1530: param scheduler#-4
+    instr 1531: param 2
+    instr 1532: param 2000
+    instr 1533: add new_Packet_result_base#32680 GP :Packet*
+    instr 1534: load (1533) :Packet
+    instr 1535: param (1534)
+    instr 1536: call [1408]
+    instr 1537: param 0
+    instr 1538: param 5
+    instr 1539: param 0
+    instr 1540: call [372]
+    instr 1541: add new_Packet_result_base#32680 GP :Packet*
+    instr 1542: load (1541) :Packet
+    instr 1543: param (1542)
+    instr 1544: param 5
+    instr 1545: param 0
+    instr 1546: call [372]
+    instr 1547: add new_Packet_result_base#32680 GP :Packet*
+    instr 1548: load (1547) :Packet
+    instr 1549: param (1548)
+    instr 1550: param 5
+    instr 1551: param 0
+    instr 1552: call [372]
+    instr 1553: param scheduler#-4
+    instr 1554: param 3
+    instr 1555: param 3000
+    instr 1556: add new_Packet_result_base#32680 GP :Packet*
+    instr 1557: load (1556) :Packet
+    instr 1558: param (1557)
+    instr 1559: call [1408]
+    instr 1560: param scheduler#-4
+    instr 1561: param 4
+    instr 1562: param 4000
+    instr 1563: param 0
+    instr 1564: call [1421]
+    instr 1565: param scheduler#-4
+    instr 1566: param 5
+    instr 1567: param 5000
+    instr 1568: param 0
+    instr 1569: call [1421]
+    instr 1570: param scheduler#-4
+    instr 1571: call [1434]
+    instr 1572: checknull scheduler#-4 :Scheduler
+    instr 1573: add (1572) queueCount_offset#4 :int*
+    instr 1574: load (1573) :int
+    instr 1575: write (1574)
+    instr 1576: checknull scheduler#-4 :Scheduler
+    instr 1577: add (1576) holdCount_offset#8 :int*
+    instr 1578: load (1577) :int
+    instr 1579: write (1578)
+    instr 1580: wrl
+    instr 1581: ret 0
+    instr 1582: entrypc
+    instr 1583: enter 0
+    instr 1584: call [304]
+    instr 1585: call [1486]
+    instr 1586: ret 0
+    instr 1587: nop
+

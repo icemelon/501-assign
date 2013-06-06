@@ -41,7 +41,7 @@ public class Main {
 			profile = new ProfileMain(program);
 			profile.run ( option );
 			
-			return;
+//			return;
 		}
 		
 		if ( option.backend == Option.BackendOption.SSA ) {

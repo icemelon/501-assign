@@ -202,6 +202,10 @@ public class PositionProfile implements Profile {
 	}
 	
 	private void bottomUpOptimize() {
+		
+		if ( localEdgeList.size() == 0 )
+			return;
+		
 		Collections.sort( localEdgeList, new Comparator<Edge>() {
 
 			@Override
@@ -211,9 +215,8 @@ public class PositionProfile implements Profile {
 			
 		} );
 		
-		for ( Edge e: localEdgeList ) {
-			System.out.println( e.toString() + ": " + e.counter ); 
-		}
+//		for ( Edge e: localEdgeList )
+//			System.out.println( e.toString() + ": " + e.counter ); 
 		
 		List<Chain> chainList = new LinkedList<Chain>();
 		Map<Block, Chain> blockChainMap = new HashMap<Block, Chain>();
@@ -282,54 +285,54 @@ public class PositionProfile implements Profile {
 		for ( int i = 0; i < chainList.size(); ++ i )
 			chainList.get( i ).index = i;
 		
-		for ( Chain c: chainList )
-			System.out.println( c );
+//		for ( Chain c: chainList )
+//			System.out.println( c );
 		
 		// calculate order between chains
 		int n = chainList.size();
-		int[][] chainOrder = new int[n][n];
-		System.out.println( "n = " + n );
 		
-		for ( int i = 0; i < n; i ++ )
-			for ( int j = 0; j < n; j ++ )
-				chainOrder[i][j] = 0;
-		
-		for ( Chain chain: chainList )
-			for ( Block block: chain.blockList )
-				if ( block.getSuccs().size() > 1 ) {
-					
-					Block b1 = block.getSuccs().get(0);
-					Block b2 = block.getSuccs().get(1);
-					
-					Chain c1 = blockChainMap.get( b1 );
-					Chain c2 = blockChainMap.get( b2 );
-					
-					BlockPosProfAttr attr = (BlockPosProfAttr) block.attr;
-					Edge e1 = attr.searchEdge( b1 );
-					Edge e2 = attr.searchEdge( b2 );
-					
-					if ( c1 != chain ) {
-						chainOrder[chain.index][c1.index] += e2.counter; // weight
-					} else if ( c2 != chain ) {
-						chainOrder[chain.index][c2.index] += e1.counter;
-					} else {
-						System.err.println( "wtf!!!!!!!!!" );
+		if (n > 2) {
+			int[][] chainOrder = new int[n][n];
+			
+			for ( int i = 0; i < n; i ++ )
+				for ( int j = 0; j < n; j ++ )
+					chainOrder[i][j] = 0;
+			
+			for ( Chain chain: chainList )
+				for ( Block block: chain.blockList )
+					if ( block.getSuccs().size() > 1 ) {
+						
+						Block b1 = block.getSuccs().get(0);
+						Block b2 = block.getSuccs().get(1);
+						
+						Chain c1 = blockChainMap.get( b1 );
+						Chain c2 = blockChainMap.get( b2 );
+						
+						BlockPosProfAttr attr = (BlockPosProfAttr) block.attr;
+						Edge e1 = attr.searchEdge( b1 );
+						Edge e2 = attr.searchEdge( b2 );
+						
+						if ( c1 != chain ) {
+							chainOrder[chain.index][c1.index] += e2.counter; // weight
+						} else if ( c2 != chain ) {
+							chainOrder[chain.index][c2.index] += e1.counter;
+						} 
 					}
-				}
-		
-		for ( Chain c1: chainList )
-			for ( Chain c2: chainList )
-				if ( c1 != c2 ) {
-					int id1 = c1.index;
-					int id2 = c2.index;
-					if ( chainOrder[id1][id2] > chainOrder[id2][id1] ) {
-						c1.outEdge.add( c2 );
-						c2.inEdge.add( c1 );
-					} else if ( chainOrder[id1][id2] < chainOrder[id2][id1] ) {
-						c1.inEdge.add( c2 );
-						c2.outEdge.add( c1 );
+			
+			for ( Chain c1: chainList )
+				for ( Chain c2: chainList )
+					if ( c1 != c2 ) {
+						int id1 = c1.index;
+						int id2 = c2.index;
+						if ( chainOrder[id1][id2] > chainOrder[id2][id1] ) {
+							c1.outEdge.add( c2 );
+							c2.inEdge.add( c1 );
+						} else if ( chainOrder[id1][id2] < chainOrder[id2][id1] ) {
+							c1.inEdge.add( c2 );
+							c2.outEdge.add( c1 );
+						}
 					}
-				}
+		}
 		
 		List<Block> newBlockOrder = new LinkedList<Block>();
 		Chain entryChain = blockChainMap.get( routine.getEntryBlock() );
@@ -346,15 +349,52 @@ public class PositionProfile implements Profile {
 				if ( chain.inEdge.isEmpty() )
 					break;
 			}
-			
 			addChain( newBlockOrder, chain );
 			it.remove();
 			
 		}
 		
-		for ( Block b: newBlockOrder )
-			System.out.print( b.getIndex() + "->" );
-		System.out.println();
+//		for ( Block b: newBlockOrder )
+//			System.out.print( b.getIndex() + "->" );
+//		System.out.println();
+		
+		int blockCount = newBlockOrder.size();
+		for ( int i = 0; i < blockCount; i ++ ) {
+			Block block = newBlockOrder.get( i );
+			Block nextBlock = ( i < blockCount - 1 ) ? newBlockOrder.get( i + 1 ) : null;
+			Stmt lastStmt = block.body.get( block.body.size() - 1 );
+			
+			if ( block.getSuccs().size() == 1 ) {
+				
+				Block succ = block.getSuccs().get(0);
+				
+				if ( lastStmt instanceof BranchStmt ) {
+					if ( succ == nextBlock) {
+						block.removeStmt( lastStmt );
+					}
+				} else {
+					if ( nextBlock == null || succ != nextBlock ) {
+						BranchStmt brStmt = new BranchStmt( succ );
+						block.body.add( brStmt );
+					}
+				}
+				
+			} else if ( block.getSuccs().size() == 2 ) {
+				
+				BranchStmt brStmt = (BranchStmt) lastStmt;
+				Block elseBlock = brStmt.getBranchBlock(); 
+				if ( elseBlock == nextBlock ) {
+					brStmt.flipOperator();
+					Block thenBlock;
+					if ( elseBlock == block.getSuccs().get(0) )
+						thenBlock = block.getSuccs().get(1);
+					else
+						thenBlock = block.getSuccs().get(0);
+					brStmt.setBranchBlock(thenBlock);
+				}
+				
+			}
+		}
 		
 		routine.setBlocks( newBlockOrder );
 	}

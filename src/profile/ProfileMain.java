@@ -93,7 +93,7 @@ public class ProfileMain {
 			((RoutinePosProfAttr) r.attr).clean();
 		}
 		
-		program.renumberStmt();
+//		program.renumberStmt();
 		
 		for ( Routine r: program.getRoutines() ) {
 			((RoutinePosProfAttr) r.attr).optimize();
@@ -101,7 +101,7 @@ public class ProfileMain {
 		
 		program.renumberStmt();
 		
-		System.out.println("*************************************");
-		System.out.print( program.dumpCFG() );
+//		System.out.println("*************************************");
+//		System.out.print( program.dump() );
 	}
 }

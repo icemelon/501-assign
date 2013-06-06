@@ -28,6 +28,14 @@ public class BranchStmt extends Stmt {
 		this.brBlock = brBlock;
 	}
 	
+	// only for blbc & blbs
+	public void flipOperator() {
+		if (op == Operator.blbc)
+			op = Operator.blbs;
+		else if (op == Operator.blbs)
+			op = Operator.blbc;
+	}
+	
 	public void setBranchBlock(Block b) { brBlock = b; }
 	
 	public Block getBranchBlock() { return brBlock; } 

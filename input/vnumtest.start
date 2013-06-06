@@ -1,0 +1,177 @@
+    method vnumtest1@2: data1#12:int data3#8:int
+    method vnumtest2@9: data1#12:int data3#8:int
+    method vnumtest3@16: data1#16:int data2#12:int data3#8:int n#-4:int j#-8:int i#-12:int m#-16:int k#-20:int
+    method vnumtest4@28: data1#16:int data2#12:int data3#8:int n#-4:int j#-8:int i#-12:int m#-16:int k#-20:int
+    method vnumtest5@40: data1#16:int data2#12:int data3#8:int i#-4:int j#-8:int k#-12:int m#-16:int n#-20:int
+    method vnumtest6@54: data1#16:int data2#12:int data3#8:int i#-4:int j#-8:int k#-12:int m#-16:int n#-20:int
+    method vnumtest7@76: data1#16:int data2#12:int data3#8:int i#-4:int j#-8:int k#-12:int m#-16:int n#-20:int
+    method main@97:
+    global data0#32764:int
+    global data4#32760:int
+    global data5#32756:int
+    instr 1: nop
+    instr 2: enter 0
+    instr 3: mul data1#12 data3#8 :int
+    instr 4: mul data1#12 data3#8 :int
+    instr 5: sub (3) (4) :int
+    instr 6: add data0_base#32764 GP :int*
+    instr 7: store (5) (6)
+    instr 8: ret 8
+    instr 9: enter 0
+    instr 10: mul data1#12 data3#8 :int
+    instr 11: mul data3#8 data1#12 :int
+    instr 12: sub (10) (11) :int
+    instr 13: add data0_base#32764 GP :int*
+    instr 14: store (12) (13)
+    instr 15: ret 8
+    instr 16: enter 20
+    instr 17: mul data1#16 data3#8 :int
+    instr 18: move (17) j#-8
+    instr 19: move data3#8 i#-12
+    instr 20: move data1#16 m#-16
+    instr 21: move data2#12 k#-20
+    instr 22: mul m#-16 i#-12 :int
+    instr 23: move (22) n#-4
+    instr 24: sub n#-4 j#-8 :int
+    instr 25: add data0_base#32764 GP :int*
+    instr 26: store (24) (25)
+    instr 27: ret 12
+    instr 28: enter 20
+    instr 29: mul data1#16 data3#8 :int
+    instr 30: move (29) j#-8
+    instr 31: move data3#8 i#-12
+    instr 32: move data1#16 m#-16
+    instr 33: move data2#12 k#-20
+    instr 34: mul i#-12 m#-16 :int
+    instr 35: move (34) n#-4
+    instr 36: sub n#-4 j#-8 :int
+    instr 37: add data0_base#32764 GP :int*
+    instr 38: store (36) (37)
+    instr 39: ret 12
+    instr 40: enter 20
+    instr 41: mul data1#16 data3#8 :int
+    instr 42: move (41) j#-8
+    instr 43: cmpeq data3#8 3 :bool
+    instr 44: blbc (43) [53]
+    instr 45: move data3#8 i#-4
+    instr 46: move data1#16 m#-16
+    instr 47: move data2#12 k#-12
+    instr 48: mul m#-16 i#-4 :int
+    instr 49: move (48) n#-20
+    instr 50: sub n#-20 j#-8 :int
+    instr 51: add data0_base#32764 GP :int*
+    instr 52: store (50) (51)
+    instr 53: ret 12
+    instr 54: enter 20
+    instr 55: mul data1#16 data3#8 :int
+    instr 56: move (55) j#-8
+    instr 57: move data1#16 m#-16
+    instr 58: move j#-8 k#-12
+    instr 59: add data0_base#32764 GP :int*
+    instr 60: load (59) :int
+    instr 61: cmpeq (60) 0 :bool
+    instr 62: blbs (61) [66]
+    instr 63: add j#-8 3 :int
+    instr 64: move (63) j#-8
+    instr 65: br [68]
+    instr 66: sub j#-8 3 :int
+    instr 67: move (66) j#-8
+    instr 68: move data3#8 n#-20
+    instr 69: add data2#12 j#-8 :int
+    instr 70: move (69) j#-8
+    instr 71: mul m#-16 n#-20 :int
+    instr 72: sub k#-12 (71) :int
+    instr 73: add data4_base#32760 GP :int*
+    instr 74: store (72) (73)
+    instr 75: ret 12
+    instr 76: enter 20
+    instr 77: move data1#16 m#-16
+    instr 78: move data3#8 n#-20
+    instr 79: add data0_base#32764 GP :int*
+    instr 80: load (79) :int
+    instr 81: cmpeq (80) 0 :bool
+    instr 82: blbs (81) [91]
+    instr 83: mul m#-16 n#-20 :int
+    instr 84: move (83) j#-8
+    instr 85: move data2#12 i#-4
+    instr 86: add data5_base#32756 GP :int*
+    instr 87: store i#-4 (86)
+    instr 88: mul m#-16 n#-20 :int
+    instr 89: move (88) k#-12
+    instr 90: br [93]
+    instr 91: move 5 j#-8
+    instr 92: move 5 k#-12
+    instr 93: sub k#-12 j#-8 :int
+    instr 94: add data0_base#32764 GP :int*
+    instr 95: store (93) (94)
+    instr 96: ret 12
+    instr 97: entrypc
+    instr 98: enter 0
+    instr 99: add data0_base#32764 GP :int*
+    instr 100: store 0 (99)
+    instr 101: add data4_base#32760 GP :int*
+    instr 102: store 0 (101)
+    instr 103: param 0
+    instr 104: param 1
+    instr 105: call [2]
+    instr 106: write 1
+    instr 107: add data0_base#32764 GP :int*
+    instr 108: load (107) :int
+    instr 109: write (108)
+    instr 110: wrl
+    instr 111: param 0
+    instr 112: param 1
+    instr 113: call [9]
+    instr 114: write 2
+    instr 115: add data0_base#32764 GP :int*
+    instr 116: load (115) :int
+    instr 117: write (116)
+    instr 118: wrl
+    instr 119: param 0
+    instr 120: param 1
+    instr 121: param 2
+    instr 122: call [16]
+    instr 123: write 3
+    instr 124: add data0_base#32764 GP :int*
+    instr 125: load (124) :int
+    instr 126: write (125)
+    instr 127: wrl
+    instr 128: param 0
+    instr 129: param 1
+    instr 130: param 2
+    instr 131: call [28]
+    instr 132: write 4
+    instr 133: add data0_base#32764 GP :int*
+    instr 134: load (133) :int
+    instr 135: write (134)
+    instr 136: wrl
+    instr 137: param 0
+    instr 138: param 1
+    instr 139: param 2
+    instr 140: call [40]
+    instr 141: write 5
+    instr 142: add data0_base#32764 GP :int*
+    instr 143: load (142) :int
+    instr 144: write (143)
+    instr 145: wrl
+    instr 146: param 0
+    instr 147: param 1
+    instr 148: param 2
+    instr 149: call [54]
+    instr 150: write 6
+    instr 151: add data4_base#32760 GP :int*
+    instr 152: load (151) :int
+    instr 153: write (152)
+    instr 154: wrl
+    instr 155: param 0
+    instr 156: param 1
+    instr 157: param 2
+    instr 158: call [76]
+    instr 159: write 7
+    instr 160: add data0_base#32764 GP :int*
+    instr 161: load (160) :int
+    instr 162: write (161)
+    instr 163: wrl
+    instr 164: ret 0
+    instr 165: nop
+

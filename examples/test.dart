@@ -49,27 +49,23 @@ void test(int x) {
 }
 */
 void main() {
-	int i;
-	int a;
-	i = 0;
-	a = 0;
-/*	while (i < 10) {
-		i = i + 1;
-		a = i * 2;
 
-		if ( a > 50 ) {
-			a = a - 50;
+	int i,w;
+	i=0;
+	w=3;
+	while(i<1000){
+
+		if (i>999){
+			w=i;
 		} else {
-			a = a + 1;
+			w=0;
 		}
-	}*/
-	if (i < 1) {
-		a = 2;
-	} else {
-		a = 1;
+
+		i=i+1;
 	}
 
-	WriteLong(a);
+	WriteLong(w);
 	WriteLine();
+
 }
 
