@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import profile.CFGProfile;
+import profile.PositionProfile;
 
 
 import stmt.BranchStmt;

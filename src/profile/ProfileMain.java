@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import attr.RoutineCFGProfAttr;
+import attr.RoutinePosProfAttr;
 
 import compiler.Option;
 import compiler.Program;
@@ -28,8 +28,8 @@ public class ProfileMain {
 		
 		for (Routine r: program.getRoutines()) {
 			
-			RoutineCFGProfAttr attr = new RoutineCFGProfAttr();
-			attr.addProfile( new CFGProfile( r ) );
+			RoutinePosProfAttr attr = new RoutinePosProfAttr();
+			attr.addProfile( new PositionProfile( r ) );
 			attr.instrument();
 			
 			r.attr = attr;
@@ -67,7 +67,7 @@ public class ProfileMain {
 				if ( profStart ) {
 					int id = Integer.parseInt( lineStr.substring( 0, lineStr.indexOf( ':' ) ).trim() );
 					int cnt = Integer.parseInt( lineStr.substring( lineStr.indexOf( ':' ) + 1 ).trim() );
-					CFGProfile.ProfEdgeList.get( id - 1 ).counter = cnt;
+					PositionProfile.ProfEdgeList.get( id - 1 ).counter = cnt;
 				}
 				
 			}
@@ -90,17 +90,18 @@ public class ProfileMain {
 //			System.out.println( e.toString() + ": " + e.counter );
 		
 		for ( Routine r: program.getRoutines() ) {
-			((RoutineCFGProfAttr) r.attr).clean();
+			((RoutinePosProfAttr) r.attr).clean();
 		}
 		
 		program.renumberStmt();
 		
 		for ( Routine r: program.getRoutines() ) {
-			((RoutineCFGProfAttr) r.attr).optimize();
+			((RoutinePosProfAttr) r.attr).optimize();
 		}
 		
+		program.renumberStmt();
 		
-//		System.out.println("*************************************");
-//		System.out.print( program.dumpCFG() );
+		System.out.println("*************************************");
+		System.out.print( program.dumpCFG() );
 	}
 }

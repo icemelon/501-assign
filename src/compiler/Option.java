@@ -23,7 +23,7 @@ public class Option {
 	};
 	
 	public enum ProfileOption {
-		CFG,
+		POS,
 		INLINE,
 	};
 	
@@ -40,7 +40,7 @@ public class Option {
 		System.out.println("cp\tConstant propagation optimization (depends on SSA)");
 		System.out.println("vn\tValue numbering optimization (depends on SSA)");
 		System.out.println("\nProfile supported options:");
-		System.out.println("cfg\tCode block postion to optimize branch prediction and icache");
+		System.out.println("pos\tCode basic block postioning to optimize branch prediction and icache");
 		System.out.println("inline\tInline methods");
 		System.out.println("\nBackend supported options:");
 		System.out.println("asm\tAssembly code (default)");
@@ -111,8 +111,8 @@ public class Option {
 				arg = arg.substring(arg.indexOf('=') + 1).toLowerCase();
 				String[] term = arg.split(",");
 				for (String s: term) {
-					if (s.equals("cfg"))
-						profileList.add(ProfileOption.CFG);
+					if (s.equals("pos"))
+						profileList.add(ProfileOption.POS);
 					else if (s.equals("inline"))
 						profileList.add(ProfileOption.INLINE);
 					else {

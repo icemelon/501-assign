@@ -5,7 +5,7 @@ import java.util.List;
 
 import profile.Profile;
 
-public class RoutineCFGProfAttr extends Attribute {
+public class RoutinePosProfAttr extends Attribute {
 	
 	private List<Profile> profileList = new LinkedList<Profile>();
 	

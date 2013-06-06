@@ -6,13 +6,17 @@ import java.util.List;
 import compiler.Block;
 
 public class Chain {
-	public static int GlobalIndex = 0;
+//	public static int GlobalIndex = 0;
 	
-	public final int index;
-	public List<Block> blockList = new LinkedList<Block>();
+	public int index;
+	public List<Block> blockList;
+	public List<Chain> inEdge, outEdge;
 	
 	public Chain() {
-		index = GlobalIndex ++;
+//		index = GlobalIndex ++;
+		blockList = new LinkedList<Block>();
+		inEdge = new LinkedList<Chain>();
+		outEdge = new LinkedList<Chain>();
 	}
 	
 	public void merge( Chain chain ) {
@@ -30,6 +34,7 @@ public class Chain {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append( "chain#" + index + ":" );
 		for ( Block b: blockList )
 			sb.append( b.getIndex() + "->" );
 		

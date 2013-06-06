@@ -15,12 +15,12 @@ import stmt.CountStmt;
 import stmt.Stmt;
 import token.Constant;
 
-import attr.BlockCFGProfAttr;
+import attr.BlockPosProfAttr;
 
 import compiler.Block;
 import compiler.Routine;
 
-public class CFGProfile implements Profile {
+public class PositionProfile implements Profile {
 	
 	public static List<Edge> ProfEdgeList = new LinkedList<Edge>();
 	
@@ -28,7 +28,7 @@ public class CFGProfile implements Profile {
 	private Routine routine;
 	private List<Block> blocks;
 	
-	public CFGProfile( Routine routine ) {
+	public PositionProfile( Routine routine ) {
 		this.routine = routine;
 		this.blocks = routine.getBlocks();
 		
@@ -38,14 +38,14 @@ public class CFGProfile implements Profile {
 	private void genEdges() {
 		for ( Block b: blocks ) {
 			
-			b.attr = new BlockCFGProfAttr();
+			b.attr = new BlockPosProfAttr();
 			
 			for ( Block succ: b.getSuccs() ) {
 				Edge e = new Edge( b, succ );
 				localEdgeList.add( e );
 				ProfEdgeList.add( e );
 				
-				((BlockCFGProfAttr) b.attr).addEdge(e);
+				((BlockPosProfAttr) b.attr).addEdge(e);
 			}
 		}
 	}
@@ -115,7 +115,7 @@ public class CFGProfile implements Profile {
 				workingList.add( block );
 				
 //				System.out.println( "visit block#" + block.getIndex() );
-				BlockCFGProfAttr attr = (BlockCFGProfAttr) block.attr;
+				BlockPosProfAttr attr = (BlockPosProfAttr) block.attr;
 				
 				if ( attr.getEdgeList().size() == 0 ) {
 					
@@ -172,7 +172,7 @@ public class CFGProfile implements Profile {
 				
 				Edge hotEdge = null;
 				for ( Block b: workingList ) {
-					BlockCFGProfAttr attr = (BlockCFGProfAttr) b.attr;
+					BlockPosProfAttr attr = (BlockPosProfAttr) b.attr;
 					List<Edge> list = attr.getEdgeList();
 					Iterator<Edge> it = list.iterator();
 					while ( it.hasNext() ) {
@@ -186,12 +186,19 @@ public class CFGProfile implements Profile {
 				}
 				
 				block = hotEdge.dst;
-				((BlockCFGProfAttr) hotEdge.src.attr).removeEdge( hotEdge );
+				((BlockPosProfAttr) hotEdge.src.attr).removeEdge( hotEdge );
 
 			}
 		}
 		
 		routine.setBlocks(workingList);
+	}
+	
+	private void addChain( List<Block> blockList, Chain chain ) {
+		blockList.addAll( chain.blockList );
+		for ( Chain c: chain.outEdge ) {
+			c.inEdge.remove( chain );
+		}
 	}
 	
 	private void bottomUpOptimize() {
@@ -272,9 +279,84 @@ public class CFGProfile implements Profile {
 			}
 		}
 		
+		for ( int i = 0; i < chainList.size(); ++ i )
+			chainList.get( i ).index = i;
+		
 		for ( Chain c: chainList )
 			System.out.println( c );
 		
+		// calculate order between chains
+		int n = chainList.size();
+		int[][] chainOrder = new int[n][n];
+		System.out.println( "n = " + n );
+		
+		for ( int i = 0; i < n; i ++ )
+			for ( int j = 0; j < n; j ++ )
+				chainOrder[i][j] = 0;
+		
+		for ( Chain chain: chainList )
+			for ( Block block: chain.blockList )
+				if ( block.getSuccs().size() > 1 ) {
+					
+					Block b1 = block.getSuccs().get(0);
+					Block b2 = block.getSuccs().get(1);
+					
+					Chain c1 = blockChainMap.get( b1 );
+					Chain c2 = blockChainMap.get( b2 );
+					
+					BlockPosProfAttr attr = (BlockPosProfAttr) block.attr;
+					Edge e1 = attr.searchEdge( b1 );
+					Edge e2 = attr.searchEdge( b2 );
+					
+					if ( c1 != chain ) {
+						chainOrder[chain.index][c1.index] += e2.counter; // weight
+					} else if ( c2 != chain ) {
+						chainOrder[chain.index][c2.index] += e1.counter;
+					} else {
+						System.err.println( "wtf!!!!!!!!!" );
+					}
+				}
+		
+		for ( Chain c1: chainList )
+			for ( Chain c2: chainList )
+				if ( c1 != c2 ) {
+					int id1 = c1.index;
+					int id2 = c2.index;
+					if ( chainOrder[id1][id2] > chainOrder[id2][id1] ) {
+						c1.outEdge.add( c2 );
+						c2.inEdge.add( c1 );
+					} else if ( chainOrder[id1][id2] < chainOrder[id2][id1] ) {
+						c1.inEdge.add( c2 );
+						c2.outEdge.add( c1 );
+					}
+				}
+		
+		List<Block> newBlockOrder = new LinkedList<Block>();
+		Chain entryChain = blockChainMap.get( routine.getEntryBlock() );
+		addChain( newBlockOrder, entryChain );
+		chainList.remove( entryChain );
+		
+		while ( !chainList.isEmpty() ) {
+			
+			Iterator<Chain> it = chainList.iterator();
+			Chain chain = null;
+			
+			while ( it.hasNext() ) {
+				chain = it.next();
+				if ( chain.inEdge.isEmpty() )
+					break;
+			}
+			
+			addChain( newBlockOrder, chain );
+			it.remove();
+			
+		}
+		
+		for ( Block b: newBlockOrder )
+			System.out.print( b.getIndex() + "->" );
+		System.out.println();
+		
+		routine.setBlocks( newBlockOrder );
 	}
 	
 	public void clean() {
