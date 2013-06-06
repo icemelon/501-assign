@@ -1,0 +1,20 @@
+richards:
+
+2322 928
+
+-------------------------
+- Dynamic cycles : 26933770
+- Instruction count : 16716459
+- Instruction cache misses : 574219
+- Branch mispredicts : 367278
+- Allocated bytes: 1305092
+
+ 2322 928
+
+-------------------------
+- Dynamic cycles : 26439098
+- Instruction count : 16730588
+- Instruction cache misses : 552687
+- Branch mispredicts : 80946
+- Allocated bytes: 1305092
+
