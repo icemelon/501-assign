@@ -203,6 +203,10 @@ public class PositionProfile implements Profile {
 	
 	private void bottomUpOptimize() {
 		
+		for ( Edge e: localEdgeList )
+			if ( e.isBackEdge )
+				e.counter ++;
+		
 		if ( localEdgeList.size() == 0 )
 			return;
 		
@@ -223,8 +227,8 @@ public class PositionProfile implements Profile {
 		
 		for ( Edge e: localEdgeList ) {
 			
-			if ( e.isBackEdge )
-				continue;
+//			if ( e.isBackEdge )
+//				continue;
 			
 			boolean srcVisited = blockChainMap.containsKey( e.src );
 			boolean dstVisited = blockChainMap.containsKey( e.dst );
@@ -382,17 +386,41 @@ public class PositionProfile implements Profile {
 			} else if ( block.getSuccs().size() == 2 ) {
 				
 				BranchStmt brStmt = (BranchStmt) lastStmt;
-				Block elseBlock = brStmt.getBranchBlock(); 
+				Block elseBlock = brStmt.getBranchBlock();
+				Block thenBlock = ( elseBlock == block.getSuccs().get(0) ) ? 
+						block.getSuccs().get(1) : block.getSuccs().get(0);
+							
+				/*BlockPosProfAttr attr = (BlockPosProfAttr) block.attr;
+				Edge thenEdge = attr.searchEdge( thenBlock );
+				Edge elseEdge = attr.searchEdge( elseBlock );*/
+				
 				if ( elseBlock == nextBlock ) {
 					brStmt.flipOperator();
-					Block thenBlock;
-					if ( elseBlock == block.getSuccs().get(0) )
-						thenBlock = block.getSuccs().get(1);
-					else
-						thenBlock = block.getSuccs().get(0);
 					brStmt.setBranchBlock(thenBlock);
+					
+					/*Block tmpBlock = thenBlock;
+					thenBlock = elseBlock;
+					elseBlock = tmpBlock;
+					
+					Edge tmpEdge = thenEdge;
+					thenEdge = elseEdge;
+					elseEdge = tmpEdge;*/
+				}
+				/*
+				boolean backedge = false;
+				for ( Block b: newBlockOrder ) {
+					if ( b == elseBlock ) {
+						backedge = true;
+						break;
+					}
+					if ( b == block )
+						break;
 				}
 				
+				if ( backedge && thenEdge.counter > elseEdge.counter ) {
+					BranchStmt
+				}
+				*/	
 			}
 		}
 		
@@ -406,7 +434,7 @@ public class PositionProfile implements Profile {
 	}
 	
 	public void optimize() {
-		topDownOptimize();
-//		bottomUpOptimize();
+//		topDownOptimize();
+		bottomUpOptimize();
 	}
 }
