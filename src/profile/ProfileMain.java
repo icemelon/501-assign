@@ -50,7 +50,7 @@ public class ProfileMain {
 		}
 		
 		Runtime run = Runtime.getRuntime();
-		String cmd = Option.START_LOC + " -r --stats " + outFileName;
+		String cmd = Option.DART_SDK + " " + Option.START + " -r --stats " + outFileName;
 		try {
 			Process p = run.exec( cmd );
 			BufferedReader reader = new BufferedReader( new InputStreamReader( p.getInputStream() ) );

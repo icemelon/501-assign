@@ -1,12 +1,38 @@
 package compiler;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Option {
 	
-	public static String START_LOC = "start";
+	public static String DART_SDK;
+	public static String START;
+	public static String CONFIG_FILE = "config";
+	
+	static {
+		try {
+			BufferedReader reader = new BufferedReader( new InputStreamReader(new FileInputStream( CONFIG_FILE ) ) );
+			String lineStr;
+			while ( (lineStr = reader.readLine()) != null ) {
+				if ( lineStr.startsWith( "#" ) )
+					continue;
+				else if ( lineStr.startsWith( "DART" ) ) {
+					DART_SDK = lineStr.substring( lineStr.indexOf( '=' ) + 1 ) + "/bin/dart"; 
+				} else if ( lineStr.startsWith( "START" ))
+					START = lineStr.substring( lineStr.indexOf( '=' ) + 1 ) + "/bin/start.dart";
+			}
+		} catch ( FileNotFoundException e ) {
+			e.printStackTrace();
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+	}
 	
 	public enum BackendOption {
 		ASM,
@@ -34,13 +60,13 @@ public class Option {
 	public BackendOption backend;
 	
 	public void usage() {
-		System.out.println("java -jar opt.jar <filename> [-opt=<optimize>] [-backend=<backend>] [-profile=<profile>]\n");
+		System.out.println("java -jar compiler.jar <filename> [-opt=<optimize>] [-backend=<backend>] [-profile=<profile>]\n");
 		System.out.println("Optimization supported options:");
 		System.out.println("ssa\tSSA optimization");
 		System.out.println("cp\tConstant propagation optimization (depends on SSA)");
 		System.out.println("vn\tValue numbering optimization (depends on SSA)");
 		System.out.println("\nProfile supported options:");
-		System.out.println("pos\tCode basic block postioning to optimize branch prediction and icache");
+		System.out.println("pos\tBasic block positioning to optimize branch prediction and icache");
 		System.out.println("inline\tInline methods");
 		System.out.println("\nBackend supported options:");
 		System.out.println("asm\tAssembly code (default)");
@@ -52,7 +78,7 @@ public class Option {
 	}
 	
 	public boolean parse(String[] args) {
-
+		
 		options = new LinkedList<String>();
 		optimizeList = new LinkedList<OptimizeOption>();
 		profileList = new LinkedList<ProfileOption>();

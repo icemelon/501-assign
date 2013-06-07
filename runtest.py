@@ -1,5 +1,4 @@
-import os
-import sys
+import os;
 
 def getCmdOutput(cmd):
   child = os.popen(cmd)
@@ -10,11 +9,16 @@ def getCmdOutput(cmd):
   return data.split('\n')
 
 
-inputFile = "input/" + sys.argv[1] + ".start"
-firstRunCmd = "start -r -p " + inputFile
-os.system(firstRunCmd)
-optCmd = "./run.sh " + inputFile + " -profile=pos -backend=asm > 1.start"
-os.system(optCmd)
-secondRunCmd = "start -r -p 1.start"
-os.system(secondRunCmd)
+dartFiles = os.listdir("input")
+
+for file in dartFiles:
+  pos = file.index('.')
+  name = file[0 : pos]
+
+  print("Program: " + name)
+  optCmd = "./run.sh input/" + file + " -profile=pos -backend=asm > 1.start"
+  os.system(optCmd)
+  runCmd = "start -r -p 1.start"
+#  runCmd = "start -r -p input/" + file
+  os.system(runCmd)
 

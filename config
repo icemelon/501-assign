@@ -1,0 +1,5 @@
+# set the dart sdk directory
+DART_SDK=/home/haichen/bin/dart-sdk
+
+# set the start directory
+START=/home/haichen/repo/hw/501-assign/start

@@ -223,8 +223,8 @@ public class PositionProfile implements Profile {
 		
 		for ( Edge e: localEdgeList ) {
 			
-//			if ( e.isBackEdge )
-//				continue;
+			if ( e.isBackEdge )
+				continue;
 			
 			boolean srcVisited = blockChainMap.containsKey( e.src );
 			boolean dstVisited = blockChainMap.containsKey( e.dst );
@@ -406,7 +406,7 @@ public class PositionProfile implements Profile {
 	}
 	
 	public void optimize() {
-		//topDownOptimize();
-		bottomUpOptimize();
+		topDownOptimize();
+//		bottomUpOptimize();
 	}
 }
